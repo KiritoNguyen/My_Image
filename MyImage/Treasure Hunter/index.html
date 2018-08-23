@@ -43,6 +43,12 @@
         var treeSpriteManager;
 
         var time;
+        var speed=0.2; //set speed
+        
+        var flagEnergy=true;// check key e
+
+        var energy=0;
+        var energyCount=setInterval(function(){energy++},2000);
         /////////////////////// ENVIRONMENT //////////////////////////
         var basicEnvironment = function(scene) {
             ////////////////////// TREE //////////////////////           
@@ -490,8 +496,12 @@
 
             //////////// TIME COUNT ///////////////
             var timeCount = setInterval(function(){time++}, 1000);  
+            //////////// SET SPEED////////////////
+
+            
 
             /////////////////// CONTROL ////////////////////
+
             var Control = function() {
                 scene.actionManager = new BABYLON.ActionManager(scene);
                 var map = {}; //object for multiple key presses
@@ -508,7 +518,7 @@
 
                 /****************************Move Box*****************************/
 
-                var speed=0.2;
+                
 
                 scene.registerAfterRender(function () {
                     camera.setTarget(box.position);
@@ -568,6 +578,32 @@
                         }
                     )
                 )
+                scene.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                        parameter: 'e'
+                    },
+                    function() {
+                        if(energy>0){
+                           flagEnergy=false;
+                           speed=0.5; 
+                           energy--;
+                        }
+                    }
+                )
+            )
+            scene.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyUpTrigger,
+                        parameter: 'e'
+                    },
+                    function() {
+                        flagEnergy=true;
+                    }
+                )
+            )
             }
 
             /////////////////////////// GUI ////////////////////////////
@@ -1021,7 +1057,8 @@
                             box.position.z+=0.2;
                     }
                 });
-                speed=0.2;
+                if(flagEnergy)
+                    speed=0.2;
             })
 
             return scene;
@@ -1176,6 +1213,14 @@
             scoreText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             scoreText.top = 10;
             scoreText.left = 10;
+
+            var energyText=new BABYLON.GUI.TextBlock();
+            energyText.color="yellow";
+            energyText.text="Energy: ";
+            energyText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            energyText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            energyText.top = 50;
+            energyText.left = 10;
 
             var btnBack = BABYLON.GUI.Button.CreateSimpleButton("btnBack", "Main Menu");
             btnBack.width = 0.08;
@@ -1374,6 +1419,7 @@
             advancedTexture.addControl(btnOption);
             advancedTexture.addControl(panelCheckBox);
             advancedTexture.addControl(panelHeaderCheckBox);
+            advancedTexture.addControl(energyText);
             
             /////////////////////////// END GUI //////////////////////////         
 
@@ -1552,8 +1598,6 @@
 
             /****************************Move Box**************************************/
 
-            var speed=0.2;
-
             scene.registerAfterRender(function () {
                 camera.setTarget(box.position);
                 if ((map["w"] || map["W"])) {
@@ -1613,6 +1657,34 @@
                 )
             )
 
+                            scene.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                        parameter: 'e'
+                    },
+                    function() {
+                        if(energy>0)
+                        {
+                           flagEnergy=false;
+                           speed=0.5; 
+                            energy--;
+                        }
+                    }
+                ))
+            
+            scene.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyUpTrigger,
+                        parameter: 'e'
+                    },
+                    function() {
+                        flagEnergy=true;
+                    }
+                )
+            )
+
             snowDropEffect(scene);
             basicEnvironment(scene);
             changeColorTank(advancedTexture, boxMaterial);
@@ -1639,12 +1711,14 @@
 
                 // TIME SHOW
                 scoreText.text="Scores: " + score;
+                energyText.text="Energy: "+ energy;
                 textTime.text="Time: "+Math.floor(timeScoreAttack/60)+":"+timeScoreAttack%60;
                 if(timeScoreAttack<=0){
                     textTime.text="Time up!\n Your score: " + score;
                     for (var i = 0; i < scene.actionManager.actions.length; i++) {
                         scene.actionManager.actions.splice(i, i);
                     }
+                    clearInterval(energyCount);
                 }
 
                 // Collide with crates
@@ -1661,7 +1735,8 @@
                             box.position.z+=0.2;
                     }
                 });
-                speed=0.2;
+                if(flagEnergy)
+                    speed=0.2;
             })
 
             return scene;
