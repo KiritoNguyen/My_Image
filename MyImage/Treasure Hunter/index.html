@@ -40,21 +40,25 @@
 
         // Environment variables
         var skybox;
-        var treeSpriteManager;
 
         var time;
+
         /////////////////////// ENVIRONMENT //////////////////////////
         var basicEnvironment = function(scene) {
             ////////////////////// TREE //////////////////////           
-            treeSpriteManager = new BABYLON.SpriteManager('treeSpriteManager', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/tree1.png', 260, 337, scene);
+	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", scene, function (newMeshes) {
+                var mesh = newMeshes[0];
 
-            for (var i = 0; i < 20; i++) {
-                var tree = new BABYLON.Sprite('tree', treeSpriteManager);
-                tree.width = 50;
-                tree.height = 50;
-                tree.position = new BABYLON.Vector3(Math.random()*300 - 100, 12, Math.random()*300 - 100);
-                tree.isPickable = false;
-            }
+                mesh.position = new BABYLON.Vector3(0, -5, 0);
+                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+
+                for (var i = 0; i < 20; i++) {			
+                    newMeshes.forEach(function (m) {
+                        var clone = m.clone("newtree");
+                        clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
+                    });
+                }
+            });
 
             ///////////////////////// Skybox /////////////////////////
             skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
@@ -168,8 +172,6 @@
         var createScene = function () {
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
-            engine.loadingScreen.loadingUIText = "JS < TS or > TS?!";
-            engine.loadingScreen.loadingUIBackgroundColor = "bottleGreenWithABitOfOlive";
 
             // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
@@ -364,8 +366,7 @@
         var createSceneTimeRush = function() {
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
-            engine.loadingScreen.loadingUIText = "JS < TS or > TS?!";
-            engine.loadingScreen.loadingUIBackgroundColor = "bottleGreenWithABitOfOlive";
+
             var gravityVector = new BABYLON.Vector3(0,-9.81, 0);
             var physicsPlugin = new BABYLON.CannonJSPlugin();
             scene.enablePhysics(gravityVector, physicsPlugin);
@@ -635,7 +636,7 @@
             ////////// CHECK BOX ///////////
             var panelCheckBox = new BABYLON.GUI.StackPanel();
             panelCheckBox.width = "20px";
-            panelCheckBox.height = "100px";
+            panelCheckBox.height = "80px";
             panelCheckBox.isVertical = true;
             panelCheckBox.top = '20px';
             panelCheckBox.left = '-140px';
@@ -648,13 +649,6 @@
             cbSkyBox.isChecked = true;
             cbSkyBox.color = "green";            
             panelCheckBox.addControl(cbSkyBox);  
-
-            var cbTree = new BABYLON.GUI.Checkbox('cbTree');
-            cbTree.width = "20px";
-            cbTree.height = "20px";
-            cbTree.isChecked = true;
-            cbTree.color = "green";     
-            panelCheckBox.addControl(cbTree);  
 
             var cbSnow = new BABYLON.GUI.Checkbox('cbSnow');
             cbSnow.width = "20px";
@@ -680,7 +674,7 @@
             ////////// HEADER CHECK BOX ///////////
             var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
             panelHeaderCheckBox.width = "140px";
-            panelHeaderCheckBox.height = "100px";
+            panelHeaderCheckBox.height = "80px";
             panelHeaderCheckBox.isVertical = true;
             panelHeaderCheckBox.top = '20px';
             panelHeaderCheckBox.background = 'yellow';
@@ -694,14 +688,6 @@
             headerSkybox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             headerSkybox.color = "blue";
             panelHeaderCheckBox.addControl(headerSkybox);
-
-            var headerTree = new BABYLON.GUI.TextBlock();
-            headerTree.text = "TREE";
-            headerTree.width = "140px";
-            headerTree.height = '20px';
-            headerTree.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            headerTree.color = "blue";
-            panelHeaderCheckBox.addControl(headerTree);
 
             var headerSnow = new BABYLON.GUI.TextBlock();
             headerSnow.text = "SNOW";
@@ -727,7 +713,6 @@
             headerEffectSound.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             headerEffectSound.color = "blue";
             panelHeaderCheckBox.addControl(headerEffectSound);           
-
 
             var gameStop = false; // Biến kiểm tra game đã kết thúc hay chưa
 
@@ -809,10 +794,6 @@
 
             cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
                 skybox.isVisible = value;
-            });
-
-            cbTree.onIsCheckedChangedObservable.add(function(value) {
-                scene.spritesEnabled = value;
             });
 
             cbSnow.onIsCheckedChangedObservable.add(function(value) {
@@ -1030,8 +1011,7 @@
         var createSceneScoreAttack = function() {
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
-            engine.loadingScreen.loadingUIText = "JS < TS or > TS?!";
-            engine.loadingScreen.loadingUIBackgroundColor = "bottleGreenWithABitOfOlive";
+
             var gravityVector = new BABYLON.Vector3(0,-9.81, 0);
             var physicsPlugin = new BABYLON.CannonJSPlugin();
             scene.enablePhysics(gravityVector, physicsPlugin);
@@ -1216,7 +1196,7 @@
             ////////// CHECK BOX ///////////
             var panelCheckBox = new BABYLON.GUI.StackPanel();
             panelCheckBox.width = "20px";
-            panelCheckBox.height = "100px";
+            panelCheckBox.height = "80px";
             panelCheckBox.isVertical = true;
             panelCheckBox.top = '20px';
             panelCheckBox.left = '-140px';
@@ -1229,13 +1209,6 @@
             cbSkyBox.isChecked = true;
             cbSkyBox.color = "green";            
             panelCheckBox.addControl(cbSkyBox);  
-
-            var cbTree = new BABYLON.GUI.Checkbox('cbTree');
-            cbTree.width = "20px";
-            cbTree.height = "20px";
-            cbTree.isChecked = true;
-            cbTree.color = "green";     
-            panelCheckBox.addControl(cbTree);  
 
             var cbSnow = new BABYLON.GUI.Checkbox('cbSnow');
             cbSnow.width = "20px";
@@ -1261,7 +1234,7 @@
             ////////// HEADER CHECK BOX ///////////
             var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
             panelHeaderCheckBox.width = "140px";
-            panelHeaderCheckBox.height = "100px";
+            panelHeaderCheckBox.height = "80px";
             panelHeaderCheckBox.isVertical = true;
             panelHeaderCheckBox.top = '20px';
             panelHeaderCheckBox.background = 'yellow';
@@ -1275,14 +1248,6 @@
             headerSkybox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             headerSkybox.color = "blue";
             panelHeaderCheckBox.addControl(headerSkybox);
-
-            var headerTree = new BABYLON.GUI.TextBlock();
-            headerTree.text = "TREE";
-            headerTree.width = "140px";
-            headerTree.height = '20px';
-            headerTree.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            headerTree.color = "blue";
-            panelHeaderCheckBox.addControl(headerTree);
 
             var headerSnow = new BABYLON.GUI.TextBlock();
             headerSnow.text = "SNOW";
@@ -1346,10 +1311,6 @@
 
             cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
                 skybox.isVisible = value;
-            });
-
-            cbTree.onIsCheckedChangedObservable.add(function(value) {
-                scene.spritesEnabled = value;
             });
 
             cbSnow.onIsCheckedChangedObservable.add(function(value) {
