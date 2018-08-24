@@ -48,19 +48,33 @@
 
         var energy=0;
         var energyCount=setInterval(function(){energy++},2000);
+        var treeList;
+        var treeRootList;
         /////////////////////// ENVIRONMENT //////////////////////////
         var basicEnvironment = function(scene) {
             ////////////////////// TREE //////////////////////           
-	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", scene, function (newMeshes) {
+	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", 
+                scene, function (newMeshes) {
                 var mesh = newMeshes[0];
-
+                treeList=[mesh];
                 mesh.position = new BABYLON.Vector3(0, -5, 0);
                 mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                mesh.isPickable=false;
+                var treeRoot=new BABYLON.MeshBuilder.CreateCylinder("treeRoot",{height:50,diameter:6},scene);
+                treeRoot.isVisible=false;
+                treeRootList=[treeRoot];
+                treeRoot.position=new BABYLON.Vector3(mesh.position.x,mesh.position.y,mesh.position.z);
+                treeRootList.push(treeRoot);
 
                 for (var i = 0; i < 20; i++) {			
                     newMeshes.forEach(function (m) {
                         var clone = m.clone("newtree");
+                        var treeClone=treeRoot.clone("treeRoot");
                         clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
+                        treeRoot.position=new BABYLON.Vector3(clone.position.x,clone.position.y,clone.position.z);
+                        treeRoot.isVisible=false;
+                        treeList.push(clone);
+                        treeRootList.push(treeClone);
                     });
                 }
             });
@@ -1037,6 +1051,19 @@
                             box.position.z+=0.2;
                     }
                 });
+                treeRootList.forEach(tree => {
+                    if (box.intersectsMesh(tree, true)) {
+                       speed=0;
+                        if(direction.x>=0)
+                            box.position.x-=0.2;
+                        else
+                            box.position.x+=0.2;
+                        if(direction.z>=0)
+                            box.position.z-=0.2;
+                        else
+                            box.position.z+=0.2;
+                    }
+                });
                 if(flagEnergy)
                     speed=0.2;
             })
@@ -1562,46 +1589,46 @@
             scene.registerAfterRender(function () {
                 camera.setTarget(box.position);
                 if ((map["w"] || map["W"])) {
-                    if(pickResult.pickedPoint.z-box.position.z>10)
-                    {
-                        box.position.z +=speed;
-                        box.position.x=(box.position.z-b)/a;
+                        if(pickResult.pickedPoint.z-box.position.z>10)
+                        {
+                            box.position.z +=speed;
+                            box.position.x=(box.position.z-b)/a;
 
-                    }
-                    else if(pickResult.pickedPoint.z-box.position.z<-10)
-                    {
-                        box.position.z -= speed;
-                        box.position.x=(box.position.z-b)/a;
-                    }
-                    else
-                    {
-                    if(pickResult.pickedPoint.x<box.position.x)
-                        box.position.x-=speed*2;
-                    else
-                        box.position.x+=speed*2;
-                    }
-                };
-
-                if ((map["s"] || map["S"])) {
-                    if(pickResult.pickedPoint.z-box.position.z>10)
+                        }
+                        else if(pickResult.pickedPoint.z-box.position.z<-10)
                         {
                             box.position.z -= speed;
                             box.position.x=(box.position.z-b)/a;
                         }
-                    else if(pickResult.pickedPoint.z-box.position.z<-10)
-                    {
-                        box.position.z += speed;   
-                        box.position.x=(box.position.z-b)/a;
-                    }
-                    else
-                    {
-                        if(pickResult.pickedPoint.x<box.position.x)
-                            box.position.x+=speed*2;
                         else
+                        {
+                        if(pickResult.pickedPoint.x<box.position.x)
                             box.position.x-=speed*2;
-                    }
-                };
-            });
+                        else
+                            box.position.x+=speed*2;
+                        }
+                    };
+
+                    if ((map["s"] || map["S"])) {
+                        if(pickResult.pickedPoint.z-box.position.z>10)
+                            {
+                                box.position.z -= speed;
+                                box.position.x=(box.position.z-b)/a;
+                            }
+                        else if(pickResult.pickedPoint.z-box.position.z<-10)
+                        {
+                            box.position.z += speed;   
+                            box.position.x=(box.position.z-b)/a;
+                        }
+                        else
+                        {
+                            if(pickResult.pickedPoint.x<box.position.x)
+                                box.position.x+=speed*2;
+                            else
+                                box.position.x-=speed*2;
+                        }
+                    };
+                });
 
             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
@@ -1617,7 +1644,7 @@
                     }
                 )
             )
-
+            var energyCondition=new BABYLON.ValueCondition(scene.actionManager,energy,"",0,BABYLON.ValueCondition.IsGreater);
                             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
                     {
@@ -1626,11 +1653,12 @@
                     },
                     function() {
                         if(energy>0)
-                        {
-                           flagEnergy=false;
-                           speed=0.5; 
-                            energy--;
-                        }
+                            for(var i=0;i<energy;i++)
+                                {
+                                flagEnergy=false;
+                                speed=0.5; 
+                                    energy--;
+                                }
                     }
                 ))
             
@@ -1685,6 +1713,19 @@
                 // Collide with crates
                 crates.forEach(crate => {
                     if (box.intersectsMesh(crate, true)) {
+                       speed=0;
+                        if(direction.x>=0)
+                            box.position.x-=0.2;
+                        else
+                            box.position.x+=0.2;
+                        if(direction.z>=0)
+                            box.position.z-=0.2;
+                        else
+                            box.position.z+=0.2;
+                    }
+                });
+                treeRootList.forEach(tree => {
+                    if (box.intersectsMesh(tree, true)) {
                        speed=0;
                         if(direction.x>=0)
                             box.position.x-=0.2;
