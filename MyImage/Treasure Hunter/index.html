@@ -41,6 +41,11 @@
         // Environment variables
         var skybox;
 
+        //Crate and array of crates
+        var crate;
+        var crates;
+
+
         // Time variable of time rush
         var time;
 
@@ -418,6 +423,16 @@
             muzzle.isPickable = false;
             muzzle.parent = box;
 
+            
+            ///COLLISION////
+    
+            var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+            planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+            planOBB.parent = box;
+            planOBB.showBoundingBox=true;
+
+            ///////////////
+
             ///////////////// GROUND ///////////////////
             var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
             ground.position.y = -5;
@@ -445,10 +460,10 @@
                 crate.position.z = rand() * 50;
             }
 
-            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
             crate.checkCollisions = true;
             cratePosition(crate);
-            let crates = [crate];
+            crates = [crate];
 
             for (let i = 0; i < sliderValue - 1; ++i) {
                 let b = crate.clone("crate" + i);
@@ -771,10 +786,10 @@
 
                 Control();
 
-                let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                 crate.checkCollisions = true;
                 cratePosition(crate);
-                let crates = [crate];
+                crates = [crate];
 
                 for (let i = 0; i < sliderValue - 1; ++i) {
                     let b = crate.clone("crate" + i);
@@ -993,6 +1008,8 @@
                             explosion.play();
                         }
                         hit.pickedMesh.dispose();
+                        const index = crates.indexOf(hit.pickedMesh);
+                        crates.splice(index, 1);
                     }
 
                 }
@@ -1095,6 +1112,15 @@
             muzzle.isPickable = false;
             muzzle.parent = box;
 
+            ///COLLISION////
+    
+            var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+            planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+            planOBB.parent = box;
+            planOBB.showBoundingBox=true;
+
+            ///////////////
+
             var ray = new BABYLON.Ray();
             var rayHelper = new BABYLON.RayHelper(ray);
             
@@ -1122,7 +1148,7 @@
                 crate.position.z = rand() * 50;
             }
 
-            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
             crate.checkCollisions = true;
             cratePosition(crate);
             let crates = [crate];
@@ -1516,10 +1542,10 @@
                             countScore += 5;
 
                             //Create more crate after hit gift box      
-                            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                             crate.checkCollisions = true;
                             cratePosition(crate);
-                            let crates = [crate];
+                            crates = [crate];
 
                             for (let i = 0; i < 4; ++i) {
                                 let b = crate.clone("crate" + i);
@@ -1549,6 +1575,9 @@
                         else {
                             explosion.play();
                         }
+                        hit.pickedMesh.dispose();
+                        const index = crates.indexOf(hit.pickedMesh);
+                        crates.splice(index, 1);
                     }
 
                 }
