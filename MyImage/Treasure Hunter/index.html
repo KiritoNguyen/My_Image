@@ -41,10 +41,12 @@
         // Environment variables
         var skybox;
 
+        // Time variable of time rush
         var time;
+
         var speed=0.2; //set speed
         
-        var flagEnergy=true;// check key e
+        var flagEnergy=true;// check key energy
 
         var energy=0;
         var energyCount=setInterval(function(){energy++},2000);
@@ -66,11 +68,11 @@
                 }
             });
 
-            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/", "Tiger_I.babylon", scene, function (newMeshes) {
-                var tank = newMeshes;
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
+                var tank = newMeshes[0];
 
-                tank.position = new BABYLON.Vector3(50, -5, 50);
-                tank.scaling = new BABYLON.Vector3(5, 5, 5);
+                tank.position = new BABYLON.Vector3(0, -4, 0);
+                tank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
             });
 
             ///////////////////////// Skybox /////////////////////////
