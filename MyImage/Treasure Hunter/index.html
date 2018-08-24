@@ -42,6 +42,11 @@
             // Environment variables
             var skybox;
 
+            //Crate and array of crates
+            var crate;
+            var crates;
+
+
             // Time variable of time rush
             var time;
 
@@ -51,119 +56,137 @@
 
             var energy=0;
             var energyCount=setInterval(function(){energy++},2000);
+            var treeList;
+            var treeRootList;
 
-            /////////////////////// TANK //////////////////////////
             var tank, muzzleTank;
             var tankCreation = function(scene) {
-                BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {                
+                BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
                     tank = newMeshes[0];
-                    tank.isPickable = false;
                     tank.position = new BABYLON.Vector3(0, -4, 0);
                     tank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
+                    tank.isPickable = false;
 
-                    muzzleTank = newMeshes[1];
-                    muzzleTank.isPickable = false;
-                    muzzleTank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
+                    // muzzleTank = newMeshes[1];
+                    // muzzleTank.position = new BABYLON.Vector3(0, 0, 3);
+                    // muzzleTank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
+                    // muzzleTank.isPickable = false;
                 });
             }
 
             /////////////////////// ENVIRONMENT //////////////////////////
             var basicEnvironment = function(scene) {
-                ////////////////////// TREE //////////////////////           
-                BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", scene, function (newMeshes) {
-                    var mesh = newMeshes[0];
 
-                    mesh.position = new BABYLON.Vector3(50, -5, 50);
-                    mesh.scaling = new BABYLON.Vector3(100, 100, 100);
-                    mesh.isPickable = false;
+            ////////////////////// TREE //////////////////////           
+	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", 
+                scene, function (newMeshes) {
 
-                    for (var i = 0; i < 20; i++) {			
-                        newMeshes.forEach(function (m) {
-                            var clone = m.clone("newtree");
-                            clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
-                        });
-                    }
-                });
+                var mesh = newMeshes[0];
+                treeList=[mesh];
+                mesh.position = new BABYLON.Vector3(0, -5, 0);
+                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                mesh.isPickable=false;
 
-                ///////////////////////// Skybox /////////////////////////
-                skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
-                skybox.checkCollisions = true;
-                var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-                skyboxMaterial.backFaceCulling = false;
-                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/skybox/snow", scene);
-                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-                skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-                skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-                skyboxMaterial.disableLighting = true;
-                skybox.material = skyboxMaterial;
+                var treeRoot=new BABYLON.MeshBuilder.CreateCylinder("treeRoot",{height:50,diameter:6},scene);
+                treeRoot.isVisible=false;
+                treeRootList=[treeRoot];
+                treeRoot.position=new BABYLON.Vector3(mesh.position.x,mesh.position.y,mesh.position.z);
+                treeRootList.push(treeRoot);
 
-                var skybox_ground = new BABYLON.MeshBuilder.CreateGround('skybox_ground', {width: 600, height: 600}, scene);
-                skybox_ground.position.y = -124;            
-            }       
+                for (var i = 0; i < 20; i++) {			
+                    newMeshes.forEach(function (m) {
+                        var clone = m.clone("newtree");
+                        var treeClone=treeRoot.clone("treeRoot");
+                        clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
+                        treeRoot.position=new BABYLON.Vector3(clone.position.x, clone.position.y, clone.position.z);
+                        clone.isPickable = false;
+                        treeRoot.isPickable = false;
+                        treeRoot.isVisible=false;
+                        treeList.push(clone);
+                        treeRootList.push(treeClone);
+                    });
+                }
+            });
 
-            /////////////////////// SOUND ///////////////////////////
-            var soundManager = function(scene) {
-                gunshot = new BABYLON.Sound("gunshot", "https://raw.githubusercontent.com/tranminhquan/Metroid_Game_2/master/Metroid/Resources/sound/sfx/bullet.wav", scene);
-                explosion = new BABYLON.Sound('explosion', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Explosion%2B6.wav', scene);
-                explosion.setVolume(0.2);
-            } 
+            ///////////////////////// Skybox /////////////////////////
+            skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
+            skybox.checkCollisions = true;
+            var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/skybox/snow", scene);
+            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+            skyboxMaterial.disableLighting = true;
+            skybox.material = skyboxMaterial;
 
-            //////////////////// EfFECT PARTICLE DROP ///////////////////////
-            var snowDropEffect = function(scene) {
-                // Create Invisible box use for drop particle
-                var fountain = new BABYLON.Mesh.CreateBox('fountain', 1, scene);
-                fountain.position = new BABYLON.Vector3(0, 25, 0);
-                fountain.visibility = 0;
+            var skybox_ground = new BABYLON.MeshBuilder.CreateGround('skybox_ground', {width: 600, height: 600}, scene);
+            skybox_ground.position.y = -124;            
+        }       
 
-                // Create a particle system
-                var particleSystem = new BABYLON.ParticleSystem("particles", 10000, scene);
+        /////////////////////// SOUND ///////////////////////////
+        var soundManager = function(scene) {
+            gunshot = new BABYLON.Sound("gunshot", "https://raw.githubusercontent.com/tranminhquan/Metroid_Game_2/master/Metroid/Resources/sound/sfx/bullet.wav", scene);
+            explosion = new BABYLON.Sound('explosion', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Explosion%2B6.wav', scene);
+            explosion.setVolume(0.2);
+        } 
 
-                //Texture of each particle
-                particleSystem.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/starburst_white_300_drop_2.png", scene);           
+        //////////////////// EfFECT PARTICLE DROP ///////////////////////
+        var snowDropEffect = function(scene) {
+            // Create Invisible box use for drop particle
+            var fountain = new BABYLON.Mesh.CreateBox('fountain', 1, scene);
+            fountain.position = new BABYLON.Vector3(0, 25, 0);
+            fountain.visibility = 0;
 
-                // Where the particles come from
-                particleSystem.emitter = fountain; // the starting object, the emitter
-                particleSystem.minEmitBox = new BABYLON.Vector3(-100, 20, -100); // Starting all from
-                particleSystem.maxEmitBox = new BABYLON.Vector3(100, 20, 100); // To...
+            // Create a particle system
+            var particleSystem = new BABYLON.ParticleSystem("particles", 10000, scene);
 
-                // Colors of all particles
-                particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
-                particleSystem.color2 = new BABYLON.Color4(1, 1, 1.0, 1.0);
-                particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 0.0);
+            //Texture of each particle
+            particleSystem.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/starburst_white_300_drop_2.png", scene);           
 
-                // Size of each particle (random between...
-                particleSystem.minSize = 0.2;
-                particleSystem.maxSize = 0.7;
+            // Where the particles come from
+            particleSystem.emitter = fountain; // the starting object, the emitter
+            particleSystem.minEmitBox = new BABYLON.Vector3(-100, 20, -100); // Starting all from
+            particleSystem.maxEmitBox = new BABYLON.Vector3(100, 20, 100); // To...
 
-                // Life time of each particle (random between...
-                particleSystem.minLifeTime = 0.3;
-                particleSystem.maxLifeTime = 3.5;
+            // Colors of all particles
+            particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
+            particleSystem.color2 = new BABYLON.Color4(1, 1, 1.0, 1.0);
+            particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 0.0);
 
-                // Emission rate
-                particleSystem.emitRate = 8000;
+            // Size of each particle (random between...
+            particleSystem.minSize = 0.2;
+            particleSystem.maxSize = 0.7;
 
-                // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-                particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-                
-                // Set the gravity of all particles
-                particleSystem.gravity = new BABYLON.Vector3(0, 9.81, 0);
+            // Life time of each particle (random between...
+            particleSystem.minLifeTime = 0.3;
+            particleSystem.maxLifeTime = 3.5;
 
-                // Direction of each particle after it has been emitted
-                particleSystem.direction1 = new BABYLON.Vector3(-7, -10, 3);
-                particleSystem.direction2 = new BABYLON.Vector3(7, -10, -3);
+            // Emission rate
+            particleSystem.emitRate = 8000;
 
-                // Angular speed, in radians
-                particleSystem.minAngularSpeed = 0;
-                particleSystem.maxAngularSpeed = Math.PI;
+            // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+            particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+            
+            // Set the gravity of all particles
+            particleSystem.gravity = new BABYLON.Vector3(0, 9.81, 0);                
 
-                // Speed
-                particleSystem.minEmitPower = 1;
-                particleSystem.maxEmitPower = 3;
-                particleSystem.updateSpeed = 0.005;
-                
-                // Start the particle system
-                particleSystem.start();
-            }
+            // Direction of each particle after it has been emitted
+            particleSystem.direction1 = new BABYLON.Vector3(-7, -10, 3);
+            particleSystem.direction2 = new BABYLON.Vector3(7, -10, -3);
+
+            // Angular speed, in radians
+            particleSystem.minAngularSpeed = 0;
+            particleSystem.maxAngularSpeed = Math.PI;
+
+            // Speed
+            particleSystem.minEmitPower = 1;
+            particleSystem.maxEmitPower = 3;
+            particleSystem.updateSpeed = 0.005;
+            
+            // Start the particle system
+            particleSystem.start();
+        }
 
             var changeColorTank = function(advancedTexture, material) {
                 // GUI CHANGE COLOR OF TANK //
@@ -417,6 +440,12 @@
                 muzzle.visibility = 0;
                 muzzle.isPickable = false;
 
+                ///COLLISION////    
+                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+                planOBB.parent = tank;
+                planOBB.showBoundingBox=true;
+
                 ///////////////// GROUND ///////////////////
                 var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
                 ground.position.y = -5;
@@ -444,10 +473,10 @@
                     crate.position.z = rand() * 50;
                 }
 
-                let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                 crate.checkCollisions = true;
                 cratePosition(crate);
-                let crates = [crate];
+                crates = [crate];
 
                 for (let i = 0; i < sliderValue - 1; ++i) {
                     let b = crate.clone("crate" + i);
@@ -755,10 +784,10 @@
 
                     Control();
 
-                    let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                    crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                     crate.checkCollisions = true;
                     cratePosition(crate);
-                    let crates = [crate];
+                    crates = [crate];
 
                     for (let i = 0; i < sliderValue - 1; ++i) {
                         let b = crate.clone("crate" + i);
@@ -920,14 +949,14 @@
 
                 scene.onPointerMove = function () {
                     pickResult = scene.pick(scene.pointerX, scene.pointerY);
-                    var diffX = -pickResult.pickedPoint.x + muzzleTank.position.x;
-                    var diffY = -pickResult.pickedPoint.z + muzzleTank.position.z;
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
                     direction.x = diffX;
                     direction.y = diffY;
                     
                     if (pickResult.hit) {
 
-                        muzzleTank.rotation.y = Math.atan2(diffX, diffY);	
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
 
                         if(diffX != 0) {
                             a = diffY/diffX;
@@ -977,6 +1006,8 @@
                                 explosion.play();
                             }
                             hit.pickedMesh.dispose();
+                            const index = crates.indexOf(hit.pickedMesh);
+                            crates.splice(index, 1);
                         }
 
                     }
@@ -1032,12 +1063,27 @@
                                 tank.position.z+=0.2;
                         }
                     });
+
+                    treeRootList.forEach(tree => {
+                        if (tank.intersectsMesh(tree, true)) {
+                        speed=0;
+                            if(direction.x>=0)
+                                tank.position.x-=0.2;
+                            else
+                                tank.position.x+=0.2;
+                            if(direction.z>=0)
+                                tank.position.z-=0.2;
+                            else
+                                tank.position.z+=0.2;
+                        }
+                    });
+
                     if(flagEnergy)
                         speed=0.2;
 
                     // Muzzle of tank
                     muzzle.position = new BABYLON.Vector3(tank.position.x, tank.position.y, tank.position.z);
-                    muzzle.rotation = new BABYLON.Vector3(muzzleTank.rotation.x, muzzleTank.rotation.y + Math.PI / 2, muzzleTank.rotation.z);
+                    muzzle.rotation = new BABYLON.Vector3(tank.rotation.x, tank.rotation.y + Math.PI / 2, tank.rotation.z);
                 })
 
 
@@ -1069,6 +1115,12 @@
                 camera.upperBetaLimit = Math.PI / 2;
 
                 camera.attachControl(canvas, true);
+
+                ///COLLISION////    
+                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+                planOBB.parent = tank;
+                planOBB.showBoundingBox=true;
 
                 ///////////////////////// RAY CAST ////////////////////////////
 
@@ -1103,7 +1155,7 @@
                     crate.position.z = rand() * 50;
                 }
 
-                let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                 crate.checkCollisions = true;
                 cratePosition(crate);
                 let crates = [crate];
@@ -1377,7 +1429,7 @@
                 // Colors of all particles
                 particleSystemBlow.color1 = new BABYLON.Color4(1, 1, 0, 1.0);
                 particleSystemBlow.color2 = new BABYLON.Color4(1, 0, 1.0, 1.0);
-                particleSystemBlow.colorDead = new BABYLON.Color4(0.1, 0, 0.2, 0.0);
+                particleSystemBlow.colorDead = new BABYLON.Color4(0.1, 0, 0.2, 0.0);                
 
                 // Size of each particle (random between...
                 particleSystemBlow.minSize = 0.5;
@@ -1435,16 +1487,17 @@
 
                 var a = 0, b = 0, pickResult;
                 var direction = new BABYLON.Vector2.Zero();
+
                 scene.onPointerMove = function () {
                     pickResult = scene.pick(scene.pointerX, scene.pointerY);
-                    var diffX = -pickResult.pickedPoint.x + muzzleTank.position.x;
-                    var diffY = -pickResult.pickedPoint.z + muzzleTank.position.z;
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
                     direction.x = diffX;
                     direction.y = diffY;
                     
                     if (pickResult.hit) {
 
-                        muzzleTank.rotation.y = Math.atan2(diffX, diffY);	
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
 
                         if(diffX != 0) {
                             a = diffY/diffX;
@@ -1480,20 +1533,19 @@
                         hit.pickedMesh.scaling.z -= 0.02;
 
                         if (hit.pickedMesh.scaling.y <= 0.9) {
-                            hit.pickedMesh.dispose();
                             countScore--;
                             if (hit.pickedMesh.name == 'crate1') {
                                 score += countScore;
                                 timeScoreAttack += countScore;
                                 countScore += 5;
 
-                                //Create more crate after hit gift box      
-                                let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                                //Create more crate after hit gift box   
+                                crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                                 crate.checkCollisions = true;
                                 cratePosition(crate);
-                                let crates = [crate];
+                                crates = [crate];
 
-                                for (let i = 0; i < 4; ++i) {
+                                for (let i = 0; i < sliderValue - 1; ++i) {
                                     let b = crate.clone("crate" + i);
                                     cratePosition(b)
                                     crates.push(b);
@@ -1521,30 +1573,33 @@
                             else {
                                 explosion.play();
                             }
+                            hit.pickedMesh.dispose();
+                            const index = crates.indexOf(hit.pickedMesh);
+                            crates.splice(index, 1);
                         }
 
                     }
                 }
 
+                scene.actionManager = new BABYLON.ActionManager(scene);
                 var map = {}; //object for multiple key presses
-                    scene.actionManager = new BABYLON.ActionManager(scene);
 
-                    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-                        map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+                scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+                    map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
 
-                    }));
+                }));
 
-                    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-                        map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-                    }));
+                scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+                    map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+                }));
 
 
-                /****************************Move Tank***********************************/
-                
+                /****************************Move Tank*****************************/
+
                 scene.registerAfterRender(function () {
                     camera.setTarget(tank.position);
                     if ((map["w"] || map["W"])) {
-                        if(pickResult.pickedPoint.z-tank.position.z > 10)
+                        if(pickResult.pickedPoint.z - tank.position.z > 10)
                         {
                             tank.position.z +=speed;
                             tank.position.x=(tank.position.z-b)/a;
@@ -1599,24 +1654,20 @@
                         }
                     )
                 )
-
                 scene.actionManager.registerAction(
-                    new BABYLON.ExecuteCodeAction(
-                        {
-                            trigger: BABYLON.ActionManager.OnKeyDownTrigger,
-                            parameter: 'e'
-                        },
-                        function() {
-                            if(energy>0)
-                            {
-                                flagEnergy=false;
-                                speed=0.5; 
-                                energy--;
-                            }
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                        parameter: 'e'
+                    },
+                    function() {
+                        if(energy>0){
+                        flagEnergy=false;
+                        speed=0.5; 
+                        energy--;
                         }
-                    )
+                    })
                 )
-                
                 scene.actionManager.registerAction(
                     new BABYLON.ExecuteCodeAction(
                         {
@@ -1669,7 +1720,7 @@
                     // Collide with crates
                     crates.forEach(crate => {
                         if (tank.intersectsMesh(crate, true)) {
-                            speed=0;
+                        speed=0;
                             if(direction.x>=0)
                                 tank.position.x-=0.2;
                             else
@@ -1680,12 +1731,27 @@
                                 tank.position.z+=0.2;
                         }
                     });
+
+                    treeRootList.forEach(tree => {
+                        if (tank.intersectsMesh(tree, true)) {
+                        speed=0;
+                            if(direction.x>=0)
+                                tank.position.x-=0.2;
+                            else
+                                tank.position.x+=0.2;
+                            if(direction.z>=0)
+                                tank.position.z-=0.2;
+                            else
+                                tank.position.z+=0.2;
+                        }
+                    });
+
                     if(flagEnergy)
                         speed=0.2;
 
                     // Muzzle of tank
                     muzzle.position = new BABYLON.Vector3(tank.position.x, tank.position.y, tank.position.z);
-                    muzzle.rotation = new BABYLON.Vector3(muzzleTank.rotation.x, muzzleTank.rotation.y + Math.PI / 2, muzzleTank.rotation.z);
+                    muzzle.rotation = new BABYLON.Vector3(tank.rotation.x, tank.rotation.y + Math.PI / 2, tank.rotation.z);
                 })
 
                 return scene;
@@ -1701,8 +1767,8 @@
             var scene = createScene();
             engine.runRenderLoop(function(){
                 scene.render();
-            }) 
-        }); 
-    </script>    
+            }); 
+        })
+    </script>      
 </body>
 </html>
