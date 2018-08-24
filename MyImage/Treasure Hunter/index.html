@@ -41,10 +41,17 @@
         // Environment variables
         var skybox;
 
+        //Crate and array of crates
+        var crate;
+        var crates;
+
+
+        // Time variable of time rush
         var time;
+
         var speed=0.2; //set speed
         
-        var flagEnergy=true;// check key e
+        var flagEnergy=true;// check key energy
 
         var energy=0;
         var energyCount=setInterval(function(){energy++},2000);
@@ -56,6 +63,7 @@
 	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", 
                 scene, function (newMeshes) {
                 var mesh = newMeshes[0];
+<<<<<<< HEAD
                 treeList=[mesh];
                 mesh.position = new BABYLON.Vector3(0, -5, 0);
                 mesh.scaling = new BABYLON.Vector3(100, 100, 100);
@@ -65,6 +73,12 @@
                 treeRootList=[treeRoot];
                 treeRoot.position=new BABYLON.Vector3(mesh.position.x,mesh.position.y,mesh.position.z);
                 treeRootList.push(treeRoot);
+=======
+
+                mesh.position = new BABYLON.Vector3(50, -5, 50);
+                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                mesh.isPickable = false;
+>>>>>>> 2cba8d702a9394aa2453551765ebbebbc1988437
 
                 for (var i = 0; i < 20; i++) {			
                     newMeshes.forEach(function (m) {
@@ -77,6 +91,13 @@
                         treeRootList.push(treeClone);
                     });
                 }
+            });
+
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
+                var tank = newMeshes[0];
+
+                tank.position = new BABYLON.Vector3(0, -4, 0);
+                tank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
             });
 
             ///////////////////////// Skybox /////////////////////////
@@ -422,6 +443,16 @@
             muzzle.isPickable = false;
             muzzle.parent = box;
 
+            
+            ///COLLISION////
+    
+            var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+            planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+            planOBB.parent = box;
+            planOBB.showBoundingBox=true;
+
+            ///////////////
+
             ///////////////// GROUND ///////////////////
             var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
             ground.position.y = -5;
@@ -449,10 +480,10 @@
                 crate.position.z = rand() * 50;
             }
 
-            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
             crate.checkCollisions = true;
             cratePosition(crate);
-            let crates = [crate];
+            crates = [crate];
 
             for (let i = 0; i < sliderValue - 1; ++i) {
                 let b = crate.clone("crate" + i);
@@ -775,10 +806,10 @@
 
                 Control();
 
-                let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                 crate.checkCollisions = true;
                 cratePosition(crate);
-                let crates = [crate];
+                crates = [crate];
 
                 for (let i = 0; i < sliderValue - 1; ++i) {
                     let b = crate.clone("crate" + i);
@@ -997,6 +1028,8 @@
                             explosion.play();
                         }
                         hit.pickedMesh.dispose();
+                        const index = crates.indexOf(hit.pickedMesh);
+                        crates.splice(index, 1);
                     }
 
                 }
@@ -1112,6 +1145,15 @@
             muzzle.isPickable = false;
             muzzle.parent = box;
 
+            ///COLLISION////
+    
+            var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+            planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+            planOBB.parent = box;
+            planOBB.showBoundingBox=true;
+
+            ///////////////
+
             var ray = new BABYLON.Ray();
             var rayHelper = new BABYLON.RayHelper(ray);
             
@@ -1139,7 +1181,7 @@
                 crate.position.z = rand() * 50;
             }
 
-            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
             crate.checkCollisions = true;
             cratePosition(crate);
             let crates = [crate];
@@ -1398,7 +1440,7 @@
             cbEffectSound.onIsCheckedChangedObservable.add(function(value) {
                 scene.audioEnabled = value;
             });
-            
+
             advancedTexture.addControl(energyText);
             advancedTexture.addControl(scoreText);
             advancedTexture.addControl(textTime);
@@ -1533,10 +1575,10 @@
                             countScore += 5;
 
                             //Create more crate after hit gift box      
-                            let crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+                            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                             crate.checkCollisions = true;
                             cratePosition(crate);
-                            let crates = [crate];
+                            crates = [crate];
 
                             for (let i = 0; i < 4; ++i) {
                                 let b = crate.clone("crate" + i);
@@ -1566,6 +1608,9 @@
                         else {
                             explosion.play();
                         }
+                        hit.pickedMesh.dispose();
+                        const index = crates.indexOf(hit.pickedMesh);
+                        crates.splice(index, 1);
                     }
 
                 }
@@ -1644,8 +1689,13 @@
                     }
                 )
             )
+<<<<<<< HEAD
             var energyCondition=new BABYLON.ValueCondition(scene.actionManager,energy,"",0,BABYLON.ValueCondition.IsGreater);
                             scene.actionManager.registerAction(
+=======
+
+            scene.actionManager.registerAction(
+>>>>>>> 2cba8d702a9394aa2453551765ebbebbc1988437
                 new BABYLON.ExecuteCodeAction(
                     {
                         trigger: BABYLON.ActionManager.OnKeyDownTrigger,
@@ -1653,14 +1703,23 @@
                     },
                     function() {
                         if(energy>0)
+<<<<<<< HEAD
                             for(var i=0;i<energy;i++)
                                 {
                                 flagEnergy=false;
                                 speed=0.5; 
                                     energy--;
                                 }
+=======
+                        {
+                            flagEnergy=false;
+                            speed=0.5; 
+                            energy--;
+                        }
+>>>>>>> 2cba8d702a9394aa2453551765ebbebbc1988437
                     }
-                ))
+                )
+            )
             
             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
