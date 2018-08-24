@@ -65,6 +65,13 @@
                 }
             });
 
+            BABYLON.SceneLoader.ImportMesh("", "C:\Users\Acer\Desktop\qchljccdm5ts-TigerI\babylon/", "Tiger_I.babylon", scene, function (newMeshes) {
+                var mesh = newMeshes[0];
+
+                mesh.position = new BABYLON.Vector3(0, -5, 0);
+                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+            });
+
             ///////////////////////// Skybox /////////////////////////
             skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
             skybox.checkCollisions = true;
@@ -1371,7 +1378,7 @@
             cbEffectSound.onIsCheckedChangedObservable.add(function(value) {
                 scene.audioEnabled = value;
             });
-            
+
             advancedTexture.addControl(energyText);
             advancedTexture.addControl(scoreText);
             advancedTexture.addControl(textTime);
@@ -1618,7 +1625,7 @@
                 )
             )
 
-                            scene.actionManager.registerAction(
+            scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
                     {
                         trigger: BABYLON.ActionManager.OnKeyDownTrigger,
@@ -1627,12 +1634,13 @@
                     function() {
                         if(energy>0)
                         {
-                           flagEnergy=false;
-                           speed=0.5; 
+                            flagEnergy=false;
+                            speed=0.5; 
                             energy--;
                         }
                     }
-                ))
+                )
+            )
             
             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
