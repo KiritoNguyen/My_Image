@@ -54,8 +54,9 @@
 	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", scene, function (newMeshes) {
                 var mesh = newMeshes[0];
 
-                mesh.position = new BABYLON.Vector3(0, -5, 0);
+                mesh.position = new BABYLON.Vector3(50, -5, 50);
                 mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                mesh.isPickable = false;
 
                 for (var i = 0; i < 20; i++) {			
                     newMeshes.forEach(function (m) {
@@ -65,11 +66,11 @@
                 }
             });
 
-            BABYLON.SceneLoader.ImportMesh("", "C:\Users\Acer\Desktop\qchljccdm5ts-TigerI\babylon/", "Tiger_I.babylon", scene, function (newMeshes) {
-                var mesh = newMeshes[0];
+            BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/", "Tiger_I.babylon", scene, function (newMeshes) {
+                var tank = newMeshes;
 
-                mesh.position = new BABYLON.Vector3(0, -5, 0);
-                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                tank.position = new BABYLON.Vector3(50, -5, 50);
+                tank.scaling = new BABYLON.Vector3(5, 5, 5);
             });
 
             ///////////////////////// Skybox /////////////////////////
