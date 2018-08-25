@@ -37,7 +37,6 @@
 
             // Value of time score attack
             var timeScoreAttack;      
-            var intervalTimeScoreAttack;
 
             // Environment variables
             var skybox;
@@ -317,7 +316,8 @@
             var createScene = function () {
                 // This creates a basic Babylon Scene object (non-mesh)
                 var scene = new BABYLON.Scene(engine);
-
+                scene.clearColor = new BABYLON.Color3.Black();
+                
                 // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
                 var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 
@@ -333,9 +333,9 @@
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
                 var panel = new BABYLON.GUI.StackPanel();
-                panel.width = "1000px";
+                panel.width = "1200px";
                 panel.height="80px";
-                panel.background="White";
+                // panel.background="White";
                 panel.isVertical = true;
                 panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
@@ -343,11 +343,12 @@
                 advancedTexture.addControl(panel);
 
                 var name = new BABYLON.GUI.TextBlock();
-                name.text = "Treasure Hunter";
+                name.text = "THE TREASURE HUNTER";
                 name.color = "yellow";
                 name.height = "100px";
                 name.fontSize = 100;
                 name.paddingTop=-20;
+                name.fontFamily ="Algerian";
                 name.fontStyle ="bold italic";
                 panel.addControl(name); 
 
