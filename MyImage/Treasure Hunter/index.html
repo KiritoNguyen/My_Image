@@ -46,7 +46,6 @@
             var crate;
             var crates;
 
-
             // Time variable of time rush
             var time;
 
@@ -59,7 +58,15 @@
             var treeList;
             var treeRootList;
 
-            var tank, muzzleTank;
+            // Tank variables
+            var tank, muzzleTank, muzzle;
+
+            // default Value of Slider variable
+            var sliderValue = 20;
+
+            //Particle effect of giftBox
+            var particleSystemBlow;
+
             var tankCreation = function(scene) {
                 BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
                     tank = newMeshes[0];
@@ -72,121 +79,211 @@
                     // muzzleTank.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
                     // muzzleTank.isPickable = false;
                 });
+
+                muzzle = new BABYLON.MeshBuilder.CreateCylinder('muzzle', {height: 2}, scene);
+                muzzle.visibility = 0;
+                muzzle.isPickable = false;
+
+                ///COLLISION////    
+                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
+                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
+                planOBB.parent = tank;
+                planOBB.showBoundingBox=true;
             }
 
             /////////////////////// ENVIRONMENT //////////////////////////
             var basicEnvironment = function(scene) {
 
-            ////////////////////// TREE //////////////////////           
-	        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", 
+                ////////////////////// TREE //////////////////////           
+                BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Tree/", "tree.babylon", 
                 scene, function (newMeshes) {
 
-                var mesh = newMeshes[0];
-                treeList=[mesh];
-                mesh.position = new BABYLON.Vector3(0, -5, 0);
-                mesh.scaling = new BABYLON.Vector3(100, 100, 100);
-                mesh.isPickable=false;
+                    var mesh = newMeshes[0];
+                    treeList=[mesh];
+                    mesh.position = new BABYLON.Vector3(0, -5, 0);
+                    mesh.scaling = new BABYLON.Vector3(100, 100, 100);
+                    mesh.isPickable=false;
 
-                var treeRoot=new BABYLON.MeshBuilder.CreateCylinder("treeRoot",{height:50,diameter:6},scene);
-                treeRoot.isVisible=false;
-                treeRootList=[treeRoot];
-                treeRoot.position=new BABYLON.Vector3(mesh.position.x,mesh.position.y,mesh.position.z);
-                treeRootList.push(treeRoot);
+                    var treeRoot=new BABYLON.MeshBuilder.CreateCylinder("treeRoot",{height:50,diameter:6},scene);
+                    treeRoot.isVisible=false;
+                    treeRootList=[treeRoot];
+                    treeRoot.position=new BABYLON.Vector3(mesh.position.x,mesh.position.y,mesh.position.z);
+                    treeRootList.push(treeRoot);
 
-                for (var i = 0; i < 20; i++) {			
-                    newMeshes.forEach(function (m) {
-                        var clone = m.clone("newtree");
-                        var treeClone=treeRoot.clone("treeRoot");
-                        clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
-                        treeRoot.position=new BABYLON.Vector3(clone.position.x, clone.position.y, clone.position.z);
-                        clone.isPickable = false;
-                        treeRoot.isPickable = false;
-                        treeRoot.isVisible=false;
-                        treeList.push(clone);
-                        treeRootList.push(treeClone);
-                    });
-                }
-            });
+                    for (var i = 0; i < 20; i++) {			
+                        newMeshes.forEach(function (m) {
+                            var clone = m.clone("newtree");
+                            var treeClone=treeRoot.clone("treeRoot");
+                            clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -5, Math.random()*300 - 100);
+                            treeRoot.position=new BABYLON.Vector3(clone.position.x, clone.position.y, clone.position.z);
+                            clone.isPickable = false;
+                            treeRoot.isPickable = false;
+                            treeRoot.isVisible=false;
+                            treeList.push(clone);
+                            treeRootList.push(treeClone);
+                        });
+                    }
+                });
 
-            ///////////////////////// Skybox /////////////////////////
-            skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
-            skybox.checkCollisions = true;
-            var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-            skyboxMaterial.backFaceCulling = false;
-            skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/skybox/snow", scene);
-            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-            skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-            skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-            skyboxMaterial.disableLighting = true;
-            skybox.material = skyboxMaterial;
+                ///////////////////////// Skybox /////////////////////////
+                skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
+                skybox.checkCollisions = true;
+                
+                skybox.material = new BABYLON.StandardMaterial("skyBox", scene);
+                skybox.material.backFaceCulling = false;
+                skybox.material.reflectionTexture = new BABYLON.CubeTexture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/skybox/snow", scene);
+                skybox.material.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                skybox.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                skybox.material.specularColor = new BABYLON.Color3(0, 0, 0);
+                skybox.material.disableLighting = true;
 
-            var skybox_ground = new BABYLON.MeshBuilder.CreateGround('skybox_ground', {width: 600, height: 600}, scene);
-            skybox_ground.position.y = -124;            
-        }       
+                var skybox_ground = new BABYLON.MeshBuilder.CreateGround('skybox_ground', {width: 600, height: 600}, scene);
+                skybox_ground.position.y = -124;     
 
-        /////////////////////// SOUND ///////////////////////////
-        var soundManager = function(scene) {
-            gunshot = new BABYLON.Sound("gunshot", "https://raw.githubusercontent.com/tranminhquan/Metroid_Game_2/master/Metroid/Resources/sound/sfx/bullet.wav", scene);
-            explosion = new BABYLON.Sound('explosion', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Explosion%2B6.wav', scene);
-            explosion.setVolume(0.2);
-        } 
+                ///////////////// GROUND ///////////////////
+                var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
+                ground.position.y = -5;
+                ground.checkCollisions = true;
 
-        //////////////////// EfFECT PARTICLE DROP ///////////////////////
-        var snowDropEffect = function(scene) {
-            // Create Invisible box use for drop particle
-            var fountain = new BABYLON.Mesh.CreateBox('fountain', 1, scene);
-            fountain.position = new BABYLON.Vector3(0, 25, 0);
-            fountain.visibility = 0;
+                ground.material = new BABYLON.StandardMaterial('groundMaterial', scene);
+                ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);
+                ground.material.backFaceCulling = false;
+                
+                ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);       
 
-            // Create a particle system
-            var particleSystem = new BABYLON.ParticleSystem("particles", 10000, scene);
+                //////////// Invisible wall ///////////
+                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {size: 400}, scene);
+                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {size: 400}, scene);
+                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {size: 400}, scene);
+                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {size: 400}, scene);
 
-            //Texture of each particle
-            particleSystem.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/starburst_white_300_drop_2.png", scene);           
+                inviWallFront.visibility = 0;
+                inviWallBack.visibility = 0;
+                inviWallLeft.visibility = 0;
+                inviWallRight.visibility = 0;
 
-            // Where the particles come from
-            particleSystem.emitter = fountain; // the starting object, the emitter
-            particleSystem.minEmitBox = new BABYLON.Vector3(-100, 20, -100); // Starting all from
-            particleSystem.maxEmitBox = new BABYLON.Vector3(100, 20, 100); // To...
+                inviWallFront.isPickable = false;
+                inviWallBack.isPickable = false;
+                inviWallLeft.isPickable = false;
+                inviWallRight.isPickable = false;
 
-            // Colors of all particles
-            particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
-            particleSystem.color2 = new BABYLON.Color4(1, 1, 1.0, 1.0);
-            particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 0.0);
+                inviWallFront.position = new BABYLON.Vector3(0, 0, -200);
+                inviWallBack.position = new BABYLON.Vector3(0, 0, 200);
+                inviWallLeft.position = new BABYLON.Vector3(-200, 0, 0);
+                inviWallRight.position = new BABYLON.Vector3(200, 0, 0);
 
-            // Size of each particle (random between...
-            particleSystem.minSize = 0.2;
-            particleSystem.maxSize = 0.7;
+                inviWallLeft.rotation.y = Math.PI / 2;
+                inviWallRight.rotation.y = Math.PI / 2;
 
-            // Life time of each particle (random between...
-            particleSystem.minLifeTime = 0.3;
-            particleSystem.maxLifeTime = 3.5;
+                inviWallFront.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallFront,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
+                inviWallBack.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallBack,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
+                inviWallLeft.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallLeft,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
+                inviWallRight.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallRight,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);  
 
-            // Emission rate
-            particleSystem.emitRate = 8000;
+            }       
 
-            // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-            particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-            
-            // Set the gravity of all particles
-            particleSystem.gravity = new BABYLON.Vector3(0, 9.81, 0);                
+            /////////////////////// SOUND ///////////////////////////
+            var soundManager = function(scene) {
+                gunshot = new BABYLON.Sound("gunshot", "https://raw.githubusercontent.com/tranminhquan/Metroid_Game_2/master/Metroid/Resources/sound/sfx/bullet.wav", scene);
+                explosion = new BABYLON.Sound('explosion', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Explosion%2B6.wav', scene);
+                explosion.setVolume(0.2);
+            } 
 
-            // Direction of each particle after it has been emitted
-            particleSystem.direction1 = new BABYLON.Vector3(-7, -10, 3);
-            particleSystem.direction2 = new BABYLON.Vector3(7, -10, -3);
+            //////////////////// EfFECT SNOW DROP ///////////////////////
+            var snowDropEffect = function(scene) {
+                // Create Invisible box use for drop particle
+                var fountain = new BABYLON.Mesh.CreateBox('fountain', 1, scene);
+                fountain.position = new BABYLON.Vector3(0, 25, 0);
+                fountain.visibility = 0;
 
-            // Angular speed, in radians
-            particleSystem.minAngularSpeed = 0;
-            particleSystem.maxAngularSpeed = Math.PI;
+                // Create a particle system
+                var particleSystem = new BABYLON.ParticleSystem("particles", 10000, scene);
 
-            // Speed
-            particleSystem.minEmitPower = 1;
-            particleSystem.maxEmitPower = 3;
-            particleSystem.updateSpeed = 0.005;
-            
-            // Start the particle system
-            particleSystem.start();
-        }
+                //Texture of each particle
+                particleSystem.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/starburst_white_300_drop_2.png", scene);           
+
+                // Where the particles come from
+                particleSystem.emitter = fountain; // the starting object, the emitter
+                particleSystem.minEmitBox = new BABYLON.Vector3(-100, 20, -100); // Starting all from
+                particleSystem.maxEmitBox = new BABYLON.Vector3(100, 20, 100); // To...
+
+                // Colors of all particles
+                particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
+                particleSystem.color2 = new BABYLON.Color4(1, 1, 1.0, 1.0);
+                particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 0.0);
+
+                // Size of each particle (random between...
+                particleSystem.minSize = 0.2;
+                particleSystem.maxSize = 0.7;
+
+                // Life time of each particle (random between...
+                particleSystem.minLifeTime = 0.3;
+                particleSystem.maxLifeTime = 3.5;
+
+                // Emission rate
+                particleSystem.emitRate = 8000;
+
+                // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+                particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+                
+                // Set the gravity of all particles
+                particleSystem.gravity = new BABYLON.Vector3(0, 9.81, 0);                
+
+                // Direction of each particle after it has been emitted
+                particleSystem.direction1 = new BABYLON.Vector3(-7, -10, 3);
+                particleSystem.direction2 = new BABYLON.Vector3(7, -10, -3);
+
+                // Angular speed, in radians
+                particleSystem.minAngularSpeed = 0;
+                particleSystem.maxAngularSpeed = Math.PI;
+
+                // Speed
+                particleSystem.minEmitPower = 1;
+                particleSystem.maxEmitPower = 3;
+                particleSystem.updateSpeed = 0.005;
+                
+                // Start the particle system
+                particleSystem.start();
+            }
+
+            //////////////////// EfFECT GIFTBOX BLOW ///////////////////////
+            var giftBoxBlowEffect = function(scene) {
+                // Create Invisible box use for drop particle
+                particleSystemBlow = new BABYLON.ParticleSystem('particleBlow', 5000, scene);
+
+                //Texture of each particle
+                particleSystemBlow.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Flare.png", scene);
+
+                // Colors of all particles
+                particleSystemBlow.color1 = new BABYLON.Color4(1, 1, 0, 1.0);
+                particleSystemBlow.color2 = new BABYLON.Color4(1, 0, 1.0, 1.0);
+                particleSystemBlow.colorDead = new BABYLON.Color4(0.1, 0, 0.2, 0.0);
+
+                // Size of each particle (random between...
+                particleSystemBlow.minSize = 0.5;
+                particleSystemBlow.maxSize = 1.0;
+
+                // Life time of each particle (random between...
+                particleSystemBlow.minLifeTime = 1;
+                particleSystemBlow.maxLifeTime = 3;
+
+                // Emission rate
+                particleSystemBlow.emitRate = 2000;
+
+                // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+                particleSystemBlow.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                
+                // Set the gravity of all particles
+                particleSystemBlow.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+                // Direction of each particle after it has been emitted
+                particleSystemBlow.direction1 = new BABYLON.Vector3(-5, 5, 5);
+                particleSystemBlow.direction2 = new BABYLON.Vector3(5, 5, -5);
+
+                // Speed
+                particleSystemBlow.minEmitPower = 3;
+                particleSystemBlow.maxEmitPower = 5;
+            }            
 
             var changeColorTank = function(advancedTexture, material) {
                 // GUI CHANGE COLOR OF TANK //
@@ -346,9 +443,6 @@
                 return scene;
             };
 
-            // Value Slider variable
-            var sliderValue = 20;
-
             var createSceneSlider = function() {
                 var scene = new BABYLON.Scene(engine);
 
@@ -430,38 +524,19 @@
                 camera.lowerRadiusLimit = 30;
                 camera.upperRadiusLimit = 110;      
                 camera.useBouncingBehavior = true; 
-                camera.allowUpsideDown = false;
                 camera.checkCollisions = true;
                 camera.lowerBetaLimit = Math.PI / 3;
                 camera.upperBetaLimit = Math.PI / 2;
                 camera.attachControl(canvas, true);
 
-                var muzzle = new BABYLON.MeshBuilder.CreateCylinder('muzzle', {height: 2}, scene);
-                muzzle.visibility = 0;
-                muzzle.isPickable = false;
+                tankCreation(scene);
+                snowDropEffect(scene);
+                giftBoxBlowEffect(scene);
+                basicEnvironment(scene);
+                // changeColorTank(advancedTexture, tank.material);
+                soundManager(scene);
 
-                ///COLLISION////    
-                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
-                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
-                planOBB.parent = tank;
-                planOBB.showBoundingBox=true;
-
-                ///////////////// GROUND ///////////////////
-                var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
-                ground.position.y = -5;
-                ground.checkCollisions = true;
-                // ground.isPickable = false;
-
-                var ray = new BABYLON.Ray();
-                var rayHelper = new BABYLON.RayHelper(ray);
-                
-                var localMeshDirection = new BABYLON.Vector3(3, 0, 0);
-                var localMeshOrigin = new BABYLON.Vector3(0, 1.5, 0);
-                var length = 6;
-
-                rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);
-
-                //Simple crate
+                /////////////////////// CRATES ///////////////////////
                 function rand() {
                     let sign = Math.random() < 0.5;
                     return Math.random() * (sign ? 1 : -1);
@@ -482,46 +557,29 @@
                     let b = crate.clone("crate" + i);
                     cratePosition(b)
                     crates.push(b);
-                }
-
-                //////////////////////// MATERIAL //////////////////////////
-                var groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene);
-                groundMaterial.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);
-                groundMaterial.backFaceCulling = false;
-                ground.material = groundMaterial;
-
-                // CRATES //
+                }  
+                
                 var crateMaterial = new BABYLON.StandardMaterial("crateMaterial", scene);
                 crateMaterial.diffuseTexture = new BABYLON.Texture("https://thumbs.dreamstime.com/b/plain-wood-crate-one-side-wooden-63453318.jpg", scene);
                 crateMaterial.diffuseTexture.hasAlpha = true;          
+                
                 crates.forEach(crate => {
                     crate.material = crateMaterial;
                 });
-                /////////////////////// END MATERIAL //////////////////////////////            
 
-                //////////// Invisible wall ///////////
-                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {size: 400}, scene);
-                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {size: 400}, scene);
-                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {size: 400}, scene);
-                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {size: 400}, scene);
+                crates.forEach(crate => {
+                    crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
+                });
+ 
+                /////////////////// RAY CAST ////////////////////
+                var ray = new BABYLON.Ray();
+                var rayHelper = new BABYLON.RayHelper(ray);
+                
+                var localMeshDirection = new BABYLON.Vector3(3, 0, 0);
+                var localMeshOrigin = new BABYLON.Vector3(0, 1.5, 0);
+                var length = 6;
 
-                inviWallFront.visibility = 0;
-                inviWallBack.visibility = 0;
-                inviWallLeft.visibility = 0;
-                inviWallRight.visibility = 0;
-
-                inviWallFront.isPickable = false;
-                inviWallBack.isPickable = false;
-                inviWallLeft.isPickable = false;
-                inviWallRight.isPickable = false;
-
-                inviWallFront.position = new BABYLON.Vector3(0, 0, -200);
-                inviWallBack.position = new BABYLON.Vector3(0, 0, 200);
-                inviWallLeft.position = new BABYLON.Vector3(-200, 0, 0);
-                inviWallRight.position = new BABYLON.Vector3(200, 0, 0);
-
-                inviWallLeft.rotation.y = Math.PI / 2;
-                inviWallRight.rotation.y = Math.PI / 2;
+                rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);        
 
                 //////////// TIME COUNT ///////////////
                 var timeCount = setInterval(function(){time++}, 1000);  
@@ -881,52 +939,8 @@
 
                 ///////////////////////////// PHYSICS //////////////////////////
                 // box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 10, restitution: 0.0}, scene);
-                inviWallFront.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallFront,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallBack.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallBack,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallLeft.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallLeft,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallRight.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallRight,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                    
-                ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);    
-                crates.forEach(crate => {
-                    crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
-                });
 
                 ///////////////// EFFECT OF GIFT BOX ////////////////
-                // Create Invisible box use for drop particle
-                var particleSystemBlow = new BABYLON.ParticleSystem('particleBlow', 5000, scene);
-
-                //Texture of each particle
-                particleSystemBlow.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Flare.png", scene);
-
-                // Colors of all particles
-                particleSystemBlow.color1 = new BABYLON.Color4(1, 1, 0, 1.0);
-                particleSystemBlow.color2 = new BABYLON.Color4(1, 0, 1.0, 1.0);
-                particleSystemBlow.colorDead = new BABYLON.Color4(0.1, 0, 0.2, 0.0);
-
-                // Size of each particle (random between...
-                particleSystemBlow.minSize = 0.5;
-                particleSystemBlow.maxSize = 1.0;
-
-                // Life time of each particle (random between...
-                particleSystemBlow.minLifeTime = 1;
-                particleSystemBlow.maxLifeTime = 3;
-
-                // Emission rate
-                particleSystemBlow.emitRate = 2000;
-
-                // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-                particleSystemBlow.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-                
-                // Set the gravity of all particles
-                particleSystemBlow.gravity = new BABYLON.Vector3(0, -9.81, 0);
-
-                // Direction of each particle after it has been emitted
-                particleSystemBlow.direction1 = new BABYLON.Vector3(-5, 5, 5);
-                particleSystemBlow.direction2 = new BABYLON.Vector3(5, 5, -5);
-
-                // Speed
-                particleSystemBlow.minEmitPower = 3;
-                particleSystemBlow.maxEmitPower = 5;
                 
 
                 // SET LOCATION OF GIFT BOX INSIDE CRATE           
@@ -1013,12 +1027,7 @@
                     }
                 }
 
-                tankCreation(scene);
-                snowDropEffect(scene);
                 Control();
-                basicEnvironment(scene);
-                // changeColorTank(advancedTexture, tank.material);
-                soundManager(scene);
 
                 ///////////////////////////////////////////////////////
                 var red = 1, green = 0, blue = 0;
@@ -1109,48 +1118,27 @@
                 camera.lowerRadiusLimit = 30;
                 camera.upperRadiusLimit = 110;      
                 camera.useBouncingBehavior = true; 
-                camera.allowUpsideDown = false;
                 camera.checkCollisions = true;
                 camera.lowerBetaLimit = Math.PI / 3;
                 camera.upperBetaLimit = Math.PI / 2;
 
                 camera.attachControl(canvas, true);
 
-                ///COLLISION////    
-                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
-                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
-                planOBB.parent = tank;
-                planOBB.showBoundingBox=true;
+                tankCreation(scene);
+                snowDropEffect(scene);
+                giftBoxBlowEffect(scene);
+                basicEnvironment(scene);
+                // changeColorTank(advancedTexture, tank.material);
+                soundManager(scene);
 
-                ///////////////////////// RAY CAST ////////////////////////////
-
-                var muzzle = new BABYLON.MeshBuilder.CreateCylinder('muzzle', {height: 2}, scene);
-                muzzle.visibility = 0;
-                muzzle.isPickable = false;
-
-                var ray = new BABYLON.Ray();
-                var rayHelper = new BABYLON.RayHelper(ray);
-                
-                var localMeshDirection = new BABYLON.Vector3(3, 0, 0);
-                var localMeshOrigin = new BABYLON.Vector3(0, 1.5, 0);
-                var length = 6;
-
-                rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);
-
-                // GROUND
-                var ground = new BABYLON.MeshBuilder.CreateGround('ground', {width: 400, height: 400}, scene);
-                ground.position.y = -5;
-                ground.checkCollisions = true;
-                // ground.isPickable = false;
-
-                //Simple crate
+                /////////////////////// CRATES ///////////////////////
                 function rand() {
                     let sign = Math.random() < 0.5;
                     return Math.random() * (sign ? 1 : -1);
                 }
 
                 function cratePosition(crate) {
-                    crate.position.y = 10;
+                    crate.position.y = 20;
                     crate.position.x = rand() * 50;
                     crate.position.z = rand() * 50;
                 }
@@ -1158,52 +1146,35 @@
                 crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
                 crate.checkCollisions = true;
                 cratePosition(crate);
-                let crates = [crate];
+                crates = [crate];
 
                 for (let i = 0; i < 4; ++i) {
                     let b = crate.clone("crate" + i);
-                    cratePosition(b);
+                    cratePosition(b)
                     crates.push(b);
-                }
-
-                //////////// Invisible wall ///////////
-                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {size: 400}, scene);
-                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {size: 400}, scene);
-                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {size: 400}, scene);
-                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {size: 400}, scene);
-
-                inviWallFront.visibility = 0;
-                inviWallBack.visibility = 0;
-                inviWallLeft.visibility = 0;
-                inviWallRight.visibility = 0;
-
-                inviWallFront.isPickable = false;
-                inviWallBack.isPickable = false;
-                inviWallLeft.isPickable = false;
-                inviWallRight.isPickable = false;
-
-                inviWallFront.position = new BABYLON.Vector3(0, 0, -200);
-                inviWallBack.position = new BABYLON.Vector3(0, 0, 200);
-                inviWallLeft.position = new BABYLON.Vector3(-200, 0, 0);
-                inviWallRight.position = new BABYLON.Vector3(200, 0, 0);
-
-                inviWallLeft.rotation.y = Math.PI / 2;
-                inviWallRight.rotation.y = Math.PI / 2;
-
-                //////////////////////// MATERIAL //////////////////////////
-                var groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene);
-                groundMaterial.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);
-                groundMaterial.backFaceCulling = false;
-                ground.material = groundMaterial;
-
-                // CRATES //
+                }  
+                
                 var crateMaterial = new BABYLON.StandardMaterial("crateMaterial", scene);
                 crateMaterial.diffuseTexture = new BABYLON.Texture("https://thumbs.dreamstime.com/b/plain-wood-crate-one-side-wooden-63453318.jpg", scene);
                 crateMaterial.diffuseTexture.hasAlpha = true;          
+                
                 crates.forEach(crate => {
                     crate.material = crateMaterial;
                 });
-                /////////////////////// END MATERIAL //////////////////////////////
+
+                crates.forEach(crate => {
+                    crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
+                });
+ 
+                /////////////////// RAY CAST ////////////////////
+                var ray = new BABYLON.Ray();
+                var rayHelper = new BABYLON.RayHelper(ray);
+                
+                var localMeshDirection = new BABYLON.Vector3(3, 0, 0);
+                var localMeshOrigin = new BABYLON.Vector3(0, 1.5, 0);
+                var length = 6;
+
+                rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);   
 
                 //////////// TIME COUNT & SCORE ///////////////
                 intervalTimeScoreAttack = setInterval(function(){timeScoreAttack--;},1000);
@@ -1414,63 +1385,10 @@
                 advancedTexture.addControl(btnOption);
                 advancedTexture.addControl(panelCheckBox);
                 advancedTexture.addControl(panelHeaderCheckBox);
-    
-                
+                   
                 /////////////////////////// END GUI //////////////////////////         
 
-                //////////////////// EfFECT PARTICLE DROP ///////////////////////
-                // Create a particle system
-                var particleSystemBlow = new BABYLON.ParticleSystem('particleBlow', 5000, scene);
-
-                //Texture of each particle
-                particleSystemBlow.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/Flare.png", scene);
-
-
-                // Colors of all particles
-                particleSystemBlow.color1 = new BABYLON.Color4(1, 1, 0, 1.0);
-                particleSystemBlow.color2 = new BABYLON.Color4(1, 0, 1.0, 1.0);
-                particleSystemBlow.colorDead = new BABYLON.Color4(0.1, 0, 0.2, 0.0);                
-
-                // Size of each particle (random between...
-                particleSystemBlow.minSize = 0.5;
-                particleSystemBlow.maxSize = 1.0;
-
-                // Life time of each particle (random between...
-                particleSystemBlow.minLifeTime = 1;
-                particleSystemBlow.maxLifeTime = 3;
-
-                // Emission rate
-                particleSystemBlow.emitRate = 2000;
-
-                // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-                particleSystemBlow.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-                
-                // Set the gravity of all particles
-                particleSystemBlow.gravity = new BABYLON.Vector3(0, -9.81, 0);
-
-                // Direction of each particle after it has been emitted
-                particleSystemBlow.direction1 = new BABYLON.Vector3(-5, 5, 5);
-                particleSystemBlow.direction2 = new BABYLON.Vector3(5, 5, -5);
-
-                // Speed
-                particleSystemBlow.minEmitPower = 3;
-                particleSystemBlow.maxEmitPower = 5;
-
-                ///////////////////////////// PHYSICS ///////////////////////////////////////                   
-                
-                // box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 10, restitution: 0.0}, scene);
-                inviWallFront.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallFront,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallBack.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallBack,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallLeft.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallLeft,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                inviWallRight.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallRight,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
-                    
-                ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);    
-                crates.forEach(crate => {
-                    crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
-                });
-                
-                // SET LOCATION OF GIFT BOX INSIDE CRATE
-                
+                // SET LOCATION OF GIFT BOX INSIDE CRATE                
                 /////////////////////// GIFT BOX ////////////////////////
                 var giftBox = new BABYLON.MeshBuilder.CreateBox('giftBox', {size: 3}, scene);
                 giftBox.material = new BABYLON.StandardMaterial('giftBoxMaterial', scene);  
@@ -1545,7 +1463,7 @@
                                 cratePosition(crate);
                                 crates = [crate];
 
-                                for (let i = 0; i < sliderValue - 1; ++i) {
+                                for (let i = 0; i < 4; ++i) {
                                     let b = crate.clone("crate" + i);
                                     cratePosition(b)
                                     crates.push(b);
@@ -1678,13 +1596,7 @@
                             flagEnergy=true;
                         }
                     )
-                )
-                
-                tankCreation(scene);
-                snowDropEffect(scene);
-                basicEnvironment(scene);
-                // changeColorTank(advancedTexture, tank.material);
-                soundManager(scene);
+                )            
 
                 ///////////////////////////////////////////////////////
                 var red = 1, green = 0, blue = 0;
@@ -1760,8 +1672,8 @@
             //////Register service worker
             if('serviceWorker' in navigator) {
             navigator.serviceWorker
-                    .register('/service-worker.js')
-                    .then(function() { console.log("Service Worker Registered"); });
+                .register('/service-worker.js')
+                .then(function() { console.log("Service Worker Registered"); });
             }
             
             var scene = createScene();
