@@ -91,6 +91,13 @@
                 planOBB.showBoundingBox=true;
             }
 
+            //Function use to calculate Cast Ray
+            function vecToLocal(vector, mesh){
+                var m = mesh.getWorldMatrix();
+                var v = BABYLON.Vector3.TransformCoordinates(vector, m);
+                return v;		 
+            }
+
             /////////////////////// ENVIRONMENT //////////////////////////
             var basicEnvironment = function(scene) {
 
@@ -285,8 +292,8 @@
                 particleSystemBlow.maxEmitPower = 5;
             }            
 
+            ///////////// GUI CHANGE COLOR OF TANK ////////////
             var changeColorTank = function(advancedTexture, material) {
-                // GUI CHANGE COLOR OF TANK //
                 var panelColor = new BABYLON.GUI.StackPanel();
                 panelColor.width = "200px";
                 panelColor.isVertical = true;
@@ -312,6 +319,131 @@
                 });
                 panelColor.addControl(picker);
             }  
+
+            ///////////// GUI OPTION ////////////
+            var optionGUI = function(advancedTexture, scene) {
+                var btnOption = BABYLON.GUI.Button.CreateSimpleButton("btnOption", "Advanced Option");
+                btnOption.width = 0.08;
+                btnOption.height = "50px";
+                btnOption.cornerRadius = 20;
+                btnOption.color = "Orange";
+                btnOption.thickness = 4;
+                btnOption.background = "green";
+                btnOption.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                btnOption.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnOption.top = "110px";
+                btnOption.left = "-10px";   
+
+                ////////// CHECK BOX ///////////
+                var panelCheckBox = new BABYLON.GUI.StackPanel();
+                panelCheckBox.width = "20px";
+                panelCheckBox.height = "80px";
+                panelCheckBox.isVertical = true;
+                panelCheckBox.top = '20px';
+                panelCheckBox.left = '-140px';
+                panelCheckBox.background = 'red';
+                panelCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+
+                var cbSkyBox = new BABYLON.GUI.Checkbox('cbSkyBox');
+                cbSkyBox.width = "20px";
+                cbSkyBox.height = "20px";
+                cbSkyBox.isChecked = true;
+                cbSkyBox.color = "green";            
+                panelCheckBox.addControl(cbSkyBox);  
+
+                var cbSnow = new BABYLON.GUI.Checkbox('cbSnow');
+                cbSnow.width = "20px";
+                cbSnow.height = "20px";
+                cbSnow.isChecked = true;
+                cbSnow.color = "green";     
+                panelCheckBox.addControl(cbSnow);  
+
+                var cbBackgroundSong = new BABYLON.GUI.Checkbox('cbBackgroundSong');
+                cbBackgroundSong.width = "20px";
+                cbBackgroundSong.height = "20px";
+                cbBackgroundSong.isChecked = true;
+                cbBackgroundSong.color = "green";     
+                panelCheckBox.addControl(cbBackgroundSong);  
+
+                var cbEffectSound = new BABYLON.GUI.Checkbox('cbEffectSound');
+                cbEffectSound.width = "20px";
+                cbEffectSound.height = "20px";
+                cbEffectSound.isChecked = true;
+                cbEffectSound.color = "green";     
+                panelCheckBox.addControl(cbEffectSound);  
+
+                ////////// HEADER CHECK BOX ///////////
+                var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
+                panelHeaderCheckBox.width = "140px";
+                panelHeaderCheckBox.height = "80px";
+                panelHeaderCheckBox.isVertical = true;
+                panelHeaderCheckBox.top = '20px';
+                panelHeaderCheckBox.background = 'yellow';
+                panelHeaderCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                panelHeaderCheckBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                
+                var headerSkybox = new BABYLON.GUI.TextBlock();
+                headerSkybox.text = "SKYBOX";
+                headerSkybox.width = "140px";
+                headerSkybox.height = '20px';
+                headerSkybox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                headerSkybox.color = "blue";
+                panelHeaderCheckBox.addControl(headerSkybox);
+
+                var headerSnow = new BABYLON.GUI.TextBlock();
+                headerSnow.text = "SNOW";
+                headerSnow.width = "180px";
+                headerSnow.width = "140px";
+                headerSnow.height = '20px';
+                headerSnow.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                headerSnow.color = "blue";
+                panelHeaderCheckBox.addControl(headerSnow);  
+
+                var headerBackgroundSong = new BABYLON.GUI.TextBlock();
+                headerBackgroundSong.text = "MUSIC";
+                headerBackgroundSong.width = "140px";
+                headerBackgroundSong.height = '20px';
+                headerBackgroundSong.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                headerBackgroundSong.color = "blue";
+                panelHeaderCheckBox.addControl(headerBackgroundSong);
+
+                var headerEffectSound = new BABYLON.GUI.TextBlock();
+                headerEffectSound.text = "EFFECT SOUND";
+                headerEffectSound.width = "140px";
+                headerEffectSound.height = '20px';
+                headerEffectSound.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                headerEffectSound.color = "blue";
+                panelHeaderCheckBox.addControl(headerEffectSound);
+
+                var clicks = 0;
+                btnOption.onPointerClickObservable.add(function() {
+                    scene.debugLayer.hide();
+                    scene.debugLayer.show();  
+                });
+
+                cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
+                    skybox.isVisible = value;
+                });
+
+                cbSnow.onIsCheckedChangedObservable.add(function(value) {
+                    scene.particlesEnabled = value;
+                });
+
+                cbBackgroundSong.onIsCheckedChangedObservable.add(function(value) {
+                    if (value == true)
+                        backgroundSong.play();
+                    else
+                        backgroundSong.pause();
+                });
+
+                cbEffectSound.onIsCheckedChangedObservable.add(function(value) {
+                    scene.audioEnabled = value;
+                });   
+
+                advancedTexture.addControl(btnOption);
+                advancedTexture.addControl(panelCheckBox);
+                advancedTexture.addControl(panelHeaderCheckBox);
+            }
             ////////////////////////////////////////////////////////////////////////////
 
             var createScene = function () {
@@ -657,7 +789,7 @@
                             },
                             function() {
                                 castRay();
-                                rayHelper.show(scene);
+                                rayHelper.show(scene, new BABYLON.Color3.Green());
                                 gunshot.play();
                                 setTimeout(function(){rayHelper.hide()}, 100);
                             }
@@ -694,7 +826,7 @@
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
                 var textEndGame = new BABYLON.GUI.TextBlock();
-                textEndGame.color = "purples";
+                textEndGame.color = "green";
                 textEndGame.fontSize = 30;
                 textEndGame.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 textEndGame.top = "15px";
@@ -738,100 +870,7 @@
                 btnRestart.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 btnRestart.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 btnRestart.top = "10px";
-                btnRestart.left = "-10px";
-
-                var btnOption = BABYLON.GUI.Button.CreateSimpleButton("btnOption", "Advanced Option");
-                btnOption.width = 0.08;
-                btnOption.height = "50px";
-                btnOption.cornerRadius = 20;
-                btnOption.color = "Orange";
-                btnOption.thickness = 4;
-                btnOption.background = "green";
-                btnOption.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                btnOption.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnOption.top = "110px";
-                btnOption.left = "-10px";   
-
-                ////////// CHECK BOX ///////////
-                var panelCheckBox = new BABYLON.GUI.StackPanel();
-                panelCheckBox.width = "20px";
-                panelCheckBox.height = "80px";
-                panelCheckBox.isVertical = true;
-                panelCheckBox.top = '20px';
-                panelCheckBox.left = '-140px';
-                panelCheckBox.background = 'red';
-                panelCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-
-                var cbSkyBox = new BABYLON.GUI.Checkbox('cbSkyBox');
-                cbSkyBox.width = "20px";
-                cbSkyBox.height = "20px";
-                cbSkyBox.isChecked = true;
-                cbSkyBox.color = "green";            
-                panelCheckBox.addControl(cbSkyBox);  
-
-                var cbSnow = new BABYLON.GUI.Checkbox('cbSnow');
-                cbSnow.width = "20px";
-                cbSnow.height = "20px";
-                cbSnow.isChecked = true;
-                cbSnow.color = "green";     
-                panelCheckBox.addControl(cbSnow);  
-
-                var cbBackgroundSong = new BABYLON.GUI.Checkbox('cbBackgroundSong');
-                cbBackgroundSong.width = "20px";
-                cbBackgroundSong.height = "20px";
-                cbBackgroundSong.isChecked = true;
-                cbBackgroundSong.color = "green";     
-                panelCheckBox.addControl(cbBackgroundSong);  
-
-                var cbEffectSound = new BABYLON.GUI.Checkbox('cbEffectSound');
-                cbEffectSound.width = "20px";
-                cbEffectSound.height = "20px";
-                cbEffectSound.isChecked = true;
-                cbEffectSound.color = "green";     
-                panelCheckBox.addControl(cbEffectSound);  
-
-                ////////// HEADER CHECK BOX ///////////
-                var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
-                panelHeaderCheckBox.width = "140px";
-                panelHeaderCheckBox.height = "80px";
-                panelHeaderCheckBox.isVertical = true;
-                panelHeaderCheckBox.top = '20px';
-                panelHeaderCheckBox.background = 'yellow';
-                panelHeaderCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                panelHeaderCheckBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-                
-                var headerSkybox = new BABYLON.GUI.TextBlock();
-                headerSkybox.text = "SKYBOX";
-                headerSkybox.width = "140px";
-                headerSkybox.height = '20px';
-                headerSkybox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerSkybox.color = "blue";
-                panelHeaderCheckBox.addControl(headerSkybox);
-
-                var headerSnow = new BABYLON.GUI.TextBlock();
-                headerSnow.text = "SNOW";
-                headerSnow.width = "180px";
-                headerSnow.width = "140px";
-                headerSnow.height = '20px';
-                headerSnow.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerSnow.color = "blue";
-                panelHeaderCheckBox.addControl(headerSnow);  
-
-                var headerBackgroundSong = new BABYLON.GUI.TextBlock();
-                headerBackgroundSong.text = "MUSIC";
-                headerBackgroundSong.width = "140px";
-                headerBackgroundSong.height = '20px';
-                headerBackgroundSong.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerBackgroundSong.color = "blue";
-                panelHeaderCheckBox.addControl(headerBackgroundSong);
-
-                var headerEffectSound = new BABYLON.GUI.TextBlock();
-                headerEffectSound.text = "EFFECT SOUND";
-                headerEffectSound.width = "140px";
-                headerEffectSound.height = '20px';
-                headerEffectSound.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerEffectSound.color = "blue";
-                panelHeaderCheckBox.addControl(headerEffectSound);           
+                btnRestart.left = "-10px";                           
 
                 var gameStop = false; // Biến kiểm tra game đã kết thúc hay chưa
 
@@ -898,46 +937,13 @@
                         restartGame.render();              
                     })                
                 });       
-
-
-                var clicks = 0;
-                btnOption.onPointerClickObservable.add(function() {
-                    // if (clicks % 2 == 0)
-                    //     scene.debugLayer.show();  
-                    // else
-                    //     scene.debugLayer.hide();
-                    // clicks++;  
-                    scene.debugLayer.hide();
-                    scene.debugLayer.show();  
-                });
-
-                cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
-                    skybox.isVisible = value;
-                });
-
-                cbSnow.onIsCheckedChangedObservable.add(function(value) {
-                    scene.particlesEnabled = value;
-                });
-
-                cbBackgroundSong.onIsCheckedChangedObservable.add(function(value) {
-                    if (value == true)
-                        backgroundSong.play();
-                    else
-                        backgroundSong.pause();
-                });
-
-                cbEffectSound.onIsCheckedChangedObservable.add(function(value) {
-                    scene.audioEnabled = value;
-                });     
-
+                  
                 advancedTexture.addControl(textTime);
                 advancedTexture.addControl(textEndGame);   
                 advancedTexture.addControl(btnContinue); 
                 advancedTexture.addControl(btnBack);
                 advancedTexture.addControl(btnRestart);
-                advancedTexture.addControl(btnOption);
-                advancedTexture.addControl(panelCheckBox);
-                advancedTexture.addControl(panelHeaderCheckBox);
+                optionGUI(advancedTexture, scene);
                 /////////////////////////// END GUI //////////////////////////         
 
                 // SET LOCATION OF GIFT BOX INSIDE CRATE           
@@ -975,12 +981,6 @@
                         }	          
                     }	
                 };
-
-                function vecToLocal(vector, mesh){
-                    var m = mesh.getWorldMatrix();
-                    var v = BABYLON.Vector3.TransformCoordinates(vector, m);
-                    return v;		 
-                }
 
                 function castRay(){       
                     var origin = tank.position;
@@ -1225,100 +1225,7 @@
                 btnRestart.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 btnRestart.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 btnRestart.top = "10px";
-                btnRestart.left = "-10px";
-
-                var btnOption = BABYLON.GUI.Button.CreateSimpleButton("btnOption", "Advanced Option");
-                btnOption.width = 0.08;
-                btnOption.height = "50px";
-                btnOption.cornerRadius = 20;
-                btnOption.color = "Orange";
-                btnOption.thickness = 4;
-                btnOption.background = "green";
-                btnOption.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                btnOption.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnOption.top = "110px";
-                btnOption.left = "-10px";   
-
-                ////////// CHECK BOX ///////////
-                var panelCheckBox = new BABYLON.GUI.StackPanel();
-                panelCheckBox.width = "20px";
-                panelCheckBox.height = "80px";
-                panelCheckBox.isVertical = true;
-                panelCheckBox.top = '20px';
-                panelCheckBox.left = '-140px';
-                panelCheckBox.background = 'red';
-                panelCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-
-                var cbSkyBox = new BABYLON.GUI.Checkbox('cbSkyBox');
-                cbSkyBox.width = "20px";
-                cbSkyBox.height = "20px";
-                cbSkyBox.isChecked = true;
-                cbSkyBox.color = "green";            
-                panelCheckBox.addControl(cbSkyBox);  
-
-                var cbSnow = new BABYLON.GUI.Checkbox('cbSnow');
-                cbSnow.width = "20px";
-                cbSnow.height = "20px";
-                cbSnow.isChecked = true;
-                cbSnow.color = "green";     
-                panelCheckBox.addControl(cbSnow);  
-
-                var cbBackgroundSong = new BABYLON.GUI.Checkbox('cbBackgroundSong');
-                cbBackgroundSong.width = "20px";
-                cbBackgroundSong.height = "20px";
-                cbBackgroundSong.isChecked = true;
-                cbBackgroundSong.color = "green";     
-                panelCheckBox.addControl(cbBackgroundSong);  
-
-                var cbEffectSound = new BABYLON.GUI.Checkbox('cbEffectSound');
-                cbEffectSound.width = "20px";
-                cbEffectSound.height = "20px";
-                cbEffectSound.isChecked = true;
-                cbEffectSound.color = "green";     
-                panelCheckBox.addControl(cbEffectSound);  
-
-                ////////// HEADER CHECK BOX ///////////
-                var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
-                panelHeaderCheckBox.width = "140px";
-                panelHeaderCheckBox.height = "80px";
-                panelHeaderCheckBox.isVertical = true;
-                panelHeaderCheckBox.top = '20px';
-                panelHeaderCheckBox.background = 'yellow';
-                panelHeaderCheckBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                panelHeaderCheckBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-                
-                var headerSkybox = new BABYLON.GUI.TextBlock();
-                headerSkybox.text = "SKYBOX";
-                headerSkybox.width = "140px";
-                headerSkybox.height = '20px';
-                headerSkybox.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerSkybox.color = "blue";
-                panelHeaderCheckBox.addControl(headerSkybox);
-
-                var headerSnow = new BABYLON.GUI.TextBlock();
-                headerSnow.text = "SNOW";
-                headerSnow.width = "180px";
-                headerSnow.width = "140px";
-                headerSnow.height = '20px';
-                headerSnow.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerSnow.color = "blue";
-                panelHeaderCheckBox.addControl(headerSnow);  
-
-                var headerBackgroundSong = new BABYLON.GUI.TextBlock();
-                headerBackgroundSong.text = "MUSIC";
-                headerBackgroundSong.width = "140px";
-                headerBackgroundSong.height = '20px';
-                headerBackgroundSong.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerBackgroundSong.color = "blue";
-                panelHeaderCheckBox.addControl(headerBackgroundSong);
-
-                var headerEffectSound = new BABYLON.GUI.TextBlock();
-                headerEffectSound.text = "EFFECT SOUND";
-                headerEffectSound.width = "140px";
-                headerEffectSound.height = '20px';
-                headerEffectSound.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                headerEffectSound.color = "blue";
-                panelHeaderCheckBox.addControl(headerEffectSound);           
+                btnRestart.left = "-10px";       
 
                 btnBack.onPointerClickObservable.add(function() {
                     engine.stopRenderLoop();
@@ -1344,44 +1251,12 @@
                     })                
                 });
 
-                var clicks = 0;
-                btnOption.onPointerClickObservable.add(function() {
-                    // if (clicks % 2 == 0)
-                    //     scene.debugLayer.show();  
-                    // else
-                    //     scene.debugLayer.hide();
-                    // clicks++;  
-                    scene.debugLayer.hide();
-                    scene.debugLayer.show();  
-                });
-
-                cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
-                    skybox.isVisible = value;
-                });
-
-                cbSnow.onIsCheckedChangedObservable.add(function(value) {
-                    scene.particlesEnabled = value;
-                });
-
-                cbBackgroundSong.onIsCheckedChangedObservable.add(function(value) {
-                    if (value == true)
-                        backgroundSong.play();
-                    else
-                        backgroundSong.pause();
-                });
-
-                cbEffectSound.onIsCheckedChangedObservable.add(function(value) {
-                    scene.audioEnabled = value;
-                });
-
                 advancedTexture.addControl(energyText);
                 advancedTexture.addControl(scoreText);
                 advancedTexture.addControl(textTime);
                 advancedTexture.addControl(btnBack);
                 advancedTexture.addControl(btnRestart); 
-                advancedTexture.addControl(btnOption);
-                advancedTexture.addControl(panelCheckBox);
-                advancedTexture.addControl(panelHeaderCheckBox);
+                optionGUI(advancedTexture, scene);
                    
                 /////////////////////////// END GUI //////////////////////////         
 
@@ -1420,12 +1295,6 @@
                         }	          
                     }	
                 };
-
-                function vecToLocal(vector, mesh){
-                    var m = mesh.getWorldMatrix();
-                    var v = BABYLON.Vector3.TransformCoordinates(vector, m);
-                    return v;		 
-                }
 
                 function castRay(){       
                     var origin = tank.position;
@@ -1563,7 +1432,7 @@
                         },
                         function() {
                             castRay();
-                            rayHelper.show(scene);
+                            rayHelper.show(scene, new BABYLON.Color3.Green());
                             gunshot.play();
                             setTimeout(function(){rayHelper.hide()}, 100);
                         }
