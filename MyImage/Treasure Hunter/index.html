@@ -37,6 +37,7 @@
 
             // Value of time score attack
             var timeScoreAttack;      
+            var intervalTimeScoreAttack;
 
             // Environment variables
             var skybox;
@@ -404,7 +405,8 @@
                     }
 
                     btnTimeRush.onPointerClickObservable.add(function() {       
-                        time = 0;            
+                        time = 0;     
+                        clearInterval(intervalTimeScoreAttack);       
                         change(1);
                     })
                     btnScoreAttack.onPointerClickObservable.add(function(){     
