@@ -39,6 +39,9 @@
             var timeScoreAttack;      
             var intervalTimeScoreAttack;
 
+            // Light and camera variables
+            var light, camera;
+            
             // Environment variables
             var skybox;
 
@@ -83,12 +86,6 @@
                 muzzle = new BABYLON.MeshBuilder.CreateCylinder('muzzle', {height: 2}, scene);
                 muzzle.visibility = 0;
                 muzzle.isPickable = false;
-
-                ///COLLISION////    
-                var planOBB = BABYLON.Mesh.CreateBox("OBB", {width: 6, height: 2, depth: 6}, scene);
-                planOBB.scaling = new BABYLON.Vector3(0, -4, -20);
-                planOBB.parent = tank;
-                planOBB.showBoundingBox=true;
             }
 
             //Function use to calculate Cast Ray
@@ -96,6 +93,24 @@
                 var m = mesh.getWorldMatrix();
                 var v = BABYLON.Vector3.TransformCoordinates(vector, m);
                 return v;		 
+            }
+
+            var createLightAndCamera = function(scene) {
+                ////////////////////// LIGHT /////////////////////////
+                light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+                light.intensity = 0.7;
+
+                ////////////////////// CAMERA /////////////////////////
+                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", BABYLON.Tools.ToRadians(270), BABYLON.Tools.ToRadians(75), 75, new BABYLON.Vector3(0, 0, 0), scene);     
+                //camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 3, -30), scene);
+                
+                camera.lowerRadiusLimit = 30;
+                camera.upperRadiusLimit = 110;      
+                camera.useBouncingBehavior = true; 
+                camera.checkCollisions = true;
+                // camera.lowerBetaLimit = Math.PI / 3;
+                camera.upperBetaLimit = Math.PI / 2;
+                camera.attachControl(canvas, true);
             }
 
             /////////////////////// ENVIRONMENT //////////////////////////
@@ -107,7 +122,7 @@
 
                     var mesh = newMeshes[0];
                     treeList=[mesh];
-                    mesh.position = new BABYLON.Vector3(0, -5, 0);
+                    mesh.position = new BABYLON.Vector3(10, -5, 0);
                     mesh.scaling = new BABYLON.Vector3(100, 100, 100);
                     mesh.isPickable=false;
 
@@ -187,6 +202,10 @@
                 inviWallLeft.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallLeft,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);   
                 inviWallRight.physicsImpostor = new BABYLON.PhysicsImpostor(inviWallRight,  BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.0}, scene);  
 
+                /////////////////// FOG ////////////////////
+                scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
+                scene.fogDensity = 0.008;
+                scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
             }       
 
             /////////////////////// SOUND ///////////////////////////
@@ -211,8 +230,8 @@
 
                 // Where the particles come from
                 particleSystem.emitter = fountain; // the starting object, the emitter
-                particleSystem.minEmitBox = new BABYLON.Vector3(-100, 20, -100); // Starting all from
-                particleSystem.maxEmitBox = new BABYLON.Vector3(100, 20, 100); // To...
+                particleSystem.minEmitBox = new BABYLON.Vector3(-200, 20, -200); // Starting all from
+                particleSystem.maxEmitBox = new BABYLON.Vector3(200, 20, 200); // To...
 
                 // Colors of all particles
                 particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
@@ -334,10 +353,22 @@
                 btnOption.top = "110px";
                 btnOption.left = "-10px";   
 
+                var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Free Camera");
+                btnChangeCamera.width = 0.08;
+                btnChangeCamera.height = "50px";
+                btnChangeCamera.cornerRadius = 20;
+                btnChangeCamera.color = "Orange";
+                btnChangeCamera.thickness = 4;
+                btnChangeCamera.background = "green";
+                btnChangeCamera.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnChangeCamera.top = "-10px";
+                btnChangeCamera.left = "-10px";   
+
                 ////////// CHECK BOX ///////////
                 var panelCheckBox = new BABYLON.GUI.StackPanel();
                 panelCheckBox.width = "20px";
-                panelCheckBox.height = "80px";
+                panelCheckBox.height = "100px";
                 panelCheckBox.isVertical = true;
                 panelCheckBox.top = '20px';
                 panelCheckBox.left = '-140px';
@@ -358,6 +389,13 @@
                 cbSnow.color = "green";     
                 panelCheckBox.addControl(cbSnow);  
 
+                var cbFog = new BABYLON.GUI.Checkbox('cbFog');
+                cbFog.width = "20px";
+                cbFog.height = "20px";
+                cbFog.isChecked = true;
+                cbFog.color = "green";     
+                panelCheckBox.addControl(cbFog);  
+
                 var cbBackgroundSong = new BABYLON.GUI.Checkbox('cbBackgroundSong');
                 cbBackgroundSong.width = "20px";
                 cbBackgroundSong.height = "20px";
@@ -375,7 +413,7 @@
                 ////////// HEADER CHECK BOX ///////////
                 var panelHeaderCheckBox = new BABYLON.GUI.StackPanel();
                 panelHeaderCheckBox.width = "140px";
-                panelHeaderCheckBox.height = "80px";
+                panelHeaderCheckBox.height = "100px";
                 panelHeaderCheckBox.isVertical = true;
                 panelHeaderCheckBox.top = '20px';
                 panelHeaderCheckBox.background = 'yellow';
@@ -399,6 +437,15 @@
                 headerSnow.color = "blue";
                 panelHeaderCheckBox.addControl(headerSnow);  
 
+                var headerFog = new BABYLON.GUI.TextBlock();
+                headerFog.text = "FOG";
+                headerFog.width = "180px";
+                headerFog.width = "140px";
+                headerFog.height = '20px';
+                headerFog.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                headerFog.color = "blue";
+                panelHeaderCheckBox.addControl(headerFog);                 
+
                 var headerBackgroundSong = new BABYLON.GUI.TextBlock();
                 headerBackgroundSong.text = "MUSIC";
                 headerBackgroundSong.width = "140px";
@@ -414,11 +461,36 @@
                 headerEffectSound.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 headerEffectSound.color = "blue";
                 panelHeaderCheckBox.addControl(headerEffectSound);
-
-                var clicks = 0;
+               
                 btnOption.onPointerClickObservable.add(function() {
                     scene.debugLayer.hide();
                     scene.debugLayer.show();  
+                });
+
+                var clicks = 0;
+                btnChangeCamera.onPointerClickObservable.add(function() {
+                    if (clicks % 2 == 0) {
+                        console.log(clicks);
+                        camera.dispose();
+                        camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(tank.position.x + 30, tank.position.y + 30, tank.position.z + 30), scene); 
+                        btnChangeCamera.children[0].text = 'Arc Rotate Camera';
+                        camera.checkCollisions = true;
+                        camera.attachControl(canvas, true);
+                    }
+                    else {
+                        console.log(clicks);
+                        camera.dispose();
+                        btnChangeCamera.children[0].text = 'Free Camera';
+                        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", BABYLON.Tools.ToRadians(270), BABYLON.Tools.ToRadians(75), 75, 
+                        new BABYLON.Vector3(tank.position.x, tank.position.y + 30, tank.position.z + 30), scene); 
+                        camera.lowerRadiusLimit = 30;
+                        camera.upperRadiusLimit = 110;      
+                        camera.useBouncingBehavior = true; 
+                        camera.checkCollisions = true;
+                        camera.upperBetaLimit = Math.PI / 2;
+                        camera.attachControl(canvas, true); 
+                    }
+                    clicks++;
                 });
 
                 cbSkyBox.onIsCheckedChangedObservable.add(function(value) {
@@ -427,6 +499,10 @@
 
                 cbSnow.onIsCheckedChangedObservable.add(function(value) {
                     scene.particlesEnabled = value;
+                });
+
+                cbFog.onIsCheckedChangedObservable.add(function(value) {
+                    scene.fogEnabled = value;
                 });
 
                 cbBackgroundSong.onIsCheckedChangedObservable.add(function(value) {
@@ -441,6 +517,7 @@
                 });   
 
                 advancedTexture.addControl(btnOption);
+                advancedTexture.addControl(btnChangeCamera);
                 advancedTexture.addControl(panelCheckBox);
                 advancedTexture.addControl(panelHeaderCheckBox);
             }
@@ -451,16 +528,7 @@
                 var scene = new BABYLON.Scene(engine);
                 scene.clearColor = new BABYLON.Color3.Black();
                 
-                // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-
-                // Default intensity is 1. Let's dim the light a small amount
-                light.intensity = 0.7;
-
-                ////////////////////// CAMERA /////////////////////////           
-                var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 10, new BABYLON.Vector3(0, 0, 0), scene);     
-                camera.attachControl(canvas, true);
-                /////////////////////END CAMERA//////////////////////
+                createLightAndCamera(scene);
 
                 ///////////////////////// MENU //////////////////////
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -581,11 +649,7 @@
             var createSceneSlider = function() {
                 var scene = new BABYLON.Scene(engine);
 
-                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-                light.intensity = 0.7;
-                
-                var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 10, new BABYLON.Vector3(0, 0, 0), scene);     
-                camera.attachControl(canvas, true);      
+                createLightAndCamera(scene);   
 
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
@@ -648,22 +712,7 @@
                 var physicsPlugin = new BABYLON.CannonJSPlugin();
                 scene.enablePhysics(gravityVector, physicsPlugin);
 
-                ////////////////////// LIGHT /////////////////////////
-                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-                light.intensity = 0.7;
-
-                ////////////////////// CAMERA /////////////////////////
-                var camera = new BABYLON.ArcRotateCamera("camera1", BABYLON.Tools.ToRadians(270), BABYLON.Tools.ToRadians(75), 75, new BABYLON.Vector3(0, 0, 0), scene);     
-                // var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 3, -30), scene);
-                
-                camera.lowerRadiusLimit = 30;
-                camera.upperRadiusLimit = 110;      
-                camera.useBouncingBehavior = true; 
-                camera.checkCollisions = true;
-                camera.lowerBetaLimit = Math.PI / 3;
-                camera.upperBetaLimit = Math.PI / 2;
-                camera.attachControl(canvas, true);
-
+                createLightAndCamera(scene);
                 tankCreation(scene);
                 snowDropEffect(scene);
                 giftBoxBlowEffect(scene);
@@ -1104,23 +1153,7 @@
                 var physicsPlugin = new BABYLON.CannonJSPlugin();
                 scene.enablePhysics(gravityVector, physicsPlugin);
 
-                ////////////////////// LIGHT /////////////////////////
-                var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-                light.intensity = 0.7;
-
-                ////////////////////// CAMERA /////////////////////////
-                var camera = new BABYLON.ArcRotateCamera("camera1", BABYLON.Tools.ToRadians(270), BABYLON.Tools.ToRadians(75), 75, new BABYLON.Vector3(0, 0, 0), scene);     
-                // var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 3, -30), scene);
-                
-                camera.lowerRadiusLimit = 30;
-                camera.upperRadiusLimit = 110;      
-                camera.useBouncingBehavior = true; 
-                camera.checkCollisions = true;
-                camera.lowerBetaLimit = Math.PI / 3;
-                camera.upperBetaLimit = Math.PI / 2;
-
-                camera.attachControl(canvas, true);
-
+                createLightAndCamera(scene);
                 tankCreation(scene);
                 snowDropEffect(scene);
                 giftBoxBlowEffect(scene);
