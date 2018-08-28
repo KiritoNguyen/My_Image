@@ -11,6 +11,12 @@ window.addEventListener('DOMContentLoaded', function () {
     var timeScoreAttack;      
     var intervalTimeScoreAttack;
 
+    // Time variable of time rush
+    var timeRush;
+
+    // Time variable of battle tank
+    var timeBattleTank;
+
     // Light and camera variables
     var light, camera;
     
@@ -20,9 +26,6 @@ window.addEventListener('DOMContentLoaded', function () {
     //Crate and array of crates
     var crate;
     var crates;
-
-    // Time variable of time rush
-    var time;
 
     var speed=1; //set speed
 
@@ -37,6 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Tank variables
     var tank, muzzleTank, muzzle;
+    var enemyList;
 
     // default Value of Slider variable
     var sliderValue = 20;
@@ -70,6 +74,24 @@ window.addEventListener('DOMContentLoaded', function () {
         var m = mesh.getWorldMatrix();
         var v = BABYLON.Vector3.TransformCoordinates(vector, m);
         return v;		 
+    }
+
+    var enemyTankCreation = function(scene) {
+        BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", 
+        "Tank.babylon", scene, function (newMeshes) {
+            var enemy = newMeshes[0];
+            enemyList = [enemy]
+            enemy.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
+            enemy.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100)
+            enemy.isPickable = true;
+
+            for (var i = 0; i < 5; i++) {			
+                var clone = enemy.clone("newEnemy");
+                clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100);
+                clone.isPickable = true;
+                enemyList.push(clone);
+            }
+        });
     }
 
     var createLightAndCamera = function(scene) {
@@ -528,12 +550,10 @@ window.addEventListener('DOMContentLoaded', function () {
         var panel = new BABYLON.GUI.StackPanel();
         panel.width = "1200px";
         panel.height="80px";
-        // panel.background="White";
         panel.isVertical = true;
         panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-        panel.top="-50px";
-        advancedTexture.addControl(panel);
+        panel.top="-200px";
 
         var name = new BABYLON.GUI.TextBlock();
         name.text = "THE TREASURE HUNTER";
@@ -553,11 +573,8 @@ window.addEventListener('DOMContentLoaded', function () {
         btnTimeRush.thickness = 4;
         btnTimeRush.background = "green";
         btnTimeRush.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-        btnTimeRush.top="50px";
         btnTimeRush.children[0].fontSize=40;
-        btnTimeRush.isVisible = true;
-
-        advancedTexture.addControl(btnTimeRush); 
+        btnTimeRush.children[0].fontFamily ="Jokerman";
 
         var btnScoreAttack = BABYLON.GUI.Button.CreateSimpleButton("btnScoreAttack", "Score Attack");
         btnScoreAttack.width = 0.3;
@@ -567,11 +584,26 @@ window.addEventListener('DOMContentLoaded', function () {
         btnScoreAttack.thickness = 4;
         btnScoreAttack.background = "green";
         btnScoreAttack.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-        btnScoreAttack.top="150px";
+        btnScoreAttack.top="100px";
         btnScoreAttack.children[0].fontSize=40;
-        btnScoreAttack.isVisible = true;
+        btnScoreAttack.children[0].fontFamily ="Jokerman";
 
+        var btnBattleTank = BABYLON.GUI.Button.CreateSimpleButton("btnBattleTank", "Battle Tank");
+        btnBattleTank.width = 0.3;
+        btnBattleTank.height = "70px";
+        btnBattleTank.cornerRadius = 20;
+        btnBattleTank.color = "Orange";
+        btnBattleTank.thickness = 4;
+        btnBattleTank.background = "green";
+        btnBattleTank.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        btnBattleTank.top="200px";
+        btnBattleTank.children[0].fontSize=40;
+        btnBattleTank.children[0].fontFamily ="Jokerman";
+
+        advancedTexture.addControl(panel); 
+        advancedTexture.addControl(btnTimeRush); 
         advancedTexture.addControl(btnScoreAttack);
+        advancedTexture.addControl(btnBattleTank);
 
         // Background Song
         backgroundSong = new BABYLON.Sound('backgroundSong', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/05%20-%20Calderock%20Village%20(SEA).mp3', scene, null, {loop: true, autoplay: true});           
@@ -581,6 +613,8 @@ window.addEventListener('DOMContentLoaded', function () {
         var scene1 = createSceneSlider();
         //scene 2
         var scene2 = createSceneScoreAttack();
+        //scene 3
+        var scene3 = createSceneBattleTank();
 
         var advancedTexture;
         var createGUI = function(showScene) {             
@@ -594,16 +628,23 @@ window.addEventListener('DOMContentLoaded', function () {
                 case 2:            
                     advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene2);
                 break
+                case 3:            
+                    advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene3);
+                break
             }
 
             btnTimeRush.onPointerClickObservable.add(function() {       
-                time = 0;     
+                timeRush = 0;     
                 clearInterval(intervalTimeScoreAttack);       
                 change(1);
             })
             btnScoreAttack.onPointerClickObservable.add(function(){     
                 timeScoreAttack = 60;
                 change(2);
+            })
+            btnBattleTank.onPointerClickObservable.add(function(){   
+                timeBattleTank = 0;
+                change(3);
             })
         }
         createGUI(0);
@@ -623,6 +664,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         createGUI(showScene);
                         btnScoreAttack.dispose();
                         btnTimeRush.dispose();
+                        btnBattleTank.dispose();
                         scene1.render();
                     break
                     case 2:
@@ -630,7 +672,16 @@ window.addEventListener('DOMContentLoaded', function () {
                         createGUI(showScene);
                         btnScoreAttack.dispose();
                         btnTimeRush.dispose();
+                        btnBattleTank.dispose();
                         scene2.render();
+                    break
+                    case 3:
+                        advancedTexture.dispose();
+                        createGUI(showScene);
+                        btnScoreAttack.dispose();
+                        btnTimeRush.dispose();
+                        btnBattleTank.dispose();
+                        scene3.render();
                     break
                 }
             }
@@ -697,7 +748,6 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     var createSceneTimeRush = function() {
-        // This creates a basic Babylon Scene object (non-mesh)
         var scene = new BABYLON.Scene(engine);
 
         var gravityVector = new BABYLON.Vector3(0,-9.81, 0);
@@ -758,7 +808,7 @@ window.addEventListener('DOMContentLoaded', function () {
         rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);        
 
         //////////// TIME COUNT ///////////////
-        var timeCount = setInterval(function(){time++}, 1000);  
+        var timeCount = setInterval(function(){timeRush++}, 1000);  
         
         /////////////////// CONTROL ////////////////////
 
@@ -907,8 +957,8 @@ window.addEventListener('DOMContentLoaded', function () {
             textEndGame.text = '';
             btnContinue.isVisible = false;
             gameStop = false;
-            time = 0;
-            timeCount = setInterval(function(){time++}, 1000);   
+            timeRush = 0;
+            timeCount = setInterval(function(){timeRush++}, 1000);   
 
             Control();
 
@@ -955,7 +1005,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
         btnRestart.onPointerClickObservable.add(function() {
-            time = 0;
+            timeRush = 0;
             clearInterval(timeCount);
             var restartGame = createSceneTimeRush();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.stopRenderLoop();
@@ -1075,7 +1125,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             // TIME SHOW
             if (gameStop == false)
-                textTime.text = "Time: " + Math.floor(time / 60) + ":" + time % 60;
+                textTime.text = "Time: " + Math.floor(timeRush / 60) + ":" + timeRush % 60;
             else if (gameStop == true) {
                 textTime.text = '';
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
@@ -1122,7 +1172,6 @@ window.addEventListener('DOMContentLoaded', function () {
             // fps
             txtFps.text = 'FPS: ' + engine.getFps().toFixed();
         })
-
 
         return scene;
     };
@@ -1539,6 +1588,337 @@ window.addEventListener('DOMContentLoaded', function () {
 
         return scene;
     };
+
+    var createSceneBattleTank = function() {
+        var scene = new BABYLON.Scene(engine);
+
+        var gravityVector = new BABYLON.Vector3(0,-9.81, 0);
+        var physicsPlugin = new BABYLON.CannonJSPlugin();
+        scene.enablePhysics(gravityVector, physicsPlugin);
+
+        // console.log(enemyList.Le);
+        var enemyLength = 6;
+        createLightAndCamera(scene);
+        tankCreation(scene);
+        enemyTankCreation(scene);
+        snowDropEffect(scene);
+        giftBoxBlowEffect(scene);
+        basicEnvironment(scene);
+        // changeColorTank(advancedTexture, tank.material);
+        soundManager(scene);
+
+        /////////////////// RAY CAST ////////////////////
+        var ray = new BABYLON.Ray();
+        var rayHelper = new BABYLON.RayHelper(ray);
+        
+        var localMeshDirection = new BABYLON.Vector3(3, 0, 0);
+        var localMeshOrigin = new BABYLON.Vector3(0, 1.5, 0);
+        var length = 6;
+
+        rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);        
+
+        //////////// TIME COUNT ///////////////
+        var timeCount = setInterval(function(){timeBattleTank++}, 1000);  
+        
+        /////////////////// CONTROL ////////////////////
+        scene.actionManager = new BABYLON.ActionManager(scene);
+        var map = {}; //object for multiple key presses
+
+        scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+            map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+
+        }));
+
+        scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+            map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+        }));
+
+
+        /****************************Move Tank*****************************/
+
+        scene.registerAfterRender(function () {
+            camera.setTarget(tank.position);
+            if ((map["w"] || map["W"])) {
+                if(pickResult.pickedPoint.z > tank.position.z)
+                {
+                    tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
+                    tank.position.x=(tank.position.z-b)/a;
+
+                }
+                else if(pickResult.pickedPoint.z<tank.position.z)
+                {
+                    tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
+                    tank.position.x=(tank.position.z-b)/a;
+                }
+            };
+
+            if ((map["s"] || map["S"])) {
+                if(pickResult.pickedPoint.z>tank.position.z)
+                    {
+                        tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
+                        tank.position.x=(tank.position.z-b)/a;
+                    }
+                else if(pickResult.pickedPoint.z<tank.position.z)
+                {
+                    tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
+                    tank.position.x=(tank.position.z-b)/a;
+                }
+            };
+        });
+
+        scene.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                {
+                    trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                    parameter: 'v'
+                },
+                function() {
+                    castRay();
+                    rayHelper.show(scene, new BABYLON.Color3.Green());
+                    gunshot.play();
+                    setTimeout(function(){rayHelper.hide()}, 100);
+                }
+            )
+        )
+        scene.actionManager.registerAction(
+        new BABYLON.ExecuteCodeAction(
+            {
+                trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                parameter: 'e'
+            },
+            function() {
+                if(energy>0){
+                flagEnergy=false;
+                speed=velocity*2; 
+                energy--;
+                }
+            })
+        )
+        scene.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                {
+                    trigger: BABYLON.ActionManager.OnKeyUpTrigger,
+                    parameter: 'e'
+                },
+                function() {
+                    flagEnergy=true;
+                }
+            )
+        )
+
+        /////////////////////////// GUI ////////////////////////////
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+        var textEndGame = new BABYLON.GUI.TextBlock();
+        textEndGame.color = "green";
+        textEndGame.fontSize = 30;
+        textEndGame.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        textEndGame.top = "15px";
+
+        var textTime = new BABYLON.GUI.TextBlock();
+        textTime.color = "white";
+        textTime.fontSize = 50;
+        textTime.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        textTime.top = "15px";
+        
+        var btnBack = BABYLON.GUI.Button.CreateSimpleButton("btnBack", "Main Menu");
+        btnBack.width = 0.08;
+        btnBack.height = "40px";
+        btnBack.cornerRadius = 20;
+        btnBack.color = "Orange";
+        btnBack.thickness = 4;
+        btnBack.background = "green";
+        btnBack.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        btnBack.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        btnBack.top = "60px";
+        btnBack.left = "-10px";
+
+        var btnRestart = BABYLON.GUI.Button.CreateImageButton("btnRestart", "Restart", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/images/refresh.png");
+        btnRestart.width = 0.08;
+        btnRestart.height = "40px";
+        btnRestart.cornerRadius = 20;
+        btnRestart.color = "Orange";
+        btnRestart.thickness = 4;
+        btnRestart.background = "green";
+        btnRestart.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        btnRestart.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        btnRestart.top = "10px";
+        btnRestart.left = "-10px";                           
+
+        // Event button //
+        btnBack.onPointerClickObservable.add(function() {
+            engine.stopRenderLoop();
+            backgroundSong.stop();
+            clearInterval(timeCount);
+            var menuGame = createScene(); // Khởi tạo lại menu mới sau khi nhấn Back
+            engine.runRenderLoop(function () {
+                advancedTexture.dispose();
+                btnBack.dispose();
+                btnContinue.dispose();
+                menuGame.render();              
+            })                
+        });
+
+
+        btnRestart.onPointerClickObservable.add(function() {
+            time = 0;
+            clearInterval(timeCount);
+            var restartGame = createSceneBattleTank();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
+            engine.stopRenderLoop();
+            engine.runRenderLoop(function () {
+                advancedTexture.dispose();
+                btnBack.dispose();
+                restartGame.render();              
+            })                
+        });       
+          
+        advancedTexture.addControl(textTime);
+        advancedTexture.addControl(textEndGame);   
+        advancedTexture.addControl(btnBack);
+        advancedTexture.addControl(btnRestart);
+        optionGUI(advancedTexture, scene);
+        /////////////////////////// END GUI //////////////////////////         
+
+        // SET LOCATION OF GIFT BOX INSIDE CRATE           
+        /////////////////////// GIFT BOX ////////////////////////
+        var giftBox = new BABYLON.MeshBuilder.CreateBox('giftBox', {size: 3}, scene);
+        giftBox.material = new BABYLON.StandardMaterial('giftBoxMaterial', scene);  
+        giftBox.visibility = 0;                     
+        giftBox.isPickable = false;
+
+        particleSystemBlow.emitter = giftBox; // the starting object, the emitter
+        particleSystemBlow.minEmitBox = new BABYLON.Vector3(-3, 0, -3); // Starting all from
+        particleSystemBlow.maxEmitBox = new BABYLON.Vector3(3, 0, 3); // To...
+
+        var a = 0, b = 0, pickResult;
+        var direction = new BABYLON.Vector2.Zero();
+
+        scene.onPointerMove = function () {
+            pickResult = scene.pick(scene.pointerX, scene.pointerY);
+            var diffX = -pickResult.pickedPoint.x + tank.position.x;
+            var diffY = -pickResult.pickedPoint.z + tank.position.z;
+            direction.x = diffX;
+            direction.y = diffY;
+            
+            if (pickResult.hit) {
+
+                tank.rotation.y = Math.atan2(diffX, diffY);	
+
+                if(diffX != 0) {
+                    a = diffY/diffX;
+                    b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                }	          
+            }	
+        };
+
+        function castRay(){       
+            var origin = tank.position;
+        
+            var forward = new BABYLON.Vector3(0, 0, -1);		
+            forward = vecToLocal(forward, tank);
+        
+            var direction = forward.subtract(origin);
+            direction = BABYLON.Vector3.Normalize(direction);
+        
+            var length = 20;
+        
+            var ray = new BABYLON.Ray(origin, direction, length);
+
+            var hit = scene.pickWithRay(ray);
+
+            if (hit.pickedMesh){
+                hit.pickedMesh.scaling.y -= 0.02;
+                hit.pickedMesh.scaling.x -= 0.02;
+                hit.pickedMesh.scaling.z -= 0.02;
+
+                if (hit.pickedMesh.scaling.y <= 0.9) {
+                    hit.pickedMesh.dispose();
+                    explosion.play();
+                    enemyLength--;
+                    if (enemyLength <= 0) {
+                        clearInterval(timeCount);
+                        giftBox.visibility = 1;
+                        particleSystemBlow.start();
+                        setTimeout(function(){
+                            particleSystemBlow.stop();
+                        }, 5000);
+                    }
+
+                    // const index = crates.indexOf(hit.pickedMesh);
+                    // crates.splice(index, 1);
+                }
+
+            }
+        }
+
+        ///////////////////////////////////////////////////////
+        var red = 1, green = 0, blue = 0;
+        scene.registerBeforeRender(function() {
+            // Change color of gift box
+            if(red > 0 && blue <= 0){
+                red -= 0.01;
+                green += 0.01;
+            }
+            if(green > 0 && red <= 0){
+                green -= 0.01;
+                blue += 0.01;
+            }
+            if(blue > 0 && green <= 0){
+                red += 0.01;
+                blue -= 0.01;
+            }
+
+            giftBox.material.diffuseColor = new BABYLON.Color3(red, green, blue);
+            console.log(enemyLength);
+            // END GAME
+            if (enemyLength <= 0) {
+                textTime.text = "You have taken the enemy power source";
+                giftBox.position = new BABYLON.Vector3(tank.position.x, tank.position.y + 10, tank.position.z);
+            }
+                
+            // Collide with enemy
+            enemyList.forEach(enemy => {
+                if (tank.intersectsMesh(enemy, true)) {
+                speed=0;
+                    if(direction.x>=0)
+                        tank.position.x -= 0.2;
+                    else
+                        tank.position.x += 0.2;
+                    if(direction.z>=0)
+                        tank.position.z -= 0.2;
+                    else
+                        tank.position.z += 0.2;
+                }
+            });
+
+            treeRootList.forEach(tree => {
+                if (tank.intersectsMesh(tree, true)) {
+                speed=0;
+                    if(direction.x>=0)
+                        tank.position.x-=0.2;
+                    else
+                        tank.position.x+=0.2;
+                    if(direction.z>=0)
+                        tank.position.z-=0.2;
+                    else
+                        tank.position.z+=0.2;
+                }
+            });
+
+            if(flagEnergy)
+                speed = velocity;
+
+            // Muzzle of tank
+            muzzle.position = new BABYLON.Vector3(tank.position.x, tank.position.y, tank.position.z);
+            muzzle.rotation = new BABYLON.Vector3(tank.rotation.x, tank.rotation.y + Math.PI / 2, tank.rotation.z);
+
+            // fps, time
+            txtFps.text = 'FPS: ' + engine.getFps().toFixed();
+            textTime.text = "Time: " + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
+        })
+
+        return scene;
+    }
 
     //////Register service worker
     if('serviceWorker' in navigator) {
