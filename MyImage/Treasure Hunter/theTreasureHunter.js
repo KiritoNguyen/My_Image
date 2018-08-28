@@ -44,6 +44,9 @@ window.addEventListener('DOMContentLoaded', function () {
     //Particle effect of giftBox
     var particleSystemBlow;
 
+    // Text FPS
+    var txtFps;
+
     var tankCreation = function(scene) {
         BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
             tank = newMeshes[0];
@@ -339,6 +342,20 @@ window.addEventListener('DOMContentLoaded', function () {
         btnChangeCamera.top = "-10px";
         btnChangeCamera.left = "-10px";   
 
+        var panelFPS = new BABYLON.GUI.StackPanel();
+        panelFPS.width = "80px"
+        panelFPS.height = "20px"
+        panelFPS.top = -10;
+        panelFPS.left = 10;
+        panelFPS.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        panelFPS.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        panelFPS.background = 'blue';
+
+        txtFps = new BABYLON.GUI.TextBlock()
+        txtFps.color="yellow";
+
+        panelFPS.addControl(txtFps);
+
         ////////// CHECK BOX ///////////
         var panelCheckBox = new BABYLON.GUI.StackPanel();
         panelCheckBox.width = "20px";
@@ -494,6 +511,7 @@ window.addEventListener('DOMContentLoaded', function () {
         advancedTexture.addControl(btnChangeCamera);
         advancedTexture.addControl(panelCheckBox);
         advancedTexture.addControl(panelHeaderCheckBox);
+        advancedTexture.addControl(panelFPS);
     }
     ////////////////////////////////////////////////////////////////////////////
 
@@ -1100,6 +1118,9 @@ window.addEventListener('DOMContentLoaded', function () {
             // Muzzle of tank
             muzzle.position = new BABYLON.Vector3(tank.position.x, tank.position.y, tank.position.z);
             muzzle.rotation = new BABYLON.Vector3(tank.rotation.x, tank.rotation.y + Math.PI / 2, tank.rotation.z);
+
+            // fps
+            txtFps.text = 'FPS: ' + engine.getFps().toFixed();
         })
 
 
@@ -1511,6 +1532,9 @@ window.addEventListener('DOMContentLoaded', function () {
             // Muzzle of tank
             muzzle.position = new BABYLON.Vector3(tank.position.x, tank.position.y, tank.position.z);
             muzzle.rotation = new BABYLON.Vector3(tank.rotation.x, tank.rotation.y + Math.PI / 2, tank.rotation.z);
+
+            // fps
+            txtFps.text = 'FPS: ' + engine.getFps().toFixed();
         })
 
         return scene;
