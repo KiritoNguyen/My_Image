@@ -789,45 +789,32 @@
                     scene.registerAfterRender(function () {
                         camera.setTarget(tank.position);
                         if ((map["w"] || map["W"])) {
-                            if(pickResult.pickedPoint.z - tank.position.z > 10)
-                            {
-                                tank.position.z +=speed;
-                                tank.position.x=(tank.position.z-b)/a;
+                        if(pickResult.pickedPoint.z > tank.position.z)
+                        {
+                            tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
+                            tank.position.x=(tank.position.z-b)/a;
 
-                            }
-                            else if(pickResult.pickedPoint.z-tank.position.z<-10)
-                            {
-                                tank.position.z -= speed;
-                                tank.position.x=(tank.position.z-b)/a;
-                            }
-                            else
-                            {
-                            if(pickResult.pickedPoint.x<tank.position.x)
-                                tank.position.x-=speed*2;
-                            else
-                                tank.position.x+=speed*2;
-                            }
-                        };
+                        }
+                        else if(pickResult.pickedPoint.z<tank.position.z)
+                        {
+                            tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
+                            tank.position.x=(tank.position.z-b)/a;
+                        }
 
-                        if ((map["s"] || map["S"])) {
-                            if(pickResult.pickedPoint.z-tank.position.z>10)
-                                {
-                                    tank.position.z -= speed;
-                                    tank.position.x=(tank.position.z-b)/a;
-                                }
-                            else if(pickResult.pickedPoint.z-tank.position.z<-10)
+                    };
+
+                    if ((map["s"] || map["S"])) {
+                        if(pickResult.pickedPoint.z>tank.position.z)
                             {
-                                tank.position.z += speed;   
+                                tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                                 tank.position.x=(tank.position.z-b)/a;
                             }
-                            else
-                            {
-                                if(pickResult.pickedPoint.x<tank.position.x)
-                                    tank.position.x+=speed*2;
-                                else
-                                    tank.position.x-=speed*2;
-                            }
-                        };
+                        else if(pickResult.pickedPoint.z<tank.position.z)
+                        {
+                            tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
+                            tank.position.x=(tank.position.z-b)/a;
+                        }
+                    };
                     });
 
                     scene.actionManager.registerAction(
@@ -1416,43 +1403,30 @@
                 scene.registerAfterRender(function () {
                     camera.setTarget(tank.position);
                     if ((map["w"] || map["W"])) {
-                        if(pickResult.pickedPoint.z - tank.position.z > 10)
+                        if(pickResult.pickedPoint.z > tank.position.z)
                         {
-                            tank.position.z +=speed;
+                            tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
                             tank.position.x=(tank.position.z-b)/a;
 
                         }
-                        else if(pickResult.pickedPoint.z-tank.position.z<-10)
+                        else if(pickResult.pickedPoint.z<tank.position.z)
                         {
-                            tank.position.z -= speed;
+                            tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                             tank.position.x=(tank.position.z-b)/a;
                         }
-                        else
-                        {
-                        if(pickResult.pickedPoint.x<tank.position.x)
-                            tank.position.x-=speed*2;
-                        else
-                            tank.position.x+=speed*2;
-                        }
+
                     };
 
                     if ((map["s"] || map["S"])) {
-                        if(pickResult.pickedPoint.z-tank.position.z>10)
+                        if(pickResult.pickedPoint.z>tank.position.z)
                             {
-                                tank.position.z -= speed;
+                                tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                                 tank.position.x=(tank.position.z-b)/a;
                             }
-                        else if(pickResult.pickedPoint.z-tank.position.z<-10)
+                        else if(pickResult.pickedPoint.z<tank.position.z)
                         {
-                            tank.position.z += speed;   
+                            tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
                             tank.position.x=(tank.position.z-b)/a;
-                        }
-                        else
-                        {
-                            if(pickResult.pickedPoint.x<tank.position.x)
-                                tank.position.x+=speed*2;
-                            else
-                                tank.position.x-=speed*2;
                         }
                     };
                 });
