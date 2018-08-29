@@ -567,8 +567,9 @@ window.addEventListener('DOMContentLoaded', function () {
         name.fontStyle ="bold italic";
         panel.addControl(name); 
 
-        var btnTimeRush = BABYLON.GUI.Button.CreateSimpleButton("btnTimeRush", "Time Rush");
-        btnTimeRush.width = 0.3;
+        var btnTimeRush = BABYLON.GUI.Button.CreateImageButton("btnTimeRush", "Time Rush", 
+        'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/Time.png');
+        btnTimeRush.width = 0.25;
         btnTimeRush.height = "70px";
         btnTimeRush.cornerRadius = 20;
         btnTimeRush.color = "Orange";
@@ -578,8 +579,9 @@ window.addEventListener('DOMContentLoaded', function () {
         btnTimeRush.children[0].fontSize=40;
         btnTimeRush.children[0].fontFamily ="Jokerman";
 
-        var btnScoreAttack = BABYLON.GUI.Button.CreateSimpleButton("btnScoreAttack", "Score Attack");
-        btnScoreAttack.width = 0.3;
+        var btnScoreAttack = BABYLON.GUI.Button.CreateImageButton("btnScoreAttack", "Score Attack", 
+        'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/score.png');
+        btnScoreAttack.width = 0.25;
         btnScoreAttack.height = "70px";
         btnScoreAttack.cornerRadius = 20;
         btnScoreAttack.color = "Orange";
@@ -590,8 +592,9 @@ window.addEventListener('DOMContentLoaded', function () {
         btnScoreAttack.children[0].fontSize=40;
         btnScoreAttack.children[0].fontFamily ="Jokerman";
 
-        var btnBattleTank = BABYLON.GUI.Button.CreateSimpleButton("btnBattleTank", "Battle Tank");
-        btnBattleTank.width = 0.3;
+        var btnBattleTank = BABYLON.GUI.Button.CreateImageButton("btnBattleTank", "Battle Tank", 
+        'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/tankBattle.png');
+        btnBattleTank.width = 0.25;
         btnBattleTank.height = "70px";
         btnBattleTank.cornerRadius = 20;
         btnBattleTank.color = "Orange";
@@ -698,7 +701,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     var createSceneSlider = function() {
         var scene = new BABYLON.Scene(engine);
-
+        scene.clearColor = new BABYLON.Color3.Black();
         createLightAndCamera(scene);   
 
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
