@@ -51,6 +51,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // Text FPS
     var txtFps;
 
+    var n = 1;
+
     var tankCreation = function(scene) {
         BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
             tank = newMeshes[0];
@@ -611,10 +613,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
         //scene 1
         var scene1 = createSceneSlider();
-        //scene 2
-        var scene2 = createSceneScoreAttack();
+
         //scene 3
         var scene3 = createSceneBattleTank();
+
+        //scene 2
+        var scene2 = createSceneScoreAttack();
 
         var advancedTexture;
         var createGUI = function(showScene) {             
@@ -675,7 +679,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         createGUI(showScene);
                         btnScoreAttack.dispose();
                         btnTimeRush.dispose();
-                        btnBattleTank.dispose();
+                        btnBattleTank.dispose();           
                         scene2.render();
                     break
                     case 3:
@@ -777,13 +781,13 @@ window.addEventListener('DOMContentLoaded', function () {
             crate.position.z = rand() * 50;
         }
 
-        crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+        crate = BABYLON.MeshBuilder.CreateBox("crate0", {size: 8}, scene);  
         crate.checkCollisions = true;
         cratePosition(crate);
         crates = [crate];
 
-        for (let i = 0; i < sliderValue - 1; ++i) {
-            let b = crate.clone("crate" + i);
+        for (let i = 0; i < sliderValue - 1; i++) {
+            let b = crate.clone("crate" + (i + 1));
             cratePosition(b)
             crates.push(b);
         }  
@@ -794,9 +798,6 @@ window.addEventListener('DOMContentLoaded', function () {
         
         crates.forEach(crate => {
             crate.material = crateMaterial;
-        });
-
-        crates.forEach(crate => {
             crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
         });
 
@@ -812,9 +813,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         //////////// TIME COUNT ///////////////
         var timeCount = setInterval(function(){timeRush++}, 1000);  
-        
-        /////////////////// CONTROL ////////////////////
 
+        /////////////////// CONTROL ////////////////////
         var Control = function() {
             scene.actionManager = new BABYLON.ActionManager(scene);
             var map = {}; //object for multiple key presses
@@ -834,32 +834,31 @@ window.addEventListener('DOMContentLoaded', function () {
             scene.registerAfterRender(function () {
                 camera.setTarget(tank.position);
                 if ((map["w"] || map["W"])) {
-                if(pickResult.pickedPoint.z > tank.position.z)
-                {
-                    tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
-                    tank.position.x=(tank.position.z-b)/a;
+                    if(pickResult.pickedPoint.z > tank.position.z)
+                    {
+                        tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
+                        tank.position.x=(tank.position.z-b)/a;
 
-                }
-                else if(pickResult.pickedPoint.z<tank.position.z)
-                {
-                    tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
-                    tank.position.x=(tank.position.z-b)/a;
-                }
-
-            };
-
-            if ((map["s"] || map["S"])) {
-                if(pickResult.pickedPoint.z>tank.position.z)
+                    }
+                    else if(pickResult.pickedPoint.z<tank.position.z)
                     {
                         tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                         tank.position.x=(tank.position.z-b)/a;
                     }
-                else if(pickResult.pickedPoint.z<tank.position.z)
-                {
-                    tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
-                    tank.position.x=(tank.position.z-b)/a;
-                }
-            };
+                };
+
+                if ((map["s"] || map["S"])) {
+                    if(pickResult.pickedPoint.z>tank.position.z)
+                        {
+                            tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
+                            tank.position.x=(tank.position.z-b)/a;
+                        }
+                    else if(pickResult.pickedPoint.z<tank.position.z)
+                    {
+                        tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
+                        tank.position.x=(tank.position.z-b)/a;
+                    }
+                };
             });
 
             scene.actionManager.registerAction(
@@ -965,29 +964,26 @@ window.addEventListener('DOMContentLoaded', function () {
 
             Control();
 
-            crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+            crate = BABYLON.MeshBuilder.CreateBox("crate0", {size: 8}, scene);  
             crate.checkCollisions = true;
             cratePosition(crate);
             crates = [crate];
 
-            for (let i = 0; i < sliderValue - 1; ++i) {
-                let b = crate.clone("crate" + i);
+            for (let i = sliderValue * n - 1; i < sliderValue*(n+1) - 1; i++) {
+                let b = crate.clone("crate" + (i + 1));
                 cratePosition(b)
                 crates.push(b);
             }
-
+            n++;
             crates.forEach(crate => {
                 crate.material = crateMaterial;
-            });
-
-            crates.forEach(crate => {
                 crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
             });
 
             giftBox.visibility = 0;                     
             giftBox.isPickable = false;
             setTimeout(function() {
-                giftBox.position = new BABYLON.Vector3(crates[2].position.x, crates[2].position.y, crates[2].position.z);
+                giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
                 giftBox.visibility = 1;
             }, 8000);
         });
@@ -1034,7 +1030,7 @@ window.addEventListener('DOMContentLoaded', function () {
         giftBox.visibility = 0;                     
         giftBox.isPickable = false;
         setTimeout(function() {
-            giftBox.position = new BABYLON.Vector3(crates[2].position.x, crates[2].position.y, crates[2].position.z);
+            giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
             giftBox.visibility = 1;
         }, 8000);
 
@@ -1084,7 +1080,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 hit.pickedMesh.scaling.z -= 0.02;
 
                 if (hit.pickedMesh.scaling.y <= 0.9) {
-                    if (hit.pickedMesh.name == 'crate1') {
+                    if (hit.pickedMesh.name == 'crate0') {
                         clearInterval(timeCount);
                         textEndGame.text = 'Congratulation\nYou have found a gift box!\nYour ' + textTime.text;
                         gameStop = true;
@@ -1094,9 +1090,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             btnContinue.isVisible = true;
                         }, 5000);
                     }
-                    else {
-                        explosion.play();
-                    }
+                    explosion.play();
                     hit.pickedMesh.dispose();
                     const index = crates.indexOf(hit.pickedMesh);
                     crates.splice(index, 1);
@@ -1207,13 +1201,13 @@ window.addEventListener('DOMContentLoaded', function () {
             crate.position.z = rand() * 50;
         }
 
-        crate = BABYLON.MeshBuilder.CreateBox("crate", {size: 8}, scene);  
+        crate = BABYLON.MeshBuilder.CreateBox("crate0", {size: 8}, scene);  
         crate.checkCollisions = true;
         cratePosition(crate);
-        crates = [crate];
+        let crates = [crate];
 
-        for (let i = 0; i < 4; ++i) {
-            let b = crate.clone("crate" + i);
+        for (let i = 0; i < 4; i++) {
+            let b = crate.clone("crate" + (i + 1));
             cratePosition(b)
             crates.push(b);
         }  
@@ -1224,9 +1218,6 @@ window.addEventListener('DOMContentLoaded', function () {
         
         crates.forEach(crate => {
             crate.material = crateMaterial;
-        });
-
-        crates.forEach(crate => {
             crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
         });
 
@@ -1305,12 +1296,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 menuGame.render();     // Khởi tạo lại menu mới sau khi nhấn Back        
             })                
         });
-        
+        var restartGame;
         btnRestart.onPointerClickObservable.add(function() {
             timeScoreAttack = 60;
             engine.stopRenderLoop();
             clearInterval(intervalTimeScoreAttack);
-            var restartGame = createSceneScoreAttack();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
+            restartGame = createSceneScoreAttack();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.runRenderLoop(function () {
                 advancedTexture.dispose();
                 btnBack.dispose();
@@ -1334,7 +1325,7 @@ window.addEventListener('DOMContentLoaded', function () {
         giftBox.visibility = 0;                     
         giftBox.isPickable = false;
         setTimeout(function() {
-            giftBox.position = new BABYLON.Vector3(crates[2].position.x, crates[2].position.y, crates[2].position.z);
+            giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
             giftBox.visibility = 1;
         }, 5000);
 
@@ -1361,7 +1352,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
                 }	          
             }	
-        };
+        };        
 
         function castRay(){       
             var origin = tank.position;
@@ -1404,9 +1395,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
                         crates.forEach(crate => {
                             crate.material = crateMaterial;
-                        });
-
-                        crates.forEach(crate => {
                             crate.physicsImpostor = new BABYLON.PhysicsImpostor(crate, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 1, restitution: 0.9});
                         });
 
@@ -1443,7 +1431,6 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
             map[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
-
 
         /****************************Move Tank*****************************/
 
@@ -1492,6 +1479,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             )
         )
+
         scene.actionManager.registerAction(
         new BABYLON.ExecuteCodeAction(
             {
