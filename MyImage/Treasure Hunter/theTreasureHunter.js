@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Time variable of battle tank
     var timeBattleTank;
-
+    var intervalTimeBattleTank;
     // Light and camera variables
     var light, camera;
     
@@ -635,15 +635,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
             btnTimeRush.onPointerClickObservable.add(function() {       
                 timeRush = 0;     
-                clearInterval(intervalTimeScoreAttack);       
+                clearInterval(intervalTimeScoreAttack);  
+                clearInterval(intervalTimeBattleTank);    
                 change(1);
             })
             btnScoreAttack.onPointerClickObservable.add(function(){     
                 timeScoreAttack = 60;
+                clearInterval(intervalTimeBattleTank);
                 change(2);
             })
             btnBattleTank.onPointerClickObservable.add(function(){   
                 timeBattleTank = 0;
+                clearInterval(intervalTimeScoreAttack); 
                 change(3);
             })
         }
@@ -1618,7 +1621,7 @@ window.addEventListener('DOMContentLoaded', function () {
         rayHelper.attachToMesh(muzzle, localMeshDirection, localMeshOrigin, length);        
 
         //////////// TIME COUNT ///////////////
-        var timeCount = setInterval(function(){timeBattleTank++}, 1000);  
+        intervalTimeBattleTank = setInterval(function(){timeBattleTank++}, 1000);  
         
         /////////////////// CONTROL ////////////////////
         scene.actionManager = new BABYLON.ActionManager(scene);
@@ -1749,20 +1752,19 @@ window.addEventListener('DOMContentLoaded', function () {
         btnBack.onPointerClickObservable.add(function() {
             engine.stopRenderLoop();
             backgroundSong.stop();
-            clearInterval(timeCount);
+            clearInterval(intervalTimeBattleTank);
             var menuGame = createScene(); // Khởi tạo lại menu mới sau khi nhấn Back
             engine.runRenderLoop(function () {
                 advancedTexture.dispose();
                 btnBack.dispose();
-                btnContinue.dispose();
                 menuGame.render();              
             })                
         });
 
 
         btnRestart.onPointerClickObservable.add(function() {
-            time = 0;
-            clearInterval(timeCount);
+            timeBattleTank = 0;
+            clearInterval(intervalTimeBattleTank);
             var restartGame = createSceneBattleTank();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.stopRenderLoop();
             engine.runRenderLoop(function () {
@@ -1836,7 +1838,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     explosion.play();
                     enemyLength--;
                     if (enemyLength <= 0) {
-                        clearInterval(timeCount);
+                        clearInterval(intervalTimeBattleTank);
                         giftBox.visibility = 1;
                         particleSystemBlow.start();
                         setTimeout(function(){
@@ -1870,6 +1872,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             giftBox.material.diffuseColor = new BABYLON.Color3(red, green, blue);
             console.log(enemyLength);
+            
             // END GAME
             if (enemyLength <= 0) {
                 textTime.text = "You have taken the enemy power source";
