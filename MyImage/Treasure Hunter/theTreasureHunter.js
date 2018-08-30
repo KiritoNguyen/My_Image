@@ -569,7 +569,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var btnTimeRush = BABYLON.GUI.Button.CreateImageButton("btnTimeRush", "Time Rush", 
         'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/Time.png');
-        btnTimeRush.width = 0.25;
+        btnTimeRush.width = 0.27;
         btnTimeRush.height = "70px";
         btnTimeRush.cornerRadius = 20;
         btnTimeRush.color = "Orange";
@@ -581,7 +581,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var btnScoreAttack = BABYLON.GUI.Button.CreateImageButton("btnScoreAttack", "Score Attack", 
         'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/score.png');
-        btnScoreAttack.width = 0.25;
+        btnScoreAttack.width = 0.27;
         btnScoreAttack.height = "70px";
         btnScoreAttack.cornerRadius = 20;
         btnScoreAttack.color = "Orange";
@@ -594,7 +594,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var btnBattleTank = BABYLON.GUI.Button.CreateImageButton("btnBattleTank", "Battle Tank", 
         'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/tankBattle.png');
-        btnBattleTank.width = 0.25;
+        btnBattleTank.width = 0.27;
         btnBattleTank.height = "70px";
         btnBattleTank.cornerRadius = 20;
         btnBattleTank.color = "Orange";
