@@ -94,18 +94,23 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     var enemyTankCreation = function(scene) {
+        var enemyTankMaterial = new BABYLON.StandardMaterial('enemyTankMaterial', scene);
+        enemyTankMaterial.diffuseColor = BABYLON.Color3.Green();
+
         BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", 
         "Tank.babylon", scene, function (newMeshes) {
             var enemy = newMeshes[0];
             enemyList = [enemy]
             enemy.scaling = new BABYLON.Vector3(0.8, 0.8, 0.8);
             enemy.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100)
+            enemy.material = enemyTankMaterial;
             enemy.isPickable = true;
 
             for (var i = 0; i < 5; i++) {			
                 var clone = enemy.clone("newEnemy");
                 clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100);
                 clone.isPickable = true;
+                clone.material = enemyTankMaterial;
                 enemyList.push(clone);
                
             }
@@ -868,13 +873,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 };
 
                 if ((map["s"] || map["S"])) {
-                    if(pickResult.pickedPoint.z>tank.position.z)
-                        {
+                    if(pickResult.pickedPoint.z>tank.position.z) {
                             tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                             tank.position.x=(tank.position.z-b)/a;
-                        }
-                    else if(pickResult.pickedPoint.z<tank.position.z)
-                    {
+                    }
+                    else if(pickResult.pickedPoint.z<tank.position.z) {
                         tank.position.z += speed*Math.abs(Math.sin(Math.atan(a)));   
                         tank.position.x=(tank.position.z-b)/a;
                     }
@@ -883,29 +886,28 @@ window.addEventListener('DOMContentLoaded', function () {
 
             scene.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(
-                    {
-                        trigger: BABYLON.ActionManager.OnKeyDownTrigger,
-                        parameter: 'v'
-                    },
-                    function() {
-                        castRay();
-                        rayHelper.show(scene, new BABYLON.Color3.Green());
-                        gunshot.play();
-                        setTimeout(function(){rayHelper.hide()}, 100);
-                    }
-                )
+                {
+                    trigger: BABYLON.ActionManager.OnKeyDownTrigger,
+                    parameter: 'v'
+                },
+                function() {
+                    castRay();
+                    rayHelper.show(scene, new BABYLON.Color3.Green());
+                    gunshot.play();
+                    setTimeout(function(){rayHelper.hide()}, 100);
+                })
             )
             scene.actionManager.registerAction(
-            new BABYLON.ExecuteCodeAction(
+                new BABYLON.ExecuteCodeAction(
                 {
                     trigger: BABYLON.ActionManager.OnKeyDownTrigger,
                     parameter: 'e'
                 },
                 function() {
                     if(energy>0){
-                    flagEnergy=false;
-                    speed=velocity*2; 
-                    energy--;
+                        flagEnergy=false;
+                        speed=velocity*2; 
+                        energy--;
                     }
                 })
             )
@@ -1098,7 +1100,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (hit.pickedMesh.name == 'crate0') {
                         giftBox.visibility = 1;
                         clearInterval(timeCount);
-                        textEndGame.text = 'Congratulation\nYou have found a gift box!\nYour ' + textTime.text;
+                        textEndGame.text = 'Congratulation\nYou have found enemy power source!\nYour ' + textTime.text;
                         gameStop = true;
                         particleSystemBlow.start();
                         btnContinue.isVisible = true;
@@ -1134,7 +1136,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             // TIME SHOW
             if (gameStop == false)
-                textTime.text = "Time: " + Math.floor(timeRush / 60) + ":" + timeRush % 60;
+                textTime.text = "Time: " + '0' + Math.floor(timeRush / 60) + ":" + timeRush % 60;
             else if (gameStop == true) {
                 textTime.text = '';
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
@@ -1535,7 +1537,7 @@ window.addEventListener('DOMContentLoaded', function () {
             // TIME SHOW
             scoreText.text="Scores: " + score;
             energyText.text="Energy: "+ energy;
-            textTime.text="Time: "+ Math.floor(timeScoreAttack/60)+":" + timeScoreAttack%60;
+            textTime.text="Time: " + '0' + Math.floor(timeScoreAttack/60) + ":" + timeScoreAttack%60;
             if(timeScoreAttack <= 0){
                 textTime.text="Time up!\n Your score: " + score;
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
@@ -1883,7 +1885,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 speed=velocity*3;
                 particleSystemBlow.start();
             } else {
-                textTime.text = "Time: " + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
+                textTime.text = "Time: " + '0' + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
             }
                 
             // Collide with enemy
