@@ -41,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // Tank variables
     var tank, muzzleTank, muzzle;
     var enemyList=[];
+    var enemySpeed=1;
 
     // default Value of Slider variable
     var sliderValue = 20;
@@ -51,7 +52,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // Text FPS
     var txtFps;
 
-    var n = 1;
+    var n = 1;  // number of continue
 
     var tankCreation = function(scene) {
         BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
@@ -77,7 +78,7 @@ window.addEventListener('DOMContentLoaded', function () {
         var v = BABYLON.Vector3.TransformCoordinates(vector, m);
         return v;		 
     }
-    var enemySpeed=1;
+    
     var enemyTankMoving=function(enemy,enemyPos,tankPos){
         var diffX=-tankPos.x+enemyPos.x;
         var diffY=-tankPos.z+enemyPos.z;
@@ -166,7 +167,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         ///////////////////////// Skybox /////////////////////////
         skybox = BABYLON.Mesh.CreateBox("skyBox", 600.0, scene);
-        skybox.checkCollisions = true;
+        // skybox.checkCollisions = true;
         
         skybox.material = new BABYLON.StandardMaterial("skyBox", scene);
         skybox.material.backFaceCulling = false;
@@ -648,7 +649,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 case 1:            
                     advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
                 break
-                case 2:            
+                case 2:                              
                     advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene2);
                 break
                 case 3:            
@@ -975,6 +976,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         // Event button //
         btnContinue.onPointerClickObservable.add(function() {
+            particleSystemBlow.stop();
             textEndGame.text = '';
             btnContinue.isVisible = false;
             gameStop = false;
@@ -1003,8 +1005,7 @@ window.addEventListener('DOMContentLoaded', function () {
             giftBox.isPickable = false;
             setTimeout(function() {
                 giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
-                giftBox.visibility = 1;
-            }, 8000);
+            }, 6000);
         });
 
         btnBack.onPointerClickObservable.add(function() {
@@ -1048,7 +1049,6 @@ window.addEventListener('DOMContentLoaded', function () {
         giftBox.isPickable = false;
         setTimeout(function() {
             giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
-            giftBox.visibility = 1;
         }, 8000);
 
         particleSystemBlow.emitter = giftBox; // the starting object, the emitter
@@ -1096,14 +1096,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 if (hit.pickedMesh.scaling.y <= 0.9) {
                     if (hit.pickedMesh.name == 'crate0') {
+                        giftBox.visibility = 1;
                         clearInterval(timeCount);
                         textEndGame.text = 'Congratulation\nYou have found a gift box!\nYour ' + textTime.text;
                         gameStop = true;
                         particleSystemBlow.start();
-                        setTimeout(function(){
-                            particleSystemBlow.stop();
-                            btnContinue.isVisible = true;
-                        }, 5000);
+                        btnContinue.isVisible = true;
                     }
                     explosion.play();
                     hit.pickedMesh.dispose();
@@ -1340,7 +1338,6 @@ window.addEventListener('DOMContentLoaded', function () {
         giftBox.isPickable = false;
         setTimeout(function() {
             giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
-            giftBox.visibility = 1;
         }, 5000);
 
         particleSystemBlow.emitter = giftBox; // the starting object, the emitter
@@ -1391,6 +1388,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (hit.pickedMesh.scaling.y <= 0.9) {
                     countScore--;
                     if (hit.pickedMesh.name == 'crate0') {
+                        giftBox.visibility = 1;
                         score += countScore;
                         timeScoreAttack += countScore;
                         countScore += 5;
@@ -1419,7 +1417,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                         setTimeout(function() {
                             giftBox.position = new BABYLON.Vector3(crates[0].position.x, crates[0].position.y, crates[0].position.z);
-                            giftBox.visibility = 1;
+                            giftBox.visibility = 0;
                         }, 3000);
 
                     }
@@ -1723,10 +1721,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (enemyLength <= 0) {
                     clearInterval(intervalTimeBattleTank);
                     giftBox.visibility = 1;
-                    particleSystemBlow.start();
-                    setTimeout(function(){
-                        particleSystemBlow.stop();
-                    }, 5000);
                 }
                 const index = enemyList.indexOf(meshhit);
                 enemyList.splice(index, 1);            
@@ -1888,9 +1882,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 giftBox.position = new BABYLON.Vector3(tank.position.x, tank.position.y + 5, tank.position.z);
                 speed=velocity*3;
                 particleSystemBlow.start();
-                    setTimeout(function(){
-                        particleSystemBlow.stop();
-                    }, 5000);
             } else {
                 textTime.text = "Time: " + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
             }
