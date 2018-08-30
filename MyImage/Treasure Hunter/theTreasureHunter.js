@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Tank variables
     var tank, muzzleTank, muzzle;
-    var enemyList;
+    var enemyList=[];
 
     // default Value of Slider variable
     var sliderValue = 20;
@@ -77,6 +77,20 @@ window.addEventListener('DOMContentLoaded', function () {
         var v = BABYLON.Vector3.TransformCoordinates(vector, m);
         return v;		 
     }
+    var enemySpeed=1;
+    var enemyTankMoving=function(enemy,enemyPos,tankPos){
+        var diffX=-tankPos.x+enemyPos.x;
+        var diffY=-tankPos.z+enemyPos.z;
+        enemy.rotation.y=Math.atan2(diffX,diffY);
+        if(enemyPos.x-tankPos.x<20)
+            enemyPos.x+=enemySpeed;
+            else
+                enemyPos.x-=enemySpeed;
+        if(enemyPos.z-tankPos.z<20)
+            enemyPos.z+=enemySpeed;
+            else
+                enemyPos.z-=enemySpeed;
+    }
 
     var enemyTankCreation = function(scene) {
         BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", 
@@ -92,8 +106,10 @@ window.addEventListener('DOMContentLoaded', function () {
                 clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100);
                 clone.isPickable = true;
                 enemyList.push(clone);
+               
             }
         });
+        
     }
 
     var createLightAndCamera = function(scene) {
@@ -1870,6 +1886,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 textTime.text = "You have taken\nthe enemy power source";
                 textTime.color = 'blue';
                 giftBox.position = new BABYLON.Vector3(tank.position.x, tank.position.y + 5, tank.position.z);
+                speed=velocity*3;
+                particleSystemBlow.start();
+                    setTimeout(function(){
+                        particleSystemBlow.stop();
+                    }, 5000);
             } else {
                 textTime.text = "Time: " + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
             }
@@ -1902,6 +1923,11 @@ window.addEventListener('DOMContentLoaded', function () {
                         tank.position.z+=0.2;
                 }
             });
+            enemyList.forEach(enemy=>{
+                {
+                    enemyTankMoving(enemy,enemy.position,tank.position);
+                }
+            })
 
             if(flagEnergy)
                 speed = velocity;
