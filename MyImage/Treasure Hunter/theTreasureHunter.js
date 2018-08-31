@@ -627,6 +627,23 @@ window.addEventListener('DOMContentLoaded', function () {
         btnBattleTank.children[0].fontSize=40;
         btnBattleTank.children[0].fontFamily ="Jokerman";
 
+        btnTimeRush.onPointerClickObservable.add(function() {       
+            timeRush = 0;     
+            clearInterval(intervalTimeScoreAttack);  
+            clearInterval(intervalTimeBattleTank);    
+            change(1);
+        })
+        btnScoreAttack.onPointerClickObservable.add(function(){     
+            timeScoreAttack = 60;
+            clearInterval(intervalTimeBattleTank);
+            change(2);
+        })
+        btnBattleTank.onPointerClickObservable.add(function(){   
+            timeBattleTank = 0;
+            clearInterval(intervalTimeScoreAttack); 
+            change(3);
+        })
+
         advancedTexture.addControl(panel); 
         advancedTexture.addControl(btnTimeRush); 
         advancedTexture.addControl(btnScoreAttack);
@@ -661,23 +678,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene3);
                 break
             }
-
-            btnTimeRush.onPointerClickObservable.add(function() {       
-                timeRush = 0;     
-                clearInterval(intervalTimeScoreAttack);  
-                clearInterval(intervalTimeBattleTank);    
-                change(1);
-            })
-            btnScoreAttack.onPointerClickObservable.add(function(){     
-                timeScoreAttack = 60;
-                clearInterval(intervalTimeBattleTank);
-                change(2);
-            })
-            btnBattleTank.onPointerClickObservable.add(function(){   
-                timeBattleTank = 0;
-                clearInterval(intervalTimeScoreAttack); 
-                change(3);
-            })
         }
         createGUI(0);
 
@@ -686,11 +686,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
             engine.runRenderLoop(function () {         
                 switch (showScene) {
-                    case 0:                    
-                        advancedTexture.dispose();
-                        createGUI(showScene);
-                        scene.render();
-                    break
                     case 1:
                         advancedTexture.dispose();
                         createGUI(showScene);
@@ -726,7 +721,7 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.clearColor = new BABYLON.Color3.Black();
         createLightAndCamera(scene);   
 
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
         var panel = new BABYLON.GUI.StackPanel();
         panel.width = "220px";
@@ -765,13 +760,12 @@ window.addEventListener('DOMContentLoaded', function () {
         btnStart.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         btnStart.top = 20;
         advancedTexture.addControl(btnStart);
-
+        
         btnStart.onPointerClickObservable.add(function() {
             engine.stopRenderLoop();
             var game = createSceneTimeRush(); 
             engine.runRenderLoop(function () {
                 advancedTexture.dispose();
-                btnStart.dispose();
                 game.render(); // Khởi tạo mới sau khi nhấn start             
             })
         });
