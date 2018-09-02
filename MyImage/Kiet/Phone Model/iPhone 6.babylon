@@ -1,19 +1,10 @@
 {"producer":{"name":"Blender","version":"2.79 (sub 0)","exporter_version":"5.6.3","file":"iPhone_6.babylon"},
 "autoClear":true,"clearColor":[0,0,0],"ambientColor":[0,0,0],"gravity":[0,-9.81,0],
-"materials":[{"name":"iPhone_6.Plane","id":"iPhone_6.Plane","ambient":[0,0,0],"diffuse":[0.8,0.8,0.8],"specular":[1,1,1],"emissive":[0,0,0],"specularPower":64,"alpha":1,"backFaceCulling":true,"checkReadyOnlyOnce":false,"maxSimultaneousLights":4, 
-"diffuseTexture":{"name":"https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Texture%20Phone/iPhone_6_Plane_DIFFUSE.jpg","level":1,"hasAlpha":0,"coordinatesMode":0,"uOffset":0,"vOffset":0,"uScale":1,"vScale":1,"uAng":0,"vAng":0,"wAng":0,"wrapU":0,"wrapV":0,"coordinatesIndex":0}},
-{"name":"iPhone_6.Cube","id":"iPhone_6.Cube","ambient":[0,0,0],"diffuse":[0.8,0.8,0.8],"specular":[1,1,1],"emissive":[0,0,0],"specularPower":64,"alpha":1,"backFaceCulling":true,"checkReadyOnlyOnce":false,"maxSimultaneousLights":4, 
-"diffuseTexture":{"name":"https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Texture%20Phone/iPhone_6_Cube_DIFFUSE.jpg","level":1,"hasAlpha":0,"coordinatesMode":0,"uOffset":0,"vOffset":0,"uScale":1,"vScale":1,"uAng":0,"vAng":0,"wAng":0,"wrapU":0,"wrapV":0,"coordinatesIndex":0}}],
+"materials":[{"name":"iPhone_6.Cube","id":"iPhone_6.Cube","ambient":[0,0,0],"diffuse":[0.8,0.8,0.8],"specular":[1,1,1],"emissive":[0,0,0],"specularPower":64,"alpha":1,"backFaceCulling":true,"checkReadyOnlyOnce":false,"maxSimultaneousLights":4, 
+"diffuseTexture":{"name":"https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/Phone%20Model/iphone.jpg","level":1,"hasAlpha":0,"coordinatesMode":0,"uOffset":0,"vOffset":0,"uScale":1,"vScale":1,"uAng":0,"vAng":0,"wAng":0,"wrapU":0,"wrapV":0,"coordinatesIndex":0}}],
 "multiMaterials":[],
 "skeletons":[],
-"meshes":[{"name":"Plane","id":"Plane","materialId":"iPhone_6.Plane","billboardMode":0,"position":[0,-0.038,0],"rotation":[0,0,0],"scaling":[20,20,20],"isVisible":true,"freezeWorldMatrix":false,"isEnabled":true,"checkCollisions":false,"receiveShadows":false,"pickable":true,"tags":""
-,"positions":[1,0,-1,-1,0,1,-1,0,-1,1,0,1]
-,"normals":[0,1,0,0,1,0,0,1,0,0,1,0]
-,"uvs":[0,0,1,1,0,1,1,0]
-,"indices":[0,1,2,0,3,1]
-,"subMeshes":[{"materialIndex":0,"verticesStart":0,"verticesCount":4,"indexStart":0,"indexCount":6}]
-,"instances":[]}
-,{"name":"Cube","id":"Cube","materialId":"iPhone_6.Cube","billboardMode":0,"position":[-0.0113,3.9181,0.0163],"rotation":[0,0,0],"scaling":[1.863,1.863,0.1917],"isVisible":true,"freezeWorldMatrix":false,"isEnabled":true,"checkCollisions":false,"receiveShadows":false,"pickable":true,"tags":""
+"meshes":[{"name":"Cube","id":"Cube","materialId":"iPhone_6.Cube","billboardMode":0,"position":[-0.0113,3.9181,0.0163],"rotation":[0,0,0],"scaling":[1.863,1.863,0.1917],"isVisible":true,"freezeWorldMatrix":false,"isEnabled":true,"checkCollisions":false,"receiveShadows":false,"pickable":true,"tags":""
 ,"positions":[1,1.313,0,1,1.7833,1,1,1.7833,0,0.9965,1.8279,1,0.9965,1.8279,0,1,1.7833,-1,1,1.313,-1,-0.9846,1.8147,-1,-0.9659,1.3246,-1,-0.9692,1.8295,-1,-0.9862,-1.8402,1,-0.9667,-1.347,1,-0.9723,-1.8559,1,-0.9899,-1.9197,1,1,-1.3309,0,1,-0.0105,1,1,-0.0105,0
 ,-0.9833,-1.3431,-1,-0.9648,-0.0105,-1,-0.9824,-0.0105,-1,-0.9829,1.3209,-1,-1,-1.3386,-1,-1,-0.0105,0,-1,1.3168,1,-1,-0.0105,1,-0.9867,1.8897,1,-0.9692,1.8295,1,-0.9846,1.8147,1,-0.9659,1.3246,1,-0.9829,1.3209,1,-0.9967,1.8507,1,-0.9648,-0.0105,1,-0.9824,-0.0105,1,-0.9833,-1.3431,1
 ,1,-1.7915,0,1,-1.3309,1,-0.9862,-1.8402,-1,-0.9667,-1.347,-1,-0.9975,-1.8773,0,-1,-1.8222,-1,-1,-1.8222,0,0,-2.1115,0,0.5433,-2.1115,-1,0,-2.1115,-1,-0.5433,-2.1115,-1,-0.5433,-2.1115,0,0,-2.1115,1,0,1.3449,-1,0.5433,1.9105,-1,0,1.9107,-1,-0.5433,2.081,-1
@@ -248,7 +239,7 @@
 ,"instances":[]}
 ],
 "morphTargetManagers":[],
-"cameras":[{"name":"Camera","id":"Camera","position":[11.6937,4.6368,-14.9347],"rotation":[0.0624,-0.6373,0.012],"fov":0.8576,"minZ":0.1,"maxZ":100,"speed":1,"inertia":0.9,"checkCollisions":false,"applyGravity":false,"ellipsoid":[0.2,0.9,0.2],"cameraRigMode":0,"interaxial_distance":0.0637,"type":"UniversalCamera"}],"activeCamera":"Camera",
+"cameras":[{"name":"Camera","id":"Camera","position":[8.153,5.4671,18.8911],"rotation":[0.1044,-2.7088,0.0119],"fov":0.8576,"minZ":0.1,"maxZ":100,"speed":1,"inertia":0.9,"checkCollisions":false,"applyGravity":false,"ellipsoid":[0.2,0.9,0.2],"cameraRigMode":0,"interaxial_distance":0.0637,"type":"UniversalCamera"}],"activeCamera":"Camera",
 "lights":[{"name":"Lamp","id":"Lamp","type":0,"position":[0.0295,5.9039,-8.3361],"intensity":1,"diffuse":[1,1,1],"specular":[1,1,1]}],
 "shadowGenerators":[]
 }
