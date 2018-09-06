@@ -598,6 +598,20 @@ window.addEventListener('DOMContentLoaded', function () {
         advancedTexture.addControl(panelHeaderCheckBox);
         advancedTexture.addControl(panelFPS);
     }
+
+    var timeShow = function(time) {
+        if (time / 60 > 9) {
+            if (time % 60  > 9)
+                return "Time: " + Math.floor(time / 60) + ":" + time % 60;
+            else
+                return "Time: " + Math.floor(time / 60) + ":0" + time % 60;
+        } else {
+            if (time % 60 > 9)
+                return "Time: 0" + Math.floor(time / 60) + ":" + time % 60;
+            else
+                return "Time: 0" + Math.floor(time / 60) + ":0" + time % 60;
+        }
+    }
     ////////////////////////////////////////////////////////////////////////////
 
     var createScene = function () {
@@ -1169,7 +1183,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             // TIME SHOW
             if (gameStop == false)
-                textTime.text = "Time: " + '0' + Math.floor(timeRush / 60) + ":" + timeRush % 60;
+                textTime.text = timeShow(timeRush);
             else if (gameStop == true) {
                 textTime.text = '';
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
@@ -1570,8 +1584,9 @@ window.addEventListener('DOMContentLoaded', function () {
             // TIME SHOW
             scoreText.text="Scores: " + score;
             energyText.text="Energy: "+ energy;
-            textTime.text="Time: " + '0' + Math.floor(timeScoreAttack/60) + ":" + timeScoreAttack%60;
-            if(timeScoreAttack <= 0){
+            textTime.text = timeShow(timeScoreAttack);
+            
+            if (timeScoreAttack <= 0){
                 textTime.text="Time up!\n Your score: " + score;
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
                     scene.actionManager.actions.splice(i, i);
@@ -1921,7 +1936,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 speed=velocity*3;
                 particleSystemBlow.start();
             } else {
-                textTime.text = "Time: " + '0' + Math.floor(timeBattleTank / 60) + ":" + timeBattleTank % 60;
+                textTime.text = timeShow(timeBattleTank);
             }
                 
             // Collide with enemy
