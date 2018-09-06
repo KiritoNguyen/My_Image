@@ -42,6 +42,7 @@ window.addEventListener('DOMContentLoaded', function () {
     var tank, muzzleTank, muzzle;
     var enemyList=[];
     var enemySpeed=1;
+    var enemyLazerList=[];
 
     // default Value of Slider variable
     var sliderValue = 20;
@@ -79,18 +80,45 @@ window.addEventListener('DOMContentLoaded', function () {
         return v;		 
     }
     
+    var checkPosEnemy=function(enemy){
+        var temArray=[];
+        enemyList.forEach(e=>{
+            if(e.name!=enemy.name)
+                temArray.push(e);
+        })
+        temArray.forEach(e=>{
+            if(Math.sqrt(Math.pow(e.x-enemy.x,2)+Math.pow(e.z-enemy.z,2))<20)
+                return false;
+        })
+        return true;
+    }
     var enemyTankMoving=function(enemy,enemyPos,tankPos){
-        var diffX=-tankPos.x+enemyPos.x;
-        var diffY=-tankPos.z+enemyPos.z;
-        enemy.rotation.y=Math.atan2(diffX,diffY);
-        if(enemyPos.x-tankPos.x<20)
-            enemyPos.x+=enemySpeed;
-            else
-                enemyPos.x-=enemySpeed;
-        if(enemyPos.z-tankPos.z<20)
-            enemyPos.z+=enemySpeed;
-            else
-                enemyPos.z-=enemySpeed;
+        var d=Math.sqrt(Math.pow(tankPos.x-enemyPos.x,2)+Math.pow(tankPos.z-enemyPos.z,2));
+        console.log("d: "+d);
+        if(d>20)
+        // if(checkPosEnemy(enemy)==true)
+        {
+            var diffX=-tankPos.x+enemyPos.x;
+            var diffY=-tankPos.z+enemyPos.z;
+            enemy.rotation.y=Math.atan2(diffX,diffY);
+            if(enemyPos.z-tankPos.z<-20&&enemyPos.z-tankPos.z>20){
+                if(enemyPos.x-tankPos.x<-20)
+                    enemyPos.x+=enemySpeed;
+                    else if(enemyPos.x-tankPos.x>20)
+                        enemyPos.x-=enemySpeed;
+            }
+            if(enemyPos.x-tankPos.x<-20&&enemyPos.x-tankPos.x>20){
+                if(enemyPos.z-tankPos.z<-20)
+                    enemyPos.z+=enemySpeed;
+                    else if(enemyPos.z-tankPos.z>20)
+                        enemyPos.z-=enemySpeed;
+            }
+            if((enemyPos.z-tankPos.z)<20&&(enemyPos.x-tankPos.x)<20)
+                enemyLazerList.forEach(enemyLazer => {
+                    enemyLazer.visibility=1;
+                });
+            }
+            
     }
 
     var enemyTankCreation = function(scene) {
@@ -105,15 +133,26 @@ window.addEventListener('DOMContentLoaded', function () {
             enemy.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100)
             enemy.material = enemyTankMaterial;
             enemy.isPickable = true;
+            
 
             for (var i = 0; i < 5; i++) {			
-                var clone = enemy.clone("newEnemy");
+                var clone = enemy.clone("Enemy"+i);
                 clone.position = new BABYLON.Vector3(Math.random()*300 - 100, -4, Math.random()*300 - 100);
                 clone.isPickable = true;
                 clone.material = enemyTankMaterial;
                 enemyList.push(clone);
                
             }
+            enemyList.forEach(enemy=>{
+                var enemyLazer=new BABYLON.MeshBuilder.CreateCylinder("enemyLazer",{height:20,diameter:0.5},scene);
+                enemyLazer.parent=enemy;
+                enemyLazer.material=new BABYLON.StandardMaterial("enemyLazerMat",scene);
+                enemyLazer.material.diffuseColor= BABYLON.Color3.Yellow();
+                enemyLazer.rotation.x=Math.PI/2;
+                enemyLazer.position.z-=15;
+                enemyLazer.visibility=0;
+                enemyLazerList.push(enemyLazer);    
+            })
         });
         
     }
@@ -1854,6 +1893,9 @@ window.addEventListener('DOMContentLoaded', function () {
         ///////////////////////////////////////////////////////
         var red = 1, green = 0, blue = 0;
         scene.registerBeforeRender(function() {
+            enemyLazerList.forEach(enemyLazer => {
+                enemyLazer.visibility=0;
+            })    
             // Change color of gift box
             if(red > 0 && blue <= 0){
                 red -= 0.01;
@@ -1910,11 +1952,13 @@ window.addEventListener('DOMContentLoaded', function () {
                         tank.position.z+=0.2;
                 }
             });
+            
             enemyList.forEach(enemy=>{
                 {
                     enemyTankMoving(enemy,enemy.position,tank.position);
                 }
             })
+            
 
             if(flagEnergy)
                 speed = velocity;
