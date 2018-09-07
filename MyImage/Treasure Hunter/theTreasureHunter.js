@@ -33,8 +33,8 @@ window.addEventListener('DOMContentLoaded', function () {
     
     var flagEnergy=true;// check key energy
 
-    var energy=0;
-    var energyCount=setInterval(function(){energy++},2000);
+    var energy = 0;
+    var energyCount = setInterval(function(){energy++}, 2000);
     var treeList;
     var treeRootList;
 
@@ -50,9 +50,10 @@ window.addEventListener('DOMContentLoaded', function () {
     //Particle effect of giftBox
     var particleSystemBlow;
 
-    // Text FPS
-    var txtFps;
-
+    // HUD
+    var txtFps, txtTime, txtScore, txtEnergy, txtEndGame;
+    
+    var score = 0; // Score of Score Attack Mode
     var n = 1;  // number of continue
 
     var tankCreation = function(scene) {
@@ -436,10 +437,48 @@ window.addEventListener('DOMContentLoaded', function () {
         panelFPS.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
         panelFPS.background = 'blue';
 
+        var panelHUDleft = new BABYLON.GUI.StackPanel();
+        panelHUDleft.width = "100px"
+        panelHUDleft.height = "45px"
+        panelHUDleft.top = 10;
+        panelHUDleft.left = 10;
+        panelHUDleft.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        panelHUDleft.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        panelHUDleft.background = 'yellow';
+
         txtFps = new BABYLON.GUI.TextBlock()
         txtFps.color="yellow";
 
+        txtTime = new BABYLON.GUI.TextBlock();
+        txtTime.color = "white";
+        txtTime.fontSize = 40;
+        txtTime.width = '50%';
+        txtTime.top = 10;
+        txtTime.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+
+        txtEndGame = new BABYLON.GUI.TextBlock();
+        txtEndGame.color = "green";
+        txtEndGame.fontSize = 30;
+        txtEndGame.width = '55%';
+        txtEndGame.top = 10;
+        txtEndGame.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+
+        txtScore = new BABYLON.GUI.TextBlock();
+        txtScore.color = "blue";
+        txtScore.text = "Scores: " + score;
+        txtScore.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        txtScore.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+
+        txtEnergy = new BABYLON.GUI.TextBlock();
+        txtEnergy.color = "blue";
+        txtEnergy.text = "Energy: ";
+        txtEnergy.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        txtEnergy.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        txtEnergy.height = '20px';
+
         panelFPS.addControl(txtFps);
+        panelHUDleft.addControl(txtEnergy);
+        panelHUDleft.addControl(txtScore);
 
         ////////// CHECK BOX ///////////
         var panelCheckBox = new BABYLON.GUI.StackPanel();
@@ -506,7 +545,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var headerSnow = new BABYLON.GUI.TextBlock();
         headerSnow.text = "SNOW";
-        headerSnow.width = "180px";
         headerSnow.width = "140px";
         headerSnow.height = '20px';
         headerSnow.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -515,7 +553,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var headerFog = new BABYLON.GUI.TextBlock();
         headerFog.text = "FOG";
-        headerFog.width = "180px";
         headerFog.width = "140px";
         headerFog.height = '20px';
         headerFog.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -597,6 +634,9 @@ window.addEventListener('DOMContentLoaded', function () {
         advancedTexture.addControl(panelCheckBox);
         advancedTexture.addControl(panelHeaderCheckBox);
         advancedTexture.addControl(panelFPS);
+        advancedTexture.addControl(panelHUDleft);
+        advancedTexture.addControl(txtEndGame);
+        advancedTexture.addControl(txtTime);
     }
 
     var timeShow = function(time) {
@@ -736,7 +776,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var change = function(showScene) {
             engine.stopRenderLoop();
-
+            energy = 0;
+            score = 0;
             engine.runRenderLoop(function () {         
                 switch (showScene) {
                     case 1:
@@ -816,6 +857,7 @@ window.addEventListener('DOMContentLoaded', function () {
         
         btnStart.onPointerClickObservable.add(function() {
             engine.stopRenderLoop();
+            energy = 0;
             var game = createSceneTimeRush(); 
             engine.runRenderLoop(function () {
                 advancedTexture.dispose();
@@ -974,18 +1016,6 @@ window.addEventListener('DOMContentLoaded', function () {
         /////////////////////////// GUI ////////////////////////////
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        var textEndGame = new BABYLON.GUI.TextBlock();
-        textEndGame.color = "green";
-        textEndGame.fontSize = 30;
-        textEndGame.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        textEndGame.top = "15px";
-
-        var textTime = new BABYLON.GUI.TextBlock();
-        textTime.color = "white";
-        textTime.fontSize = 50;
-        textTime.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        textTime.top = "15px";
-
         var btnContinue = BABYLON.GUI.Button.CreateSimpleButton("btnContinue", "Continue?");
         btnContinue.width = 0.2;
         btnContinue.height = "40px";
@@ -1026,10 +1056,11 @@ window.addEventListener('DOMContentLoaded', function () {
         // Event button //
         btnContinue.onPointerClickObservable.add(function() {
             particleSystemBlow.stop();
-            textEndGame.text = '';
+            txtEndGame.text = '';
             btnContinue.isVisible = false;
             gameStop = false;
             timeRush = 0;
+            energy = 0;
             timeCount = setInterval(function(){timeRush++}, 1000);   
 
             Control();
@@ -1073,6 +1104,7 @@ window.addEventListener('DOMContentLoaded', function () {
         btnRestart.onPointerClickObservable.add(function() {
             timeRush = 0;
             clearInterval(timeCount);
+            energy = 0;
             var restartGame = createSceneTimeRush();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.stopRenderLoop();
             engine.runRenderLoop(function () {
@@ -1081,13 +1113,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 restartGame.render();              
             })                
         });       
-          
-        advancedTexture.addControl(textTime);
-        advancedTexture.addControl(textEndGame);   
-        advancedTexture.addControl(btnContinue); 
+           
+        
         advancedTexture.addControl(btnBack);
         advancedTexture.addControl(btnRestart);
         optionGUI(advancedTexture, scene);
+        txtScore.text = '';
+        advancedTexture.addControl(btnContinue); 
         /////////////////////////// END GUI //////////////////////////         
 
         // SET LOCATION OF GIFT BOX INSIDE CRATE           
@@ -1147,7 +1179,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (hit.pickedMesh.name == 'crate0') {
                         giftBox.visibility = 1;
                         clearInterval(timeCount);
-                        textEndGame.text = 'Congratulation\nYou have found enemy power source!\nYour ' + textTime.text;
+                        txtEndGame.text = "Congratulation\nYou have found enemy's power source!\nYour " + txtTime.text;
                         gameStop = true;
                         particleSystemBlow.start();
                         btnContinue.isVisible = true;
@@ -1181,11 +1213,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
             giftBox.material.diffuseColor = new BABYLON.Color3(red, green, blue);
 
-            // TIME SHOW
+            // HUD SHOW
+            txtEnergy.text= "Energy: " + energy;
             if (gameStop == false)
-                textTime.text = timeShow(timeRush);
+                txtTime.text = timeShow(timeRush);
             else if (gameStop == true) {
-                textTime.text = '';
+                txtTime.text = '';
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
                     scene.actionManager.actions.splice(i, i);
                 }
@@ -1294,33 +1327,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         //////////// TIME COUNT & SCORE ///////////////
         intervalTimeScoreAttack = setInterval(function(){timeScoreAttack--;},1000);
-        var score = 0; 
         var countScore = 5;
 
         /////////////////////////// GUI ////////////////////////////
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-        var textTime = new BABYLON.GUI.TextBlock();
-        textTime.color = "white";
-        textTime.fontSize = 40;
-        textTime.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        textTime.top = "15px";
-
-        var scoreText=new BABYLON.GUI.TextBlock();
-        scoreText.color="yellow";
-        scoreText.text="Scores: " + score;
-        scoreText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        scoreText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        scoreText.top = 10;
-        scoreText.left = 10;
-
-        var energyText=new BABYLON.GUI.TextBlock();
-        energyText.color="yellow";
-        energyText.text="Energy: ";
-        energyText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        energyText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        energyText.top = 50;
-        energyText.left = 10;
 
         var btnBack = BABYLON.GUI.Button.CreateSimpleButton("btnBack", "Main Menu");
         btnBack.width = 0.08;
@@ -1361,6 +1371,8 @@ window.addEventListener('DOMContentLoaded', function () {
         btnRestart.onPointerClickObservable.add(function() {
             timeScoreAttack = 60;
             engine.stopRenderLoop();
+            energy = 0;
+            score = 0;
             clearInterval(intervalTimeScoreAttack);
             var restartGame = createSceneScoreAttack();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.runRenderLoop(function () {
@@ -1370,9 +1382,6 @@ window.addEventListener('DOMContentLoaded', function () {
             })                
         });
 
-        advancedTexture.addControl(energyText);
-        advancedTexture.addControl(scoreText);
-        advancedTexture.addControl(textTime);
         advancedTexture.addControl(btnBack);
         advancedTexture.addControl(btnRestart); 
         optionGUI(advancedTexture, scene);
@@ -1581,13 +1590,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
             giftBox.material.diffuseColor = new BABYLON.Color3(red, green, blue);
 
-            // TIME SHOW
-            scoreText.text="Scores: " + score;
-            energyText.text="Energy: "+ energy;
-            textTime.text = timeShow(timeScoreAttack);
+            // HUD SHOW
+            txtScore.text= "Scores: " + score;
+            txtEnergy.text= "Energy: "+ energy;
+            txtTime.text = timeShow(timeScoreAttack);
             
-            if (timeScoreAttack <= 0){
-                textTime.text="Time up!\n Your score: " + score;
+            if (timeScoreAttack <= 0) {
+                txtTime.text = '';
+                txtEndGame.text = "Time up!\nYour score: " + score;
                 for (var i = 0; i < scene.actionManager.actions.length; i++) {
                     scene.actionManager.actions.splice(i, i);
                 }
@@ -1661,18 +1671,6 @@ window.addEventListener('DOMContentLoaded', function () {
         /////////////////////////// GUI ////////////////////////////
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        var textEndGame = new BABYLON.GUI.TextBlock();
-        textEndGame.color = "green";
-        textEndGame.fontSize = 30;
-        textEndGame.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        textEndGame.top = "15px";
-
-        var textTime = new BABYLON.GUI.TextBlock();
-        textTime.color = "white";
-        textTime.fontSize = 50;
-        textTime.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        textTime.top = "15px";
-        
         var btnBack = BABYLON.GUI.Button.CreateSimpleButton("btnBack", "Main Menu");
         btnBack.width = 0.08;
         btnBack.height = "40px";
@@ -1713,6 +1711,7 @@ window.addEventListener('DOMContentLoaded', function () {
         btnRestart.onPointerClickObservable.add(function() {
             timeBattleTank = 0;
             clearInterval(intervalTimeBattleTank);
+            energy = 0;
             var restartGame = createSceneBattleTank();   // Khởi tạo lại màn chơi mới sau khi nhấn Restart
             engine.stopRenderLoop();
             engine.runRenderLoop(function () {
@@ -1721,12 +1720,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 restartGame.render();              
             })                
         });       
-          
-        advancedTexture.addControl(textTime);
-        advancedTexture.addControl(textEndGame);   
+           
         advancedTexture.addControl(btnBack);
         advancedTexture.addControl(btnRestart);
         optionGUI(advancedTexture, scene);
+        txtScore.text = '';
         /////////////////////////// END GUI //////////////////////////         
          
         /////////////////////// GIFT BOX ////////////////////////
@@ -1928,17 +1926,19 @@ window.addEventListener('DOMContentLoaded', function () {
             giftBox.material.diffuseColor = new BABYLON.Color3(red, green, blue);
             console.log(enemyLength);
             
-            // END GAME
+            // HUD SHOW      
+            txtEnergy.text= "Energy: "+ energy;
             if (enemyLength <= 0) {
-                textTime.text = "You have taken\nthe enemy power source";
-                textTime.color = 'blue';
+                txtTime.text = '';
+                txtEndGame.text = "You have taken\nthe enemy's power source";
+                // txtTime.color = 'blue';
                 giftBox.position = new BABYLON.Vector3(tank.position.x, tank.position.y + 5, tank.position.z);
                 speed=velocity*3;
                 particleSystemBlow.start();
             } else {
-                textTime.text = timeShow(timeBattleTank);
+                txtTime.text = timeShow(timeBattleTank);
             }
-                
+
             // Collide with enemy
             enemyList.forEach(enemy => {
                 if (tank.intersectsMesh(enemy, true)) {
