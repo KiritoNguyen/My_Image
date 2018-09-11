@@ -504,6 +504,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 scene.fogEnabled = false;
         }
 
+        var isVirtualKeyboardOn = function(isChecked) {
+            if (isChecked)
+                scene.fogEnabled = true;
+            else
+                scene.fogEnabled = false;
+        }
+
         var displayMusicVolume = function(value) {
             return Math.round(value * 100) | 0;
         }
@@ -526,17 +533,20 @@ window.addEventListener('DOMContentLoaded', function () {
         environmentGroup.addCheckbox("Snow", isSnowOn, true);
         environmentGroup.addCheckbox("Fog", isFogOn, true);
 
+        var mobileGroup = new BABYLON.GUI.CheckboxGroup("Mobile");
+        mobileGroup.addCheckbox("Virtual keyboard", isVirtualKeyboardOn, true);
+
         var musicGroup = new BABYLON.GUI.SliderGroup("Audio");
         musicGroup.addSlider("Music volume", volumeMusicValue, "", 0, 1, 0.5, displayMusicVolume);
         musicGroup.addSlider("Effect sound volume", volumeEffectSoundValue, "", 0, 1, 0.2, displayEffectSoundVolume) 
        
-        var selectBox = new BABYLON.GUI.SelectionPanel("sp", [environmentGroup, musicGroup]);
+        var selectBox = new BABYLON.GUI.SelectionPanel("sp", [environmentGroup, mobileGroup, musicGroup]);
         selectBox.width = 0.16;
-        selectBox.height = 0.45;
+        selectBox.height = 0.52;
         selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
         selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         selectBox.headerColor = 'red';   
-        selectBox.labelColor = 'orange'; 
+        selectBox.labelColor = 'blue'; 
 
         advancedTexture.addControl(selectBox); 
        
@@ -660,42 +670,72 @@ window.addEventListener('DOMContentLoaded', function () {
         btnHelp.left = "600px";
 
         var panelHelp = new BABYLON.GUI.StackPanel();
-        panelHelp.width = "500px";
-        panelHelp.height = '450px';
+        panelHelp.width = "600px";
+        panelHelp.height = '400px';
         panelHelp.top = 90;
         panelHelp.isVisible = false;
         panelHelp.background = 'white';
-        panelHelp.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-        panelHelp.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
 
-        var imgKeyW = new BABYLON.GUI.Image('imgKeyW', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/W.png')
-        var imgKeyS = new BABYLON.GUI.Image('imgKeyS', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/S.png')
-        var imgKeyE = new BABYLON.GUI.Image('imgKeyE', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/E.png')
-        var imgKeyV = new BABYLON.GUI.Image('imgKeyV', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/V.png')
+        var gridHelp = new BABYLON.GUI.Grid();   
+        gridHelp.background = "orange"; 
+        panelHelp.addControl(gridHelp); 
+        
+        gridHelp.width = "600px";
+    
+        gridHelp.addColumnDefinition(0.2);
+        gridHelp.addColumnDefinition(1);
+        gridHelp.addRowDefinition(0.5);
+        gridHelp.addRowDefinition(0.5);
+        gridHelp.addRowDefinition(0.5);
+        gridHelp.addRowDefinition(0.5);
+        gridHelp.addRowDefinition(0.5);
+        gridHelp.addRowDefinition(0.5);
+
+        var imgKeyW = new BABYLON.GUI.Image('imgKeyW', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/W.png');
+        var imgKeyS = new BABYLON.GUI.Image('imgKeyS', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/S.png');
+        var imgKeyE = new BABYLON.GUI.Image('imgKeyE', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/E.png');
+        var imgKeyV = new BABYLON.GUI.Image('imgKeyV', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/V.png');
         var imgMouseMove = new BABYLON.GUI.Image('imgMouseMove', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/mouse-move.png');
 
-        var txtKeyW = new BABYLON.GUI.TextBlock('imgKeyW', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/W.png')
-        var txtKeyS = new BABYLON.GUI.Image('imgKeyS', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/S.png')
-        var txtKeyE = new BABYLON.GUI.Image('imgKeyE', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/E.png')
-        var txtKeyV = new BABYLON.GUI.Image('imgKeyV', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/V.png')
-        var txtMouseMove = new BABYLON.GUI.Image('imgMouseMove', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/fd1c55079418072fb06dc1ab7d4c7f85ce55a27b/MyImage/Kiet/instruction%20icon/mouse-move.png');
+        var txtHelp = new BABYLON.GUI.TextBlock();
+        var txtKeyW = new BABYLON.GUI.TextBlock();
+        var txtKeyS = new BABYLON.GUI.TextBlock();
+        var txtKeyE = new BABYLON.GUI.TextBlock();
+        var txtKeyV = new BABYLON.GUI.TextBlock();
+        var txtMouseMove = new BABYLON.GUI.TextBlock();
 
-        panelHelp.addControl(imgKeyW);
-        panelHelp.addControl(imgKeyS);
-        panelHelp.addControl(imgKeyE);
-        panelHelp.addControl(imgKeyV);
-        panelHelp.addControl(imgMouseMove);
-        panelHelp.addControl(txtKeyW);
-        panelHelp.addControl(txtKeyS);
-        panelHelp.addControl(txtKeyE);
-        panelHelp.addControl(txtKeyV);
-        panelHelp.addControl(txtMouseMove);
-        
-        for (var i = 0; i < 5; i++) {
-            panelHelp.children[i].width = 0.12;
-            panelHelp.children[i].height = 0.12;
-            panelHelp.children[i].horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            panelHelp.children[i].verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        txtHelp.text = "Tank Movement Instructions"
+        txtKeyW.text = "Move foward";
+        txtKeyS.text = "Move back";
+        txtKeyE.text = "Speed up";
+        txtKeyV.text = "Fire";
+        txtMouseMove.text = "Rotate tank's position";
+
+        gridHelp.addControl(imgKeyW, 1, 0);
+        gridHelp.addControl(imgKeyS, 2, 0);
+        gridHelp.addControl(imgKeyE, 3, 0);
+        gridHelp.addControl(imgKeyV, 4, 0);
+        gridHelp.addControl(imgMouseMove, 5, 0); 
+
+        gridHelp.addControl(txtHelp, 0, 1);
+        gridHelp.addControl(txtKeyW, 1, 1);
+        gridHelp.addControl(txtKeyS, 2, 1);
+        gridHelp.addControl(txtKeyE, 3, 1);
+        gridHelp.addControl(txtKeyV, 4, 1);
+        gridHelp.addControl(txtMouseMove, 5, 1);
+       
+        for (var i = 5; i < 11; i++) {
+            if (i == 5) {
+                gridHelp.children[i].fontFamily = "Algerian";
+                gridHelp.children[i].color = "red";
+                gridHelp.children[i].fontSize = "30px";
+                gridHelp.children[i].fontStyle = "bold";
+                gridHelp.children[i].textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            } else {
+                gridHelp.children[i].fontSize = "30px";
+                gridHelp.children[i].color = "black";
+                gridHelp.children[i].fontStyle = "italic";
+            }
         }
 
         btnTimeRush.onPointerClickObservable.add(function() {       
@@ -716,9 +756,9 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         var clicksHelp = 0;
         btnHelp.onPointerClickObservable.add(function(){   
-            if (clicksHelp % 2 == 0)
+            if (clicksHelp % 2 == 0) 
                 panelHelp.isVisible = true;
-            else
+            else 
                 panelHelp.isVisible = false;
             clicksHelp++;
         })
@@ -728,7 +768,7 @@ window.addEventListener('DOMContentLoaded', function () {
         advancedTexture.addControl(btnScoreAttack);
         advancedTexture.addControl(btnBattleTank);
         advancedTexture.addControl(btnHelp);
-        advancedTexture.addControl(panelHelp);
+        advancedTexture.addControl(panelHelp);     
 
         // Background Song
         backgroundSong = new BABYLON.Sound('backgroundSong', 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/05%20-%20Calderock%20Village%20(SEA).mp3', scene, null, {loop: true, autoplay: true});           
