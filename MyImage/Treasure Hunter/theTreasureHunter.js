@@ -155,8 +155,29 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         }
         else{
-            enemyPos.x+=Math.random()*1-2;
-            enemyPos.z+=Math.random()*1-2;
+            var c = diffY/diffX;
+            var d = tankPos.z-c*tankPos.x;
+            if(enemyPos.z-tankPos.z<-20)
+            {
+                enemyPos.z -= enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+                enemyPos.x=(enemyPos.z-d)/c;
+            }
+            else if(enemyPos.z-tankPos.z>20)
+            {
+            enemyPos.z += enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+            enemyPos.x=(enemyPos.z-d)/c;
+            }
+            if(enemyPos.z-tankPos.z>-20&&enemyPos.z-tankPos.z<20){
+                if(enemyPos.x-tankPos.x<-20)    
+                {
+                    enemyPos.x -= enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+                    //enemyPos.z=(enemyPos.x-d)/c;
+                }
+                else if(enemyPos.x-tankPos.x>20){
+                    enemyPos.x += enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+                //enemyPos.z=(enemyPos.x-d)/c;
+                }
+            }
         }
         var check=checkPosEnemy(enemy);
         console.log(check);
