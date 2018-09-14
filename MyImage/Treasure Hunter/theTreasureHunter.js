@@ -89,10 +89,13 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         var count=0;
         temArray.forEach(e=>{
+            if(enemy.State=='noIn')
             if(enemy.intersectsMesh(e,true))
             {
                 console.log("intersect");
                 count++;
+                enemy.State='inIn';
+                setTimeout(function(){enemy.State='noIn'},1000);
             }
         })
         if(count>=1)
@@ -125,7 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
         //     }
             
         // }
-        if(checkPosEnemy(enemy))
+        if(checkPosEnemy(enemy)&&enemy.State=='noIn')
         {
             var c = diffY/diffX;
             var d = tankPos.z-c*tankPos.x;
@@ -181,7 +184,7 @@ window.addEventListener('DOMContentLoaded', function () {
         //         }
         //     // }
         // }
-        if(dd<=20)
+        if(dd<=30)
         enemyLazerList.forEach(enemyLazer => {
             enemyLazer.visibility=1;
         });
@@ -218,6 +221,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 enemyLazer.position.z-=15;
                 enemyLazer.visibility=0;
                 enemyLazerList.push(enemyLazer);    
+                enemy.State='noIn';
             })
         });
         
@@ -1041,6 +1045,21 @@ window.addEventListener('DOMContentLoaded', function () {
             scene.registerAfterRender(function () {
                 camera.setTarget(tank.position);
                 if ((map["w"] || map["W"])) {
+                    {
+                        pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                        var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                        var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                        direction.x = diffX;
+                        direction.y = diffY;
+                        
+                        if (pickResult.hit) {
+                            tank.rotation.y = Math.atan2(diffX, diffY);	
+                            if(diffX != 0) {
+                                a = diffY/diffX;
+                                b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                            }	          
+                        }	
+                    };
                     if(pickResult.pickedPoint.z > tank.position.z)
                     {
                         tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
@@ -1055,6 +1074,21 @@ window.addEventListener('DOMContentLoaded', function () {
                 };
 
                 if ((map["s"] || map["S"])) {
+                    {
+                        pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                        var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                        var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                        direction.x = diffX;
+                        direction.y = diffY;
+                        
+                        if (pickResult.hit) {
+                            tank.rotation.y = Math.atan2(diffX, diffY);	
+                            if(diffX != 0) {
+                                a = diffY/diffX;
+                                b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                            }	          
+                        }	
+                    };
                     if(pickResult.pickedPoint.z>tank.position.z) {
                             tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                             tank.position.x=(tank.position.z-b)/a;
@@ -1598,6 +1632,21 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.registerAfterRender(function () {
             camera.setTarget(tank.position);
             if ((map["w"] || map["W"])) {
+                {
+                    pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                    direction.x = diffX;
+                    direction.y = diffY;
+                    
+                    if (pickResult.hit) {
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
+                        if(diffX != 0) {
+                            a = diffY/diffX;
+                            b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                        }	          
+                    }	
+                };
                 if(pickResult.pickedPoint.z > tank.position.z)
                 {
                     tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
@@ -1613,6 +1662,21 @@ window.addEventListener('DOMContentLoaded', function () {
             };
 
             if ((map["s"] || map["S"])) {
+                {
+                    pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                    direction.x = diffX;
+                    direction.y = diffY;
+                    
+                    if (pickResult.hit) {
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
+                        if(diffX != 0) {
+                            a = diffY/diffX;
+                            b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                        }	          
+                    }	
+                };
                 if(pickResult.pickedPoint.z>tank.position.z)
                 {
                     tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
@@ -1938,6 +2002,21 @@ window.addEventListener('DOMContentLoaded', function () {
         scene.registerAfterRender(function () {
             camera.setTarget(tank.position);
             if (map["w"] || map["W"]) {
+                {
+                    pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                    direction.x = diffX;
+                    direction.y = diffY;
+                    
+                    if (pickResult.hit) {
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
+                        if(diffX != 0) {
+                            a = diffY/diffX;
+                            b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                        }	          
+                    }	
+                };
                 if(pickResult.pickedPoint.z > tank.position.z) {
                     tank.position.z +=speed*Math.abs(Math.sin(Math.atan(a)));
                     tank.position.x=(tank.position.z-b)/a;
@@ -1949,6 +2028,21 @@ window.addEventListener('DOMContentLoaded', function () {
             };
 
             if (map["s"] || map["S"]) {
+                {
+                    pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                    var diffX = -pickResult.pickedPoint.x + tank.position.x;
+                    var diffY = -pickResult.pickedPoint.z + tank.position.z;
+                    direction.x = diffX;
+                    direction.y = diffY;
+                    
+                    if (pickResult.hit) {
+                        tank.rotation.y = Math.atan2(diffX, diffY);	
+                        if(diffX != 0) {
+                            a = diffY/diffX;
+                            b = pickResult.pickedPoint.z-a*pickResult.pickedPoint.x;
+                        }	          
+                    }	
+                };
                 if(pickResult.pickedPoint.z>tank.position.z) {
                     tank.position.z -= speed*Math.abs(Math.sin(Math.atan(a)));
                     tank.position.x=(tank.position.z-b)/a;
@@ -2060,6 +2154,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         tank.position.z+=0.2;
                 }
             });
+            
             
             enemyList.forEach(enemy=>{
                 {
