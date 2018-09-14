@@ -87,41 +87,106 @@ window.addEventListener('DOMContentLoaded', function () {
             if(e.name!=enemy.name)
                 temArray.push(e);
         })
+        var count=0;
         temArray.forEach(e=>{
-            if(Math.sqrt(Math.pow(e.x-enemy.x,2)+Math.pow(e.z-enemy.z,2))<20)
-                return false;
+            if(enemy.intersectsMesh(e,true))
+            {
+                console.log("intersect");
+                count++;
+            }
         })
-        return true;
+        if(count>=1)
+            return false;
+            else
+                return true;
     }
+
     var enemyTankMoving=function(enemy,enemyPos,tankPos){
-        var d=Math.sqrt(Math.pow(tankPos.x-enemyPos.x,2)+Math.pow(tankPos.z-enemyPos.z,2));
-        console.log("d: "+d);
-        if(d>20)
+        var dd=Math.sqrt(Math.pow(tankPos.x-enemyPos.x,2)+Math.pow(tankPos.z-enemyPos.z,2));
+        //console.log("d: "+d);
+        // if(d>20)
         // if(checkPosEnemy(enemy)==true)
-        {
+        //checkPosEnemy(enemy);
+        // {
             var diffX=-tankPos.x+enemyPos.x;
             var diffY=-tankPos.z+enemyPos.z;
             enemy.rotation.y=Math.atan2(diffX,diffY);
-            if(enemyPos.z-tankPos.z<-20&&enemyPos.z-tankPos.z>20){
-                if(enemyPos.x-tankPos.x<-20)
-                    enemyPos.x+=enemySpeed;
-                    else if(enemyPos.x-tankPos.x>20)
-                        enemyPos.x-=enemySpeed;
+        //     if(enemyPos.z-tankPos.z<-20&&enemyPos.z-tankPos.z>20){
+        //         if(enemyPos.x-tankPos.x<-20)
+        //             enemyPos.x+=enemySpeed;
+        //             else if(enemyPos.x-tankPos.x>20)
+        //                 enemyPos.x-=enemySpeed;
+        //     }
+        //     if(enemyPos.x-tankPos.x<-20&&enemyPos.x-tankPos.x>20){
+        //         if(enemyPos.z-tankPos.z<-20)
+        //             enemyPos.z+=enemySpeed;
+        //             else if(enemyPos.z-tankPos.z>20)
+        //                 enemyPos.z-=enemySpeed;
+        //     }
+            
+        // }
+        if(checkPosEnemy(enemy))
+        {
+            var c = diffY/diffX;
+            var d = tankPos.z-c*tankPos.x;
+            if(enemyPos.z-tankPos.z<-20)
+            {
+                enemyPos.z += enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+                enemyPos.x=(enemyPos.z-d)/c;
             }
-            if(enemyPos.x-tankPos.x<-20&&enemyPos.x-tankPos.x>20){
-                if(enemyPos.z-tankPos.z<-20)
-                    enemyPos.z+=enemySpeed;
-                    else if(enemyPos.z-tankPos.z>20)
-                        enemyPos.z-=enemySpeed;
+            else if(enemyPos.z-tankPos.z>20)
+            {
+            enemyPos.z -= enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+            enemyPos.x=(enemyPos.z-d)/c;
             }
-            if((enemyPos.z-tankPos.z)<20&&(enemyPos.x-tankPos.x)<20)
-                enemyLazerList.forEach(enemyLazer => {
-                    enemyLazer.visibility=1;
-                });
+            if(enemyPos.z-tankPos.z>-20&&enemyPos.z-tankPos.z<20){
+                if(enemyPos.x-tankPos.x<-20)    
+                {
+                    enemyPos.x += enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+                    //enemyPos.z=(enemyPos.x-d)/c;
+                }
+                else if(enemyPos.x-tankPos.x>20){
+                    enemyPos.x -= enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+                //enemyPos.z=(enemyPos.x-d)/c;
+                }
             }
+        }
+        else{
+            enemyPos.x+=Math.random()*1-2;
+            enemyPos.z+=Math.random()*1-2;
+        }
+        var check=checkPosEnemy(enemy);
+        console.log(check);
+        // if((check==false)){
+        //     console.log("==0");
+        //     // if(enemyPos.z-tankPos.z<-20)
+        //     // {
+        //     //     enemyPos.z -= enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+        //     //     //enemyPos.x=(enemyPos.z-d)/c;
+        //     // }
+        //     // else if(enemyPos.z-tankPos.z>20)
+        //     // {
+        //     // enemyPos.z += enemySpeed*Math.abs(Math.sin(Math.atan(c)));
+        //     // //enemyPos.x=(enemyPos.z-d)/c;
+        //     // }
+        //     // if(enemyPos.z-tankPos.z>-20&&enemyPos.z-tankPos.z<20){
+        //         if(enemyPos.x-tankPos.x<-20)    
+        //         {
+        //             enemyPos.x -= 2*enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+        //             //enemyPos.z=(enemyPos.x-d)/c;
+        //         }
+        //         else if(enemyPos.x-tankPos.x>20){
+        //             enemyPos.x += 2*enemySpeed*Math.abs(Math.cos(Math.atan(c)));
+        //         //enemyPos.z=(enemyPos.x-d)/c;
+        //         }
+        //     // }
+        // }
+        if(dd<=20)
+        enemyLazerList.forEach(enemyLazer => {
+            enemyLazer.visibility=1;
+        });
             
     }
-
     var enemyTankCreation = function(scene) {
         var enemyTankMaterial = new BABYLON.StandardMaterial('enemyTankMaterial', scene);
         enemyTankMaterial.diffuseColor = BABYLON.Color3.Green();
