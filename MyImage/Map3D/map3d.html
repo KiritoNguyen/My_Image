@@ -1,0 +1,137 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>MAP 2D</title>
+    <script src="https://cdn-webgl.eegeo.com/eegeojs/early_access/latest/eegeo.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="map" style="width: 1280px; height: 720px;"></div>
+    <script>
+        var map = L.map('map', {
+            center: [-33.89038, 151.22419],
+            zoom: 17
+        });
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([-33.8891, 151.2253]).addTo(map);
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Map 3D</title>
+    <script src="https://cdn-webgl.wrld3d.com/wrldjs/dist/latest/wrld.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
+
+    <link href="https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/latest/css/wrld.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
+    <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/searchbar/latest/searchbar.js"></script>
+
+  </head>
+  <body>
+  <div id="content" style="position: relative">
+    <div id="widget-container" class="wrld-widget-container"></div>
+    <div id="map" style="height: 700px"></div>
+    <script>
+      var map = L.Wrld.map("map", "ea2e8c00526bebcc5457a512b9e1b65b", {
+        center: [37.791592, -122.39937],
+        zoom: 16,
+        indoorsEnabled: true,
+      });
+
+////////////////////////////// SEARCH BAR FUNCTION /////////////////////////////////
+      var searchbarConfig = {
+          apiKey: "ea2e8c00526bebcc5457a512b9e1b65b",
+          outdoorSearchMenuItems: [
+              {name: "Around Me", searchTag: "", iconKey: "aroundme"},
+              {name: "Tourism", searchTag: "tourist_info", iconKey: "tourist_info"}
+          ],
+          locationJumps: [
+              {name:"San Francisco", latLng: [37.791592, -122.39937],headingDegrees:.5},
+              {name:"Bangkok",latLng:[13.747348,100.533493],headingDegrees:44.9},
+              {name:"Chicago",latLng:[41.882276,-87.629201],headingDegrees:51.2},
+              {name:"Dundee",latLng:[56.458598,-2.969868],headingDegrees:345.1},
+              {name:"Edinburgh",latLng:[55.948991,-3.199949],headingDegrees:115.4},
+              {name:"London",latLng:[51.51122,-.081494],headingDegrees:142.1},
+              {name:"Milan",latLng:[45.474097,9.177512],headingDegrees:191},
+              {name:"New York",latLng:[40.710184,-74.012957],headingDegrees:66.1},
+              {name:"Oslo",latLng:[59.907757,10.752348],headingDegrees:59.6},
+              {name:"Vancouver",latLng:[49.289009,-123.125933]},
+              {name:"Allianz Sydney (Non-3D Map)",latLng:[-33.89038, 151.22419]}
+          ]
+      };
+      var searchbar = new WrldSearchbar("widget-container", map, searchbarConfig);
+      searchbar.on("searchresultsclear", clearMarkers);
+      searchbar.on("searchresultsupdate", addSearchResultMarkers);
+      searchbar.on("searchresultselect", openSelectedResultPopup);
+
+      var markers = [];
+
+      function clearMarkers() {
+          markers.forEach(function(marker) { marker.remove(); });
+      }
+
+      function addSearchResultMarkers(event) {
+          clearMarkers();
+          for (var poiId in event.results) {
+              var result = event.results[poiId];
+              var marker = L.marker(result.location.latLng, { title: result.title });
+              marker.addTo(map);
+              markers.push(marker);
+          }
+      }
+
+      function openSelectedResultPopup(event) {
+          map.openPopup(event.result.title, event.result.location.latLng);
+      }
+/////////////////////////////////////////////////////////////////////////////////
+
+      var times = [L.Wrld.themes.time.Dawn, L.Wrld.themes.time.Day, L.Wrld.themes.time.Dusk, L.Wrld.themes.time.Night];
+      var timeIndex = 0;
+      setInterval(function() {
+        map.themes.setTime(times[timeIndex]);
+        timeIndex = (timeIndex + 1) % times.length;
+      }, 10000);
+
+      var weathers = [L.Wrld.themes.weather.Clear, L.Wrld.themes.weather.Overcast, L.Wrld.themes.weather.Rainy, L.Wrld.themes.weather.Snowy];
+      var weatherIndex = 2;
+      setInterval(function() {
+        map.themes.setWeather(weathers[weatherIndex]);
+        weatherIndex = (weatherIndex + 1) % weathers.length;
+      }, 5000);
+
+      var cacheCompleteCallback = function(success) {
+        if (success) {
+          console.log("Caching complete");
+        } else {
+          console.log("Caching failed");
+        }
+      }
+      map.precacheWithDetailedResult([37.7952, -122.4028], 2000, cacheCompleteCallback); //cache a 2000 meter radius around this point
+      map.precacheWithDetailedResult([13.747348,100.533493], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([41.882276,-87.629201], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([56.458598,-2.969868], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([55.948991,-3.199949], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([51.51122,-.081494], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([45.474097,9.177512], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([40.710184,-74.012957], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([59.907757,10.752348], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([49.289009,-123.125933], 2000, cacheCompleteCallback);
+      map.precacheWithDetailedResult([-33.89038, 151.22419], 2000, cacheCompleteCallback);
+
+      var indoorControl = new WrldIndoorControl("widget-container", map);
+    </script>
+
+  </div>
+  </body>
+</html>
