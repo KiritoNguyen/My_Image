@@ -68,11 +68,17 @@
             var manager = new BABYLON.GUI.GUI3DManager(scene);
         
             var btnStadium = new BABYLON.GUI.Button3D("Allianz Sydney Stadium");
+            var txtStadium = new BABYLON.GUI.TextBlock();
+            txtStadium.text = "Allianz Sydney Stadium";
+            txtStadium.color = "white";
+            txtStadium.fontSize = 24;
+            btnStadium.content = txtStadium; 
             manager.addControl(btnStadium);
             btnStadium.scaling.x=10;
             btnStadium.scaling.y=10;
             btnStadium.linkToTransformNode(loStadium);
             btnStadium.onPointerClickObservable.add(function(){
+                manager.dispose();
                 var scene1=createStadium();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -244,6 +250,7 @@
             button.background = "green";
             advancedTexture.addControl(button);
             button.onPointerClickObservable.add(function(){
+                advancedTexture.dispose();
                 var scene1=createScene();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function() {               
