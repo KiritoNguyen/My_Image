@@ -42,11 +42,34 @@
     <script>
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+
+        var createBtnClose = function() {
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
+            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
+            button.width = "40px";
+            button.height ="40px";
+            button.color = "white";
+            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            button.background = "green";
+            advancedTexture.addControl(button);
+            button.onPointerClickObservable.add(function(){
+                advancedTexture.dispose();
+                var scene1 = createScene();
+                engine.stopRenderLoop();
+                engine.runRenderLoop(function () {               
+                    scene1.render();
+                })
+            })
+        }
+
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  -Math.PI, 150, BABYLON.Vector3.Zero(), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  -Math.PI, 100, BABYLON.Vector3.Zero(), scene);
             camera.target=new BABYLON.Vector3.Zero();
             camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 50;
+            camera.upperRadiusLimit = 150; 
             // camera.inputs.attached.mousewheel.detachControl(canvas);
             
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 100, -100), scene);
@@ -59,10 +82,10 @@
             groundMaterial.specularTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/SpecularMap.png', scene);
             groundMaterial.ambientTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/AmbientOcclusionMap.png', scene);
             ground.material = groundMaterial;
-            ground.position.y=-10;
+            ground.position.y=-20;
 
-            var loStadium=new BABYLON.Mesh.CreateBox("slStadium",0,scene);
-            loStadium.visibility=0;
+            var loStadium=new BABYLON.Mesh.CreateBox("slStadium", 1, scene);
+            loStadium.visibility=1;
             loStadium.rotation.x=Math.PI/2;
 
             var manager = new BABYLON.GUI.GUI3DManager(scene);
@@ -239,6 +262,7 @@
                 },
                 scene
             );
+<<<<<<< HEAD
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         
             var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
@@ -257,6 +281,9 @@
                     scene1.render();
                 })
             })
+=======
+            createBtnClose();
+>>>>>>> 137d43acc75dc0626fc3d49cc4538799e4923ffc
             return scene;
         }
 
@@ -275,24 +302,8 @@
                     size: 50
                 },
                 scene
-            );
-            
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");       
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            );  
+            createBtnClose();
             return scene;
         }
 
@@ -312,23 +323,7 @@
                 },
                 scene
             );
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            createBtnClose();
             return scene;
         }
 
@@ -348,23 +343,7 @@
                 },
                 scene
             );
-
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");    
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            createBtnClose();
             return scene;
         }
 
@@ -384,23 +363,7 @@
                 },
                 scene
             );
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+
             return scene;
         }
 
@@ -420,23 +383,7 @@
                 },
                 scene
             );
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            createBtnClose();
             return scene;
         }
 
@@ -456,23 +403,7 @@
                 },
                 scene
             );
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            createBtnClose();
             return scene;
         }
 
@@ -492,23 +423,7 @@
                 },
                 scene
             );
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        
-            var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X", "textures/grass.png");
-            button.width = "40px";
-            button.height ="40px";
-            button.color = "white";
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            button.background = "green";
-            advancedTexture.addControl(button);
-            button.onPointerClickObservable.add(function(){
-                var scene1=createScene();
-                engine.stopRenderLoop();
-                engine.runRenderLoop(function () {               
-                    scene1.render();
-                })
-            })
+            createBtnClose();
             return scene;
         }
         var scene = createScene();
