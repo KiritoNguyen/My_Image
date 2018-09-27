@@ -44,36 +44,35 @@
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  -Math.PI, 150, BABYLON.Vector3.Zero(), scene);
             camera.target=new BABYLON.Vector3.Zero();
-            // camera.attachControl(canvas, true);
+            camera.attachControl(canvas, true);
             // camera.inputs.attached.mousewheel.detachControl(canvas);
             
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 100, -100), scene);
 
-            var ground = new BABYLON.MeshBuilder.CreatePlane('ground', {width: 50, height: 25}, scene);
-            ground.position.z=20;
-            // ground.rotation.x=+Math.PI/2;
-            ground.material = new BABYLON.StandardMaterial('groundMaterial', scene);
-            ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/stadium.jpg', scene);
-            ground.material.backFaceCulling = false;
+            // Ground
+            var ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", 'https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/DisplacementMap.png', 200, 200, 200, 0, 10, scene, false);
+            var groundMaterial = new BABYLON.StandardMaterial("groundMat", scene)
+            groundMaterial.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/stadium_up.png", scene);
+            groundMaterial.bumpTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/NormalMap.png', scene);
+            groundMaterial.specularTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/SpecularMap.png', scene);
+            groundMaterial.ambientTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Nhan/AmbientOcclusionMap.png', scene);
+            ground.material = groundMaterial;
+            ground.position.y=-10;
 
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            var loStadium=new BABYLON.Mesh.CreateBox("slStadium",0,scene);
+            loStadium.visibility=0;
+            loStadium.rotation.x=Math.PI/2;
+
+            var manager = new BABYLON.GUI.GUI3DManager(scene);
         
-            var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("but", "Allianz Sydney Stadium");
-            btnStadium.width = "50px";
-            btnStadium.height = "50px";
-            btnStadium.children[0].fontSize = 11;
-            btnStadium.color = "white";
-            btnStadium.background = "green";
-            btnStadium.cornerRadius = 180;
-            btnStadium.verticalAlignment=BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            btnStadium.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            btnStadium.left = '32%';
-            btnStadium.top = '31%';
-            advancedTexture.addControl(btnStadium);
+            var btnStadium = new BABYLON.GUI.Button3D("Allianz Sydney Stadium");
+            manager.addControl(btnStadium);
+            btnStadium.scaling.x=10;
+            btnStadium.scaling.y=10;
+            btnStadium.linkToTransformNode(loStadium);
             btnStadium.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createStadium();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -81,10 +80,9 @@
                 })
             })
 
-            var btnParking = BABYLON.GUI.Button.CreateSimpleButton("but", "Parking");
+            var btnParking = new BABYLON.GUI.Button3D( "Parking");
             btnParking.width = "50px";
             btnParking.height = "50px";
-            btnParking.children[0].fontSize = 11;
             btnParking.color = "white";
             btnParking.background = "green";
             btnParking.cornerRadius = 180;
@@ -92,9 +90,8 @@
             btnParking.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnParking.left='35%';
             btnParking.top='60%';
-            advancedTexture.addControl(btnParking);
+            manager.addControl(btnParking);
             btnParking.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createParking();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -102,10 +99,9 @@
                 })
             })
             
-            var btnNationalLeague = BABYLON.GUI.Button.CreateSimpleButton("but", "National League");
+            var btnNationalLeague = new BABYLON.GUI.Button3D( "National League");
             btnNationalLeague.width = "60px";
             btnNationalLeague.height = "50px";
-            btnNationalLeague.children[0].fontSize = 11;
             btnNationalLeague.color = "white";
             btnNationalLeague.background = "green";
             btnNationalLeague.cornerRadius = 180;
@@ -113,9 +109,8 @@
             btnNationalLeague.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnNationalLeague.left='47%';
             btnNationalLeague.top='60%';
-            advancedTexture.addControl(btnNationalLeague);
+            manager.addControl(btnNationalLeague);
             btnNationalLeague.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createNationalLeague();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -123,10 +118,9 @@
                 })
             })
 
-            var btnLake = BABYLON.GUI.Button.CreateSimpleButton("but", "Kippax Lake");
+            var btnLake = new BABYLON.GUI.Button3D("Kippax Lake");
             btnLake.width = "50px";
             btnLake.height = "50px";
-            btnLake.children[0].fontSize = 11;
             btnLake.color = "white";
             btnLake.background = "green";
             btnLake.cornerRadius = 180;
@@ -134,9 +128,8 @@
             btnLake.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnLake.left='72%';
             btnLake.top = '58%';
-            advancedTexture.addControl(btnLake);
+            manager.addControl(btnLake);
             btnLake.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createLake();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -144,10 +137,9 @@
                 })
             })
 
-            var btnStadiumSportsPhysiotherapy = BABYLON.GUI.Button.CreateSimpleButton("but", "Stadium Sports Physiotherapy");
+            var btnStadiumSportsPhysiotherapy = new BABYLON.GUI.Button3D("Stadium Sports Physiotherapy");
             btnStadiumSportsPhysiotherapy.width = "80px";
             btnStadiumSportsPhysiotherapy.height = "50px";
-            btnStadiumSportsPhysiotherapy.children[0].fontSize = 11;
             btnStadiumSportsPhysiotherapy.color = "white";
             btnStadiumSportsPhysiotherapy.background = "green";
             btnStadiumSportsPhysiotherapy.cornerRadius = 180;
@@ -155,9 +147,8 @@
             btnStadiumSportsPhysiotherapy.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnStadiumSportsPhysiotherapy.left='19%';
             btnStadiumSportsPhysiotherapy.top = '45%';
-            advancedTexture.addControl(btnStadiumSportsPhysiotherapy);
+            manager.addControl(btnStadiumSportsPhysiotherapy);
             btnStadiumSportsPhysiotherapy.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createStadiumSportsPhysiotherapy();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -165,10 +156,9 @@
                 })
             })
 
-            var btnGateACricket = BABYLON.GUI.Button.CreateSimpleButton("but", "Gate A");
+            var btnGateACricket = new BABYLON.GUI.Button3D("Gate A");
             btnGateACricket.width = "60px";
             btnGateACricket.height = "50px";
-            btnGateACricket.children[0].fontSize = 11;
             btnGateACricket.color = "white";
             btnGateACricket.background = "green";
             btnGateACricket.cornerRadius = 180;
@@ -176,9 +166,8 @@
             btnGateACricket.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnGateACricket.left='72%';
             btnGateACricket.top = '30%';
-            advancedTexture.addControl(btnGateACricket);
+            manager.addControl(btnGateACricket);
             btnGateACricket.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createGateACricket();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -186,10 +175,9 @@
                 })
             })
 
-            var btnSydneyCricketGround = BABYLON.GUI.Button.CreateSimpleButton("but", "Sydney Cricket Ground");
+            var btnSydneyCricketGround = new BABYLON.GUI.Button3D("Sydney Cricket Ground");
             btnSydneyCricketGround.width = "50px";
             btnSydneyCricketGround.height = "50px";
-            btnSydneyCricketGround.children[0].fontSize = 11;
             btnSydneyCricketGround.color = "white";
             btnSydneyCricketGround.background = "green";
             btnSydneyCricketGround.cornerRadius = 180;
@@ -197,9 +185,8 @@
             btnSydneyCricketGround.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnSydneyCricketGround.left='68%';
             btnSydneyCricketGround.top = '15%';
-            advancedTexture.addControl(btnSydneyCricketGround);
+            manager.addControl(btnSydneyCricketGround);
             btnSydneyCricketGround.onPointerClickObservable.add(function(){
-                advancedTexture.dispose();
                 var scene1=createSydneyCricketGround();
                 engine.stopRenderLoop();
                 engine.runRenderLoop(function () {               
@@ -207,10 +194,9 @@
                 })
             })
 
-            var btnStadiumForecourt = BABYLON.GUI.Button.CreateSimpleButton("but", "Stadium Forecourt");
+            var btnStadiumForecourt = new BABYLON.GUI.Button3D("Stadium Forecourt");
             btnStadiumForecourt.width = "60px";
             btnStadiumForecourt.height = "50px";
-            btnStadiumForecourt.children[0].fontSize = 11;
             btnStadiumForecourt.color = "white";
             btnStadiumForecourt.background = "green";
             btnStadiumForecourt.cornerRadius = 180;
@@ -218,7 +204,7 @@
             btnStadiumForecourt.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             btnStadiumForecourt.left='52%';
             btnStadiumForecourt.top = '55%';
-            advancedTexture.addControl(btnStadiumForecourt);
+            manager.addControl(btnStadiumForecourt);
             btnStadiumForecourt.onPointerClickObservable.add(function(){
                 advancedTexture.dispose();
                 var scene1=createStadiumForecourt();
