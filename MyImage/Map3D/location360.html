@@ -42,7 +42,8 @@
     <script>
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-
+        var camera;
+        
         var createBtnClose = function() {
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
             var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
@@ -67,7 +68,7 @@
 
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 3, 140, BABYLON.Vector3.Zero(), scene);
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 3, 140, BABYLON.Vector3.Zero(), scene);
             camera.target=new BABYLON.Vector3.Zero();
             camera.lowerRadiusLimit = 60;
             camera.upperRadiusLimit = 175; 
@@ -157,6 +158,42 @@
             var manager = new BABYLON.GUI.GUI3DManager(scene);
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
+            /////////////////////////////// BUTTON CAMERA /////////////////////////////////
+            var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Free Camera");
+            advancedTexture.addControl(btnChangeCamera);
+            btnChangeCamera.width = 0.08;
+            btnChangeCamera.height = "50px";
+            btnChangeCamera.cornerRadius = 20;
+            btnChangeCamera.color = "Orange";
+            btnChangeCamera.thickness = 4;
+            btnChangeCamera.background = "green";
+            btnChangeCamera.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            btnChangeCamera.top = "-10px";
+            btnChangeCamera.left = "-10px";   
+
+            var clicks = 0;
+            btnChangeCamera.onPointerClickObservable.add(function() {
+                if (clicks % 2 == 0) {
+                    camera.dispose();
+                    camera = new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(ground.position.x, ground.position.y + 40, ground.position.z - 160), scene); 
+                    btnChangeCamera.children[0].text = 'Free Camera';
+                    camera.attachControl(canvas, true);
+                }
+                else {
+                    camera.dispose();
+                    btnChangeCamera.children[0].text = 'Arc Rotate Camera';
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  Math.PI / 3, 140, BABYLON.Vector3.Zero(), scene);
+                    camera.target = new BABYLON.Vector3.Zero();
+                    camera.lowerRadiusLimit = 60;
+                    camera.upperRadiusLimit = 175; 
+                    camera.upperBetaLimit = Math.PI / 2.3;
+                    camera.attachControl(canvas, true); 
+                }
+                clicks++;
+            }); 
+
+            /////////////////////////// BUTTON LOCATION //////////////////////////
             var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");
             advancedTexture.addControl(btnStadium);
             btnStadium.width = "80px";
