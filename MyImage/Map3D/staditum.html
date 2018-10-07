@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Stadium Model 3D</title>
+
+        <!-- Babylon.js -->
+        <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="renderCanvas"></canvas>
+        <script>
+            var canvas = document.getElementById("renderCanvas"); 
+            // var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+            var engine = new BABYLON.Engine(canvas, null, false);
+            var createScene = function() {
+                scene = new BABYLON.Scene(engine);
+
+                ///////////////// LIGHT //////////////////
+                var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 200, 10), scene);
+
+                /////////////// CAMERA ///////////////
+                // var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, Math.PI / 2, 120, BABYLON.Vector3.Zero(), scene);
+                camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -20), scene)
+                // camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.speed = 20;
+                camera.attachControl(canvas, false);
+                // vrHelper = scene.createDefaultVRExperience();
+
+                /////////////////SKY BOX/////////////////
+                var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12600}, scene);
+                var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+                skyboxMaterial.backFaceCulling = false;
+                skybox.infiniteDistance = true;
+                skyboxMaterial.disableLighting = true;
+                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://raw.githubusercontent.com/BabylonJS/Website/master/Assets/skybox/TropicalSunnyDay", scene);
+                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                skybox.material = skyboxMaterial;			
+
+                //////////////// STADIUM MODEL //////////////////
+                var assetsManager = new BABYLON.AssetsManager(scene);
+                var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/StadiumExport/stadium.babylon");
+                                
+                meshTask.onSuccess = function (task) {
+                    task.loadedMeshes[0].position = new BABYLON.Vector3(0, -50, 0);
+                    task.loadedMeshes[0].addLODLevel(55, nul);
+                }	
+                
+                assetsManager.onFinish = function (tasks) {
+                    engine.runRenderLoop(function () {
+                        scene.render();
+                    });
+                };                
+                assetsManager.load();
+
+                var options = new BABYLON.SceneOptimizerOptions(30, 500);
+                options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 2.5));
+                var optimizer = new BABYLON.SceneOptimizer(scene, options);
+
+                // UI
+                var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+                var txtFps = new BABYLON.GUI.TextBlock();
+                txtFps.height = "40px";
+                txtFps.color = "red";
+                txtFps.fontSize = 16;
+                txtFps.top = 10;
+                txtFps.left = -10;
+                txtFps.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                txtFps.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                advancedTexture.addControl(txtFps);
+
+                var logText = new BABYLON.GUI.TextBlock();
+                logText.height = "40px";
+                logText.color = "red";
+                logText.fontSize = 24;
+                logText.top = 1;
+                logText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                advancedTexture.addControl(logText);
+
+                var btnOptimize = BABYLON.GUI.Button.CreateSimpleButton("btnOptimize", "Optimize");
+                advancedTexture.addControl(btnOptimize);
+                btnOptimize.width = "120px";
+                btnOptimize.height = "40px";
+                btnOptimize.background = "green";
+                btnOptimize.color = "Orange";
+                btnOptimize.cornerRadius = 20;
+                btnOptimize.thickness = 4;
+                btnOptimize.top = 10;
+                btnOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+
+                btnOptimize.onPointerClickObservable.add(function() {
+                    btnOptimize.isVisible = false;
+                    optimizer.start();
+                });
+
+                // Wiring
+                optimizer.onSuccessObservable.add(function () {
+                    logText.text = "Optimized";
+                });
+                optimizer.onFailureObservable.add(function () {
+                    logText.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
+                });
+
+                scene.registerBeforeRender(function() {
+                    txtFps.text = 'FPS: ' + engine.getFps().toFixed();
+                    if (btnOptimize.isVisible == false) {
+                        setTimeout(function(){
+                            logText.text = "";
+                            txtFps.top = 0;
+                        }, 12000)
+                    }
+                })
+
+                return scene;
+            }
+
+            var scene = createScene();
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+
+            // Resize
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+        </script>
+
+    </body>
+</html>
