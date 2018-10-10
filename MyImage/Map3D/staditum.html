@@ -119,6 +119,18 @@
                 btnOptimize.top = 10;
                 btnOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
+                var btnMoveUp = BABYLON.GUI.Button.CreateImageOnlyButton("btnMoveUp", "img/keyboard_key_up.png");
+                advancedTexture.addControl(btnMoveUp);
+                btnMoveUp.width = "120px";
+                btnMoveUp.height = "40px";
+                // btnMoveUp.background = "green";
+                // btnMoveUp.color = "Orange";
+                // btnMoveUp.cornerRadius = 20;
+                // btnMoveUp.thickness = 4;
+                // btnMoveUp.top = 10;
+                btnMoveUp.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnMoveUp.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+
                 btnOptimize.onPointerClickObservable.add(function() {
                     btnOptimize.isVisible = false;
                     optimizer.start();
