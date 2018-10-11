@@ -54,7 +54,6 @@
                 camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
                 camera.speed = 20;
                 camera.attachControl(canvas, false);
-                // vrHelper = scene.createDefaultVRExperience();
 
                 /////////////////SKY BOX/////////////////
                 // var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12600}, scene);
@@ -125,66 +124,35 @@
                 btnOptimize.top = 10;
                 btnOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
-                var btnMoveUp = BABYLON.GUI.Button.CreateImageOnlyButton("btnMoveUp", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/img/keyboard_key_up.png");
-                advancedTexture.addControl(btnMoveUp);
-                btnMoveUp.width = "100px";
-                btnMoveUp.height = "100px";
-                btnMoveUp.color = "Red";
-                btnMoveUp.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMoveUp.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                btnMoveUp.top = -200;
-                btnMoveUp.left = 200;
+                /////////////////////////////// BUTTON CAMERA /////////////////////////////////
+                var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Mobile Control");
+                advancedTexture.addControl(btnChangeCamera);
+                btnChangeCamera.width = 0.08;
+                btnChangeCamera.height = "50px";
+                btnChangeCamera.cornerRadius = 20;
+                btnChangeCamera.color = "Orange";
+                btnChangeCamera.thickness = 4;
+                btnChangeCamera.background = "green";
+                btnChangeCamera.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnChangeCamera.top = "-10px";
+                btnChangeCamera.left = "-10px";   
 
-                var btnMoveLeft = BABYLON.GUI.Button.CreateImageOnlyButton("btnMoveLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/img/keyboard_key_left.png");
-                advancedTexture.addControl(btnMoveLeft);
-                btnMoveLeft.width = "100px";
-                btnMoveLeft.height = "100px";
-                btnMoveLeft.color = "Red";
-                btnMoveLeft.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMoveLeft.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                btnMoveLeft.top = -100;
-                btnMoveLeft.left = 100;
+                btnChangeCamera.onPointerClickObservable.add(function() {
+                    camera.dispose();
+                    camera = new BABYLON.VirtualJoysticksCamera("VJC", new BABYLON.Vector3(0, 2, -10), scene);
+                    camera.inertia = 0;
+                    camera.speed = 20;
+                    camera.inputs.attached.virtualJoystick.camera.inertia = 0; 
 
-                var btnMoveDown = BABYLON.GUI.Button.CreateImageOnlyButton("btnMoveDown", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/img/keyboard_key_down.png");
-                advancedTexture.addControl(btnMoveDown);
-                btnMoveDown.width = "100px";
-                btnMoveDown.height = "100px";
-                btnMoveDown.color = "Red";
-                btnMoveDown.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMoveDown.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                btnMoveDown.top = -100;
-                btnMoveDown.left = 200;
-
-                var btnMoveRight = BABYLON.GUI.Button.CreateImageOnlyButton("btnMoveRight", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/img/keyboard_key_right.png");
-                advancedTexture.addControl(btnMoveRight);
-                btnMoveRight.width = "100px";
-                btnMoveRight.height = "100px";
-                btnMoveRight.color = "Red";
-                btnMoveRight.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMoveRight.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                btnMoveRight.top = -100;
-                btnMoveRight.left = 300;
+                    scene.activeCamera = camera;
+                    scene.activeCamera.attachControl(canvas);
+                }); 
 
                 btnOptimize.onPointerClickObservable.add(function() {
                     btnOptimize.isVisible = false;
                     optimizer.start();
                 });
-
-                // btnMoveUp.onPointerEnterObservable.add(function() {
-                //     camera.cameraDirection.z += 100;
-                // });
-
-                // btnMoveLeft.onPointerEnterObservable.add(function() {
-                //     camera.cameraDirection.x -= 100;
-                // });
-
-                // btnMoveDown.onPointerEnterObservable.add(function() {
-                //     camera.cameraDirection.z -= 100;
-                // });
-
-                // btnMoveRight.onPointerEnterObservable.add(function() {
-                //     camera.cameraDirection.x += 100;
-                // });
 
                 // Wiring
                 optimizer.onSuccessObservable.add(function () {
