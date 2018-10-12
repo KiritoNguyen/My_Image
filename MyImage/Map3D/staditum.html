@@ -67,12 +67,90 @@
                 skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
                 skybox.material = skyboxMaterial;			
 
+                ///////////////// GROUND /////////////////
+                var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+        
+                var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                dynamicMaterial.diffuseTexture = groundTexture;
+
+                var ground = BABYLON.Mesh.CreateGround("ground1", 3500, 3500, 2, scene);
+                ground.position.y = -45;
+                dynamicMaterial.diffuseTexture.hasAlpha = true;
+                ground.material = dynamicMaterial;
+
+                //////Data of Points////
+                var PointData=[];
+
+                var clearColor = "#555555";
+                var invertY = true;
+                var context = groundTexture._context;
+                var size = groundTexture.getSize();
+
+                groundTexture.update(invertY);
+        
+                PointData.forEach(p => {
+                    console.log(p);
+                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                    groundTexture.update(invertY);
+                });
+                var draw = false;
+                
+                var onPointerDown = function (evt) {
+                    draw = true;
+                    preMove.x = scene.pointerX;
+                    preMove.y = scene.pointerY;
+                };
+
+                var onPointerUp = function (evt) {
+                    draw = false;
+                };
+
+                var preMove=new BABYLON.Vector2(0,0);
+
+                var onPointerMove = function (evt) {
+                    var d = Math.sqrt((scene.pointerX-preMove.x)*(scene.pointerX-preMove.x)+(scene.pointerY-preMove.y)*(scene.pointerY-preMove.y));
+                    //console.log(Math.floor(d));
+                    if (draw && DrawMode && Math.floor(d)>15 && Math.floor(d)<25) {
+                        var pickResult = scene.pick(scene.pointerX, scene.pointerY);	
+                               
+                        var texcoords = pickResult.getTextureCoordinates();
+                        
+                        var centerX = texcoords.x * size.width;
+                        var centerY = size.height - texcoords.y * size.height;
+                        var radius = 3;
+
+                        // draw circle
+                        context.beginPath();
+                        context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                        var point=new Point(centerX,centerY);
+                        PointData.push(point);
+                        context.fillStyle = 'green';
+                        context.fill();
+                        context.lineWidth = 2;
+                        context.strokeStyle = '#00EE00';
+                        context.stroke();
+                        preMove.x=scene.pointerX;
+                        preMove.y=scene.pointerY;
+                        groundTexture.update(invertY);
+                    }
+                };
+        
+                canvas.addEventListener("pointerdown", onPointerDown, false);
+                canvas.addEventListener("pointerup", onPointerUp, false);
+                canvas.addEventListener("pointermove", onPointerMove, false);
+                
+                scene.onDispose = function () {
+                    canvas.removeEventListener("pointerdown", onPointerDown);
+                    canvas.removeEventListener("pointerup", onPointerUp);
+                    canvas.removeEventListener("pointermove", onPointerMove);
+                };
+
                 //////////////// STADIUM MODEL //////////////////
                 var assetsManager = new BABYLON.AssetsManager(scene);
                 // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/StadiumExport/stadium.babylon");
                 var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/stadium.babylon");
                 meshTask.onSuccess = function (task) {
-                    task.loadedMeshes[0].position = new BABYLON.Vector3(0, -50, 0);
+                    task.loadedMeshes[0].position = new BABYLON.Vector3(500, -50, 500);
                 }	
                 
                 assetsManager.onFinish = function (tasks) {
@@ -125,6 +203,19 @@
                 btnOptimize.top = 10;
                 btnOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
+                var btnMoveTank = BABYLON.GUI.Button.CreateSimpleButton("btnMoveTank", "Move Tank");
+                advancedTexture.addControl(btnMoveTank);
+                btnMoveTank.width = 0.08;
+                btnMoveTank.height = "50px";
+                btnMoveTank.cornerRadius = 20;
+                btnMoveTank.color = "Orange";
+                btnMoveTank.thickness = 4;
+                btnMoveTank.background = "green";
+                btnMoveTank.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnMoveTank.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnMoveTank.top = "-70px";
+                btnMoveTank.left = "-10px";   
+
                 /////////////////////////////// BUTTON CAMERA /////////////////////////////////
                 var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Mobile Control");
                 advancedTexture.addControl(btnChangeCamera);
@@ -138,6 +229,35 @@
                 btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 btnChangeCamera.top = "-10px";
                 btnChangeCamera.left = "-10px";   
+
+                //////////////////////////////////Button Draw////////////////////////////////////////
+                var btnDrawMode = BABYLON.GUI.Button.CreateSimpleButton("btnDrawMode", "Draw Route");
+                advancedTexture.addControl(btnDrawMode);
+                btnDrawMode.width = 0.08;
+                btnDrawMode.height = "50px";
+                btnDrawMode.cornerRadius = 20;
+                btnDrawMode.color = "Orange";
+                btnDrawMode.thickness = 4;
+                btnDrawMode.background = "green";
+                btnDrawMode.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnDrawMode.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnDrawMode.top = "-130px";
+                btnDrawMode.left = "-10px";   
+
+                /////////////////////////////////Button Clear/////////////////////////////////////
+                var btnClear = BABYLON.GUI.Button.CreateSimpleButton("btnClear", "Clear Route");
+                advancedTexture.addControl(btnClear);
+                btnClear.width = 0.08;
+                btnClear.height = "50px";
+                btnClear.cornerRadius = 20;
+                btnClear.color = "Orange";
+                btnClear.thickness = 4;
+                btnClear.background = "green";
+                btnClear.children[0].text = 'Clear Route';
+                btnClear.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnClear.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnClear.top = "-190px";
+                btnClear.left = "-10px";   
 
                 btnChangeCamera.onPointerClickObservable.add(function() {
                     camera.dispose();
@@ -155,7 +275,99 @@
                     optimizer.start();
                 });
 
-                // Wiring
+                btnMoveTank.onPointerDownObservable.add(function() {
+                    if(btnMoveTank.isVisible) {
+                        btnMoveTank.isVisible = false;
+                        setTimeout(function(){
+                            btnMoveTank.isVisible = true;
+                        }, 12000);
+                    }
+ 
+                    var frameRate = 60;
+                    var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);       
+                    var movein_keys = []; 
+
+                    movein_keys.push({
+                        frame: 0,
+                        value: new BABYLON.Vector3(-1800, -40, 300)
+                    });
+
+                    movein_keys.push({
+                        frame: 6 * frameRate,
+                        value: new BABYLON.Vector3(-1700, -40, -700)
+                    });
+
+                    movein_keys.push({
+                        frame: 12 * frameRate,
+                        value: new BABYLON.Vector3(-1600, -40, -1400)
+                    });
+
+                    movein.setKeys(movein_keys);
+
+                    scene.beginDirectAnimation(tank, [movein], 0, 12 * frameRate, false);
+                });
+
+                var clicksDraw = 0;
+                var DrawMode = false;
+                btnDrawMode.onPointerClickObservable.add(function() {
+                    if (clicksDraw % 2 == 0) {
+                        DrawMode = true;
+                        camera.dispose();
+                        btnDrawMode.children[0].text = 'Drawing';
+                        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                        camera.target = new BABYLON.Vector3.Zero();
+                    }
+                    else {
+                        DrawMode = false;
+                        camera.dispose();
+                        btnDrawMode.children[0].text = 'Draw Route';
+                        camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -500), scene);
+                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
+                        camera.speed = 20;
+                        camera.attachControl(canvas, false);
+                        camera.attachControl(canvas, true); 
+                    }
+                    clicksDraw++;
+                }); 
+
+                btnClear.onPointerClickObservable.add(function() {
+                    var clearColor = "#555555";
+                    var invertY = true;
+                    var context = groundTexture._context;
+                    var size = groundTexture.getSize();
+
+                    groundTexture.update(invertY);
+                }); 
+
+                function Point(_x,_y){
+                    this.x=_x;
+                    this.y=_y;
+                }
+                ///////////////////////////Draw Point/////////////////////////////////
+                var point = new Point(3,3);
+                // var PointList=[point];
+                // for(var i=0;i<3;i++){
+                //     var x=Math.random()*200+100;
+                //     var y=Math.random()*200+100;
+                //     var point=new Point(x,y);
+                //     PointList.push(point);
+                // }
+
+                var DrawOnePoint=function(groundTexture,invertY,x,y){
+                    var context = groundTexture._context;
+                    context.beginPath();
+                    context.arc(x, y, 3, 0, 2 * Math.PI, false);
+                    
+                    context.fillStyle = 'green';
+                    context.fill();
+                    context.lineWidth = 2;
+                    context.strokeStyle = '#00EE00';
+                    context.stroke();
+                    groundTexture.update(invertY);
+                }
+
+                // Writing
                 optimizer.onSuccessObservable.add(function () {
                     logText.text = "Optimized";
                 });
@@ -171,6 +383,14 @@
                             txtFps.top = 0;
                         }, 12000)
                     }
+
+                    if (btnMoveTank.isVisible == false) {
+                        camera.dispose();
+                        camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(tank.position.x, tank.position.y + 100, tank.position.z + 400), scene);
+                        camera.rotation.y = Math.PI;
+                        camera.speed = 20;
+                        camera.attachControl(canvas, false);
+                    }         
                 })
 
                 return scene;
