@@ -167,7 +167,7 @@
                 //////////////// TANK MODEL //////////////////
                 BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
                     tank = newMeshes[0];
-                    tank.position = new BABYLON.Vector3(-100, -40, -1200);
+                    tank.position = new BABYLON.Vector3(400, -40, -700);
                     tank.scaling = new BABYLON.Vector3(5, 5, 5);
                 });
                 
@@ -258,6 +258,20 @@
                 btnClear.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 btnClear.top = "-190px";
                 btnClear.left = "-10px";   
+
+                /////////////////////////////////Button Go/////////////////////////////////////
+                var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
+                advancedTexture.addControl(btnGo);
+                btnGo.width = 0.08;
+                btnGo.height = "50px";
+                btnGo.cornerRadius = 20;
+                btnGo.color = "Orange";
+                btnGo.thickness = 4;
+                btnGo.background = "green";
+                btnGo.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                btnGo.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnGo.top = "10px";
+                btnGo.left = "-10px";
 
                 btnChangeCamera.onPointerClickObservable.add(function() {
                     camera.dispose();
@@ -366,6 +380,27 @@
                     context.stroke();
                     groundTexture.update(invertY);
                 }
+
+                btnGo.onPointerDownObservable.add(function() {
+                    var count=0;
+                    var frameRate = 60;
+                    var movein_keys = []; 
+
+                    PointData.forEach(p=>{
+                        movein_keys.push({
+                            frame: count*frameRate/10,
+                            value: new BABYLON.Vector3(p.x, tank.position.y,p.y)
+                        });
+                        console.log("sphere" + tank.position+"  point"+p.x+";"+p.y);
+                        count++;
+                    })
+                    
+                    var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+                    movein.setKeys(movein_keys);
+                    scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
+                });
 
                 // Writing
                 optimizer.onSuccessObservable.add(function () {
