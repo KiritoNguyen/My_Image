@@ -43,6 +43,30 @@
             var canvas = document.getElementById("renderCanvas"); 
             // var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
             var engine = new BABYLON.Engine(canvas, null, false);
+            var camera;
+
+            var createBtnClose = function() {
+                var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
+                var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
+                button.width = "40px";
+                button.height ="40px";
+                button.top = 10;
+                button.left = -10;
+                button.color = "white";
+                button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                button.background = "green";
+                advancedTexture.addControl(button);
+                button.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1 = createScene();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+            }
+
             var createScene = function() {
                 scene = new BABYLON.Scene(engine);
 
@@ -50,11 +74,13 @@
                 var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 200, 100), scene);
 
                 /////////////// CAMERA ///////////////
-                // var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, Math.PI / 2, 120, BABYLON.Vector3.Zero(), scene);
-                camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -500), scene)
-                camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
-                camera.speed = 20;
-                camera.attachControl(canvas, false);
+                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                camera.target = new BABYLON.Vector3.Zero();
+                camera.lowerRadiusLimit = 200;
+                camera.upperRadiusLimit = 2800;      
+                camera.checkCollisions = true;
+                camera.upperBetaLimit = Math.PI / 2;
+                camera.attachControl(canvas, true); 
 
                 /////////////////SKY BOX/////////////////
                 // var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12600}, scene);
@@ -80,6 +106,54 @@
 
                 //////Data of Points////
                 var PointData=[];
+
+                var locStadium = new BABYLON.Mesh.CreateBox("locStadium", 0, scene);
+                locStadium.visibility = 0;
+                locStadium.position.x -= 100;
+                locStadium.position.z += 700;
+                locStadium.position.y -= 10;
+
+                var locParking = new BABYLON.Mesh.CreateBox("locParking", 0, scene);
+                locParking.visibility = 0;
+                locParking.position.x -= 600;
+                locParking.position.z += 900;
+                locParking.position.y -= 10;
+  
+                var locNationalLeague = new BABYLON.Mesh.CreateBox("locNationalLeague", 0, scene);
+                locNationalLeague.visibility = 0;
+                locNationalLeague.position.x -= 650;
+                locNationalLeague.position.z += 750;
+                locNationalLeague.position.y -= 10;
+                
+                var locKippaxLake = new BABYLON.Mesh.CreateBox("locKippaxLake", 0, scene);
+                locKippaxLake.visibility = 0;
+                locKippaxLake.position.x -= 920;
+                locKippaxLake.position.z += 600;
+                locKippaxLake.position.y -= 10;
+
+                var locStadiumSportsPhysiotherapy = new BABYLON.Mesh.CreateBox("locStadiumSportsPhysiotherapy", 0, scene);
+                locStadiumSportsPhysiotherapy.visibility = 0;
+                locStadiumSportsPhysiotherapy.position.x -= 300;
+                locStadiumSportsPhysiotherapy.position.z += 1100;
+                locStadiumSportsPhysiotherapy.position.y -= 10;
+
+                var locGateACricket = new BABYLON.Mesh.CreateBox("locGateACricket", 0, scene);
+                locGateACricket.visibility = 0;
+                locGateACricket.position.x -= 600;
+                locGateACricket.position.z += 0;
+                locGateACricket.position.y -= 10;
+
+                var locSydneyCricketGround = new BABYLON.Mesh.CreateBox("locSydneyCricketGround", 0, scene);
+                locSydneyCricketGround.visibility = 0;
+                locSydneyCricketGround.position.x -= 300;
+                locSydneyCricketGround.position.z -= 250
+                locSydneyCricketGround.position.y -= 10;
+
+                var locStadiumForecourt = new BABYLON.Mesh.CreateBox("locStadiumForecourt", 0, scene);
+                locStadiumForecourt.visibility = 0;
+                locStadiumForecourt.position.x -= 650;
+                locStadiumForecourt.position.z += 650;
+                locStadiumForecourt.position.y -= 10;
 
                 var clearColor = "#555555";
                 var invertY = true;
@@ -171,7 +245,8 @@
                     tank.scaling = new BABYLON.Vector3(5, 5, 5);
                 });
                 
-                // UI
+                // UI      
+                var manager = new BABYLON.GUI.GUI3DManager(scene);
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
                 var txtFps = new BABYLON.GUI.TextBlock();
@@ -179,8 +254,8 @@
                 txtFps.color = "red";
                 txtFps.fontSize = 16;
                 txtFps.top = 10;
-                txtFps.left = -10;
-                txtFps.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                txtFps.left = 10;
+                txtFps.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 txtFps.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 advancedTexture.addControl(txtFps);
 
@@ -216,8 +291,8 @@
                 btnMoveTank.top = "-70px";
                 btnMoveTank.left = "-10px";   
 
-                /////////////////////////////// BUTTON CAMERA /////////////////////////////////
-                var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Mobile Control");
+                /////////////////////////////// BUTTON MOBILE CONTROL /////////////////////////////////
+                var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Arc Rotate Camera");
                 advancedTexture.addControl(btnChangeCamera);
                 btnChangeCamera.width = 0.08;
                 btnChangeCamera.height = "50px";
@@ -226,9 +301,23 @@
                 btnChangeCamera.thickness = 4;
                 btnChangeCamera.background = "green";
                 btnChangeCamera.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 btnChangeCamera.top = "-10px";
-                btnChangeCamera.left = "-10px";   
+                btnChangeCamera.left = "10px";  
+
+                /////////////////////////////// BUTTON MOBILE CONTROL /////////////////////////////////
+                var btnMobileControl = BABYLON.GUI.Button.CreateSimpleButton("btnMobileControl", "Mobile Control");
+                advancedTexture.addControl(btnMobileControl);
+                btnMobileControl.width = 0.08;
+                btnMobileControl.height = "50px";
+                btnMobileControl.cornerRadius = 20;
+                btnMobileControl.color = "Orange";
+                btnMobileControl.thickness = 4;
+                btnMobileControl.background = "green";
+                btnMobileControl.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnMobileControl.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnMobileControl.top = "-10px";
+                btnMobileControl.left = "-10px";   
 
                 //////////////////////////////////Button Draw////////////////////////////////////////
                 var btnDrawMode = BABYLON.GUI.Button.CreateSimpleButton("btnDrawMode", "Draw Route");
@@ -273,7 +362,32 @@
                 btnGo.top = "10px";
                 btnGo.left = "-10px";
 
+                var clicks = 0;
                 btnChangeCamera.onPointerClickObservable.add(function() {
+                    if (clicks % 2 == 0) {
+                        camera.dispose();
+                        camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
+                        btnChangeCamera.children[0].text = 'Free Camera';
+                        camera.speed = 20;
+                        camera.checkCollisions = true;
+                        camera.attachControl(canvas, false);
+                    }
+                    else {
+                        camera.dispose();
+                        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                        camera.target = new BABYLON.Vector3.Zero();
+                        btnChangeCamera.children[0].text = 'Arc Rotate Camera';
+                        camera.lowerRadiusLimit = 200;
+                        camera.upperRadiusLimit = 2800;      
+                        camera.checkCollisions = true;
+                        camera.upperBetaLimit = Math.PI / 2;
+                        camera.attachControl(canvas, true); 
+                    }
+                    clicks++;
+                }); 
+
+                btnMobileControl.onPointerClickObservable.add(function() {
                     camera.dispose();
                     camera = new BABYLON.VirtualJoysticksCamera("VJC", new BABYLON.Vector3(0, 100, -500), scene);
                     camera.inertia = 0;
@@ -402,6 +516,173 @@
                     scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
                 });
 
+                /////////////////////////// BUTTON LOCATION //////////////////////////
+                var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");
+                advancedTexture.addControl(btnStadium);
+                btnStadium.width = "80px";
+                btnStadium.height = "80px";
+                btnStadium.color = "white";
+                btnStadium.background = "gray";
+                btnStadium.fontSize=15;
+                btnStadium.linkWithMesh(locStadium);   
+                btnStadium.linkOffsetY =-100;
+                btnStadium.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createStadium();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+                
+                var lineStadium = new BABYLON.GUI.Line();
+                lineStadium.lineWidth = 2;
+                lineStadium.color = "Gray";
+                lineStadium.y2 = 20;
+                lineStadium.linkOffsetY = -10;
+                advancedTexture.addControl(lineStadium);
+                lineStadium.linkWithMesh(locStadium); 
+                lineStadium.connectedControl = btnStadium; 
+                
+                var btnParking = BABYLON.GUI.Button.CreateImageOnlyButton("btnParking", "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0%0D%0AaD0iNDIuNyIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDQyLjcgNjAiPjxzdHlsZT4uc3Qwe2Zp%0D%0AbGw6IzcwNGI0M30uc3Qxe2ZpbGw6I2ZmZn08L3N0eWxlPjxnIGlkPSJwcmVjaW5jdC1lcDItZXZl%0D%0AbnQtcGFya2luZyI+PHBhdGggaWQ9InBhdGgtcHJlY2luY3QtZXAyLWV2ZW50LXBhcmtpbmciIGNs%0D%0AYXNzPSJzdDAiIGQ9Ik0yMS4zIDYwYy0uNCAwLS44LS4yLTEuMS0uNUMxOS40IDU4LjQgMCAzMi43%0D%0AIDAgMjEuMyAwIDkuNiA5LjYgMCAyMS4zIDBzMjEuMyA5LjYgMjEuMyAyMS4zYzAgMTEuNC0xOS40%0D%0AIDM3LTIwLjIgMzguMS0uMi40LS42LjYtMS4xLjZ6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTE1%0D%0ALjYgMjQuMmMtMS40IDAtMi41IDEuMS0yLjUgMi41czEuMSAyLjUgMi41IDIuNSAyLjUtMS4xIDIu%0D%0ANS0yLjVjLS4xLTEuNC0xLjItMi41LTIuNS0yLjV6bTAgMy4yYy0uNCAwLS43LS4zLS43LS43cy4z%0D%0ALS43LjctLjdjLjQgMCAuNy4zLjcuN3MtLjMuNy0uNy43eiIvPjxwYXRoIGNsYXNzPSJzdDEiIGQ9%0D%0AIk0zMy42IDI0LjZsLS40LTMuM2MtLjEtLjYtLjYtMS4xLTEuMy0xLjFIMzFsLTIuOC0yLjVjLS4z%0D%0ALS4yLS42LS40LTEtLjRoLTUuNmMtMS4zIDAtMi41LjQtMy40IDEuMkwxNS4xIDIxbC00LjIgMWMt%0D%0ALjUuMS0uOS42LS45IDEuMnYxLjJjLS4yIDAtLjMuMS0uMy4zdjEuNmMwIC4yLjIuNC40LjRoMi40%0D%0Adi0uM2MwLTEuNyAxLjQtMy4xIDMuMS0zLjFzMy4xIDEuNCAzLjEgMy4xdi4zaDYuNnYtLjNjMC0x%0D%0ALjcgMS40LTMuMSAzLjEtMy4xIDEuNyAwIDMuMSAxLjQgMy4xIDMuMXYuM2gyLjJjLjIgMCAuNC0u%0D%0AMi40LS40di0xLjVjLS4xIDAtLjMtLjItLjUtLjJ6bS04LjMtNGwtNy44LjQgMS41LTEuMmMuOC0u%0D%0ANyAxLjgtMSAyLjktMWgzLjR2MS44em0xLjMtLjF2LTEuN2guNWMuMiAwIC4zLjEuNS4ybDEuNiAx%0D%0ALjQtMi42LjF6Ii8+PHBhdGggY2xhc3M9InN0MSIgZD0iTTI4LjMgMjQuMmMtMS40IDAtMi41IDEu%0D%0AMS0yLjUgMi41czEuMSAyLjUgMi41IDIuNSAyLjUtMS4xIDIuNS0yLjUtMS4yLTIuNS0yLjUtMi41%0D%0Aem0wIDMuMmMtLjQgMC0uNy0uMy0uNy0uN3MuMy0uNy43LS43Yy40IDAgLjcuMy43LjdzLS4zLjct%0D%0ALjcuN3pNMTMuNiAxMy4xaC40Yy43IDAgMS40LS4yIDEuOC0uNi4zLS4zLjUtLjguNS0xLjNzLS4y%0D%0ALTEtLjYtMS4zYy0uNC0uMy0uOS0uNC0xLjctLjQtLjggMC0xLjMgMC0xLjcuMXY1LjVoMS4ydi0y%0D%0Aem0wLTIuNmguNWMuNiAwIDEgLjMgMSAuOCAwIC42LS40LjktMS4xLjloLS40di0xLjd6Ii8+PHBh%0D%0AdGggY2xhc3M9InN0MSIgZD0iTTExLjIgMTYuOGg2LjJjLjggMCAxLjQtLjYgMS40LTEuNFY5LjJj%0D%0AMC0uOC0uNi0xLjQtMS40LTEuNGgtNi4yYy0uOCAwLTEuNC42LTEuNCAxLjR2Ni4yYzAgLjguNyAx%0D%0ALjQgMS40IDEuNHptLS4zLTcuNWMwLS4yLjItLjQuNC0uNGg2Yy4yIDAgLjQuMi40LjR2NmMwIC4y%0D%0ALS4yLjQtLjQuNGgtNmMtLjIgMC0uNC0uMi0uNC0uNHYtNnoiLz48L2c+PC9zdmc+");
+                btnParking.color = "transparent";
+                btnParking.background = "transparent";
+                advancedTexture.addControl(btnParking);
+                btnParking.width = "60px";
+                btnParking.height = "90px";
+                btnParking.linkWithMesh(locParking);   
+                btnParking.linkOffsetY =-50;
+                btnParking.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createParking();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var btnNationalLeague = BABYLON.GUI.Button.CreateImageOnlyButton("btnNationalLeague", "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxu%0D%0Aczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgd2lkdGg9IjQyLjciIGhlaWdo%0D%0AdD0iNjAiIHZpZXdCb3g9IjAgMCA0Mi43IDYwIj48c3R5bGU+LnN0MHtmaWxsOiMwZjU3MmR9PC9z%0D%0AdHlsZT48ZyBpZD0icHJlY2luY3QtbmF0aW9uYWwtcnVnYnktbGVhZ3VlIj48cGF0aCBpZD0icGF0%0D%0AaC1wcmVjaW5jdC1uYXRpb25hbC1ydWdieS1sZWFndWUiIGNsYXNzPSJzdDAiIGQ9Ik0yMS4zIDYw%0D%0AYy0uNCAwLS44LS4yLTEuMS0uNUMxOS40IDU4LjQgMCAzMi43IDAgMjEuMyAwIDkuNiA5LjYgMCAy%0D%0AMS4zIDBzMjEuMyA5LjYgMjEuMyAyMS4zYzAgMTEuNC0xOS40IDM3LTIwLjIgMzguMS0uMi40LS42%0D%0ALjYtMS4xLjZ6Ii8+PGltYWdlIHdpZHRoPSI1MCIgaGVpZ2h0PSI2MyIgeGxpbms6aHJlZj0iZGF0%0D%0AYTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFEUUFBQUJCQ0FZQUFB%0D%0AQ2VsNGVaQUFBQUNYQklXWE1BQUJQV0FBQVQxZ0d4TmhCMUFBQUEgR1hSRldIUlRiMlowZDJGeVpR%0D%0AQkJaRzlpWlNCSmJXRm5aVkpsWVdSNWNjbGxQQUFBSE94SlJFRlVlTnJjZTNsOFZlVzE5dlB1ZmVZ%0D%0AaCBKM05JUWdZQ0lXR2VaUWd6b2xZRVJZV0wwMVY3dlZmYjZ0ZnZWMnY5dk8xbmJYdDd2MnZWMW5v%0D%0AN1haV2lMU3BJY1FKRlJCQVFBaHBDIHdwUUVRdVo1T3NrNU9mTTVlNzkzdlh1ZmhHQkIwZGI3eDdm%0D%0AemU4OCtaNDlydld1dFp6MXI3UjNnLzdPRmZlN2U3eTB3Z3ZNVU1KNU4gNnl3YW94Q0xwVU9KcFVC%0D%0AVmtta2tRWWttME5wT3d3WlZ0WUNyWmpyVEJIQURyZVhQM0lQVFVHaFRqTllSTUNrTVNRcEJrZ00w%0D%0AL0pBTiBYc2h5UDYzZDlOc0x5ZEJOeDNSQlloMlEwQTRWbmZqbDBkQ1ZLZlR3Z2xRU1pocGkwWm1J%0D%0AaGljaUhDeEVKRGlHQkU2anc0eVFqWUNSIFpMVllJVmtkc0Zyc2NKbHBXQnhJb085T3N3MTJreFUy%0D%0AT3NaaU1NRmtNTUlneVdEc3dpMDQ1NGlwQ2lLeEtFS3hDQUxSTVB5UklBYkQgQVhoRGZuaENQbmlD%0D%0AZmdSREFhaTBIV0UvRUNYNTZWaW9YQ0ZGQjBpR0pwaHQ1Mkd5Vk1Ob3FxVHQ1WGoyazVZTENqMjhh%0D%0AQTU0N0hFTSA5cTJDMzhOZ2RjS2FuSW04MUJ4TXlzakhSQnBGNmJrb1NNbEdUbUlHMHV3dW1BMG1I%0D%0AcC90ejVza2Zoa1A0Sjg1NXBMWEVJcjNCd1paIGk2Y2JqZTRPbk90cFFuVlhFODUwTmFDMnV4bGVk%0D%0AenZnNndlRUxNbFo1MkF3L0I4OGRlZ3RBNktCSERKcjN2U2l1ZXorQlRmanBrbUwgTUNvaDVTS0Jh%0D%0AVVpaTjUzYzFOK0p3dzBuME9ycFFhZlh6WHI5L2VqemUrR2xtZlRSTFBzaklZUm8xc05LRkZFbHBs%0D%0AbER0d3hKR0ZkQiBXTTBvRzJBaWkxdU1abVkzV1RUckpwQzFVK3dKU0xVbjBmMlRhWjFJRTVqT3hT%0D%0AUitvM2d1YnA2eTVDTGxmZUVnMjE5ZndYNzc4Vi9ZICs5V0hraENPVHFiTnBCRHRzTmhkYk4yMEZm%0D%0AeSt1YXRSMlY2TC96cjZObzYzbldWVlhZMW82KzlDME9jR2ZUQnlSWXFBYUh3T0paRC8gMDVyQ1JC%0D%0Ab2FROXZFRUNwYzBrQk0wNUNyNUVaRFE5RUhWL1RmWXA4NFJqWnljaXVBbERVNEVsbUdLdzFGYWJt%0D%0AWW5sV0laZU5tNGxwUyAxR215OFVOMXgrRWI2Tlp1WmdCVG1VUi9zaVN6RDA3dDUwOXNlZ0psOVNj%0D%0AWUVoUElkNlA2a0VsWWNXRkhFa0N6cUFrcTVDV0xZTkN0IEh5TUVVTDRnV29YU1ppdkZvUU5hVEdw%0D%0AbUkrRURnd0JabXVKQjMwOFdBc1VqWFpkcCt4VUZzYUFQYmQ0K3RKSHcrM3crYkpHZGVPVGUgSDZs%0D%0Aeml1Y3lXY2luOExoQ25PYVRhUXRYRFdhdUpxY3dCTExCSEluSWRLVWlOMmtVQmJnSllSSytpU3pX%0D%0ANlIvUXdZRmN5bVZMd0pqYyBpWEFTS0FnWHU2d3VqR21BNEFrSDBVYng0S1U0MEN4QjF4Zlh5cVE0%0D%0AemFQN2tBc1NLUGpRME5PQ2dRQXBTTUNpQWFWQkRKcFF1ZzlBIHlqcEQ0T1FKTVhKVkVSaVNtQm1E%0D%0AY0l0aGhYUUhVZWltcWhZMEFhUVkwdkRZaXJ2eDRNSmJod1Y3cWZSTlBMSDlLVFFKRnpTWWNjUGsg%0D%0AeFhqaXh1OWlYT3JvSzg0VEF0RU8xSi9Fci9hK2hQM0hkc0ZGYnZRbzNlZTc4ZnNjYVR5Tko5NTRH%0D%0AdVF0UUZMbWhlRDdLMlJoNUJCYyBDTTVsb1FIbm1rSVNmYUZUeU9rZ2FZZUpQK0Ura3RncVNSZGRa%0D%0ARm54UEN3bjBORGRLd3BoNnM4ZTgwV0xBSUFiSnN6RHh0c2Z4ejh1IFdLc0JSMndvTHIvVXdvWFZt%0D%0AZTRBVE1nMEZFUEN1L1VkbkYrSVluNEpZTTRqT0w5cDFyV29yQ3RIUlhPVk5rdER4d1NDUVd6ZHNR%0D%0ATXYgdjdrZHpRUGRDQ2tSN2RKSmxMTXlITWx3V20yNGJ2a3lyTHYrZXFRa0ppRS9PUXVMcHEzQTNv%0D%0ANTYrTWpOdnRLaUdZUEZZeHB4aFdMNiBScWFyeGRXNHBwZGJsaGJOeGJLWjF4RWExbEhpQ3c0RFda%0D%0AU0E0ZVRwb3poK1loOFdMRnFKb25HVEtPN0NPRlZkZ2RMeWR4RnE5K0xUIEEzc2hxVkg4eTUzM2FP%0D%0AZGtKYVloVzhUUlpkUFI1UUdHYTNDaVRUc2tUUmxWR3JZUUxRSVhPRmRKSFQxcFhGWXB3UXB1bUx3%0D%0ASTVSWDcgd01rcXcwWTFFaXVZa29neDloTGN2L29CckoyNFdJKzdZenZ3azdjOWFHeXBwdndrSVd3%0D%0ATzYyZ282NVBLdm9COVhkN2g2RElrcjdDRyBRR21vTEI1REV0ZEJRUVFaNGIvS0x6MWJkREw1dXFM%0D%0ARjJLTHhjN0I0L2cwSTJLendCVHdYRG9yU3VhRVlwUk4xeEoxSjhxaklVUTdNIFg3SUs4MHFXNkF5%0D%0AUGxsNjNtMGJmbHpiUUVJMFNNb2xJa1NTR2VOam9LQ2YwRVNBUU4rTWxMM0NpdWdwdFhaMllPV2t5%0D%0Ac2pOR1lXWHggZk1yc0xnMFpMNXEyejV4KzY5UmxXREoyQmdpSmtFYXB3Q29nWHdEcFlCQm5UcDVD%0D%0AYzFjN1REYmJWN1NTeXZRSTBqUzZ5T1Uwc09DZiBFei8xN1ExNDllM3RHUFN0eHUxcmJzR2N2RW1Z%0D%0AbUZsQVJOVDh1VGQxVUtJVVkrUVNERWNJUEY3SGE5ditDUHNZTSt4VzI5K0FDY0szICtEREtTUUlV%0D%0AY0NGcTlCaTZsR0Q1YWVpSWRLSDA0RWZvN2V6VkdIV0t6UVhCeFQ1djZlanVSbWxGT1JwYVd6QjA3%0D%0AYnJ6ZGZod3p5NDAgQmpvb1R6ckFvbC9XNTNSdm9xRFhWa3lFanpLa0VQM1dtUmN4QllGeHVMUkda%0D%0Ab3NONW1RcjlsWWN3SWRIRGx6eHJYZnQzWTNiTnF6SCBBOS81RG81VUhOZTJUWjQwQVEvOTlGRXN1%0D%0AMjRwVklvak5YWWhEL0VZZ1VZL3hWVm5KOURUUEdJMEFkMDB2TDF4UnFqRnZOQ0NFaXY5IGtJZVln%0D%0AcVNoaE1BRm9VNGN0aS9oZVdHaU51bG0xQmhiOE5hSGIySGErRW1ZTUtuNEN4V1M4aEloTFVuR0I0%0D%0AZmZRL0x2RTVIOHlJOVIgUEg0c2xveVpnUWZYZmhjLzJmUVRITisvQi9VRkpTakl5WUhMbVl5OHFR%0D%0AdFI3SFJpRkgwZlFrR0o2WFNtdzlPTE02M1ZCRHlLQmdyQyBFRnB5SDA2c2NVY1UwTWQxNm5ONUpC%0D%0AWHNJdDJPRDFyTE1PL29BUlFYRllFWnZnQjJyVlM0amhVMVlqNjJuTnlOaEJkUzhNVDMvNVg0IFd4%0D%0AcVZCTXZoWFQyQW4vejBDVHpqZmhvL2Z2ekhWSU9Od2ZQckhyM2twWVQvZk54UWliVy9leENnNU0w%0D%0AMTJUVmxtUzZjUm4yMG5Ccm4gK2x4aXc0VHk0dkpNbkVOVkY1Q1lpSDVIbEt6ME92WWZPbmhKL3g0%0D%0ANUkwd2hEL1pReFdramhqMDFEYThlMm9ZWC8vd1NNWXV3dHYrZSBaVGZqY1ZMazNicFNQUE9ILzZS%0D%0AcU5mejVoRjFETVduRUptRWpObHhZRXNyeHVBUnNDQlFZekdiNHlLUTc5M3lJcnNPTnNFb21OSVM3%0D%0AIFVPOGgzellTWW1VN2NiQytGZC8vMWMreGZQL0hTRTVLMUVqbllVOFZPaU4rdlBIT2U2ais0QVRo%0D%0AallJVHdTYjBSeUxhclpEdWdtOGkgeDNQYmY0OVRWV2RSUEhrU25FWUxGS3VFek14a3ZQeldSclIz%0D%0AZEdOOFVURXBGc1JJZ0JLS2lEQ3BqM1FqUU5leldpeFF0WHBqbU15TiBLQitnbHcrS2lDRm9OUWtM%0D%0Aa0VLN2RyK0pYZFVVbktJdGtlVUNsaGNBR1FraXk0S1BTY0h4c3RNNC90d2UwZTdRWFd2UkdGRE5n%0D%0AYzN2IGJRUWErL1FFV3BnT2xOQjJCMUgvSU1WaFZpcDZtUWZiRG00RC9ySXg3cGFFbEl2SEF0TlRz%0D%0AWG4zWnVCbEtoM01sNklHTkxMcC9rc28gWFZCU2p6TUZuU0R6SVF1SjN4cjNnUVlKR2loRTZVd3I3%0D%0AVjlBQ3BRVVhIelJZRVJmeS9IOTh3b0VaSTdvRU5ESDlVV2ZUUmdFS25FayBDOUE2bGR6djFpbFV3%0D%0AUEdMRTdHNDVpMVRFSi80eTNPZWNCaWNRSXFrRmM2bG8xeThmTkJCZ2VsMFRnZnRlSEpsbnhraldZ%0D%0AQldhSExkIE10Sm5XaDU4eERtWGE0TkVWWTFSYWtPVTI2SzAxMExZTkJ6TlY3Sm9rODkwQkx3UVEv%0D%0ARkxhSXcxUXA4Und3VnBWUDVGcWZyU1piZDYgQllsUzBEQ0NYV00waUFRNlhsUzhneXE1cE1XcFFm%0D%0ATG41MVc2Zm96OE9XUmdGd2p1VUF6UkY3b2VFeWtxTlNuQ2t5d3hOTGRiaUI3UiBMa3ZzODV0TmY4%0D%0AdkNxVUNreXk4ZFc0Si9Ybkl6dWdmNzhWLzd0dUJVTDVYbkp1T2xPMkJpVTR3K0JpeXdtR1BJVFBl%0D%0ATHFXTWlHOUVFIFNjTUtLVnk0bThSdkt1eFdDKzZ1d2k4T1M5SWJaV05ac0U4MExNZ2RqT3JmWHls%0D%0AaUI2a21GMjZhdUFTM1RscUtmcjhYZFMxTnFPNXQgMGl0WTJYU3hJaXA5ZUUwd3hDVE1tTmJPLzIx%0D%0AWks3K21hSnBhN21hU29vcGFaSWo2a0hveUZSR1N6UGhnaXdsanVrM1M1aVZ0ZlBlMyBLdFRsczdz%0D%0ANC9DWnRSc0N2M0xldmFKR05wRVFBbjlhY1JHMTdFODUzdEtDbXFSNnhtS0szd2tiR2NZQXMxbXZE%0D%0AbU5HRC9JLy9ja0w5IGRFTU5YeEtWV2U4Wmk1WlREZkpJdG8wNFU2QWhVTFh1SEdPMjh5WTJZMXFZ%0D%0AdjN0ckZkOCtvNFAveDk1OGRyb3VpV2t1YUk5Y0FJbS8gWlNGeUd6SDY4YzdwSFRoV1UwSGljTFFw%0D%0AN1FUWGttNGQwYU1UOFV5VG1aWWE0UGRmZjQ3L1lGWVhOd2NrVm5mSXlwcTdHY3Vib2ZWNyB0SUx1%0D%0AQXZXSjV5VU41NmpZczlvNUlrRUQ2azdaV0hwN2xHMG85dktWOTUza3p4OVA1Nzgva01mYXUyd016%0D%0Ac2pmSGwraU9EUGIwUzlGIDBCK28xVTFCOVJXTVpJMEFLZVUzdzJsV3NHYmxlZjZ6QlkxcXZoSE1l%0D%0AMHFXem5ZNldKaU00VWhRSWN2cUVMeXhDeWpITVd5dWVDdUYgR1F5Y2Nxc0NIeWtXcVVoa0thT0M3%0D%0ARWV6T3RSYko3ajVMMHF6c1BWSU5ndGNTWHdKL0JRZDBSZ3BiekRvamNhUlpGNG9KYmE3VW5SeCBJ%0D%0AaVJHandWV1d4VFRwM2Z4SjVjM3Fvc3lReXpXTlZweWR5NW1BMm9ubU8wa0RCRWZJakd6SnUyRkhz%0D%0AK0k4a0hYVUVTVkFBMTFtSEhJIEpLeHNVVERndHFDclBGSEs5M0gyeCt2cSthNEhLdFhsTTc4Z3Zv%0D%0AVHdCTWttL3dEc1JJdU1va0VwbmlSSThpWHFlenFaN29GQkU1Yk4gNk9TNzdxOVFTKzg4bzg0MSs2%0D%0AVzJza0twVFg2ZXVlYS9BdHZVWnloVjVjRElReG90a2pTaUtIcU9naFo4Tm9hSStsaU5Lczl5cWN6%0D%0AbiBwMlE4bE1TWjZDa3Ftdkg2VzYzTTJtTmlDL0tEL04zYktMNW1kdkwvMkpkMzZmaUtCR0ZqWnF5%0D%0AZTl3MnNtRGdYZTg0Y3hjNFRIeEhSIENPcGQwS0hqZkNhUlR6Q3BZSUEvdXJ5UnJ5dDJ3K2lSV2Fq%0D%0AS3pQcjZ3RTc1RWlBUlY4d2dFZG84WmxSMXBHQU9zWjh4S2VSRkJOMTkgb254Z24ra3BtQ2svbVF3%0D%0AUzIzbkN5TXYyRy9uNldTcW01aXBzZ0h3NXJEQXQzZ1RCTlpoVlJPbDcvM2tic3lkRTJSMEYvWHps%0D%0AV0E5LyAvbGdHLy8zQlhEMitIQ0srSXBwQzg4ZE13b01sNjdCdy9IUVV1ckxSMDkyQy9VM0hkVGNM%0D%0AbVRTTFpHWUUrQU0zbk9jUHpPNUNPbGRaIDRKeUZ1YjFHU0VaT09UWUtzNmNlRFRXdjRyV2VmcUJ2%0D%0ASnlZNXlwQ1lZTUdtVW9uN0U4eFlmdytZMWZoWEZ0S0JvcTFibGw3WVpzV08gdlhZOHVNR2diaWdK%0D%0AczB5cnlnYTlRakU5SkFnNEtPZHlZc015SXRWV2xwZ2FZVCthMzZiZU9zbk5uenFVaFMxSFJYelpT%0D%0AQ2tGZlo0QSBldnZjbWlYY2ZmM284NUxwT2Uyai9UYTdndlVyR3ZrUEZyYnpDYTRnSW0xR2FhRGJT%0D%0ARGtvVEs1T1BFMHlVeENZc1dCY0NCbGRmMEpUIDg0dVlOVTVDWTc5RjNmQmNBdnYwaUl3MWQ1ZzFw%0D%0AaUF6UHBJcGFOMFJiY2o1RGk3TlNjUFo4akMrK3l4amZ6bGt3cU8zaFBtSzZXRm0gSjUvMWVabkdR%0D%0AL1VIQ1lLbWN3UUdqSWg0WmFrd004STNycTdqOTB6cjVqOGxhKzJ0VEdHMTlXMzR0eTIveHFiZFc5%0D%0ASHNia05kcjV1QyAyb1psczdyNWp4YzM4OFY1ZzFCNlplYXZ0ckJ3bEVOMnBNUHB5RVBZMzRPZ3Q1%0D%0AVVVVaEFqR0o5WUhLSHRNbjk4bXcwdnZHdG5LaVZYIHl3dzc1S2xKR29nSnFuT0JiZE9YcUNLem1D%0D%0ATHpxeWIyODZ0dTlMUGRhV2xNclpmNGdWTUQrUFNFRVd1V0cva1BiZzVpNXZnSW96SUYgQVI4YkJq%0D%0AWmhMVEUzd1U0ak03b2x0akRMeDNmZFVjVjN6RTdtUDkrZng4cVB0N1B5R29KbGx4MHpacWo4aDh2%0D%0ATzhUVkZiaGdDWU9GeiBSaGFOeUJyNEtNU2VXd0lsQ0NjK1RvWGtXM0NFZjQ0SmhVRjBkTnI1djI5%0D%0ASzVMOTV5OHk4YmtLMllpZFFZRVAyVkEvV0xtNm42a0JDIFJERUtRMTFvWXdtSEU0M0hlWWtENnZh%0D%0AcmE5blc4V2JwNmFQalVKMmRqZUI1RDdidTl1S2pJeWJjZTJPSWYzdU5IN21aVVJZaU53eUYgNGds%0D%0AQWdCejV2RUsvd3EwR1pyQXBiRzFoSDE5UzRPRy9uVGlLYnoyYnl0WVhkZkx2ek90RWloUmpzUllL%0D%0AK29Dc0ZjM2FlVnlHay9JZiB1ZytqdXZSN21KTFRqdEdqVkw3NWZSZC9Zck9EMWRXWUdNYVNxODVN%0D%0AUm1vUng3MGxEWGhzUWlkUGNoYmlaSmdNeE9TUmJKc0w2c01FIGUraHBOVXZCWmpOV3BIdVFTVFA1%0D%0AS2xscXB5c1ZBL1lVREhRTTRyVmREQTF0REhkZUYxS1hUZ3N4ZTdMS29tUXRRWTcxMXBGK1JaVUkg%0D%0AWkt4VFlnNmJncnVtOVBCckNnZDRoamtLcDE5bE1UOU5IdTFuQnMxYmhoL21jVmxHUVk0YmRrY1pQ%0D%0AMW90NDRYVENUaFFhbUh0WWNwMyBNeE5nR1dQR25EbHVmSXRnZlZheUY2RTZBMnVreEN5TjFSOGZq%0D%0AV2lTWE9pY3htS01kWGN5V04wU1p1WUdXZkhjSm43dDJINjhWSkhCIFBqNmVoT2J6TnZTZThLTHly%0D%0ASW10V0dERXZkY0crWXp4WWRIaEowRjE0ZlJ5bjc2TG1QQ0Q1Wm5EeUxlRUJibUdLbVpUa1liVGdT%0D%0AQ2Mgb3FZenVCU3R1MUZWYTZCNFk5aFRha2FuendKdmloTnlrUVBqWndUd3dPeDZ2akovQUZtK0dP%0D%0AdXBOcUNsSHl4eGpCUm5DbXdFVTJCNiAzMEduUUtLODR5d1VsdERmWmtIQ29NcStNY3JMWjYzMDhk%0D%0AM2prN0RwMkNoMjhrUWF6alVHMExWbkVNY3F6Vmh6ZFFDM1hSM2dZN0lqIFRBMlJ0WUpNejdOUy9C%0D%0ARkJoRnlhbENORXhrVWRNdHBuSktTVEtaODJ0aHY1YTN0dGVPZERHODRSVXhoSW9rU1RZMFg2NUJq%0D%0AdW10T0MgRFVVOVBFK09ncmVZV0UrL2pRV0lkQ3FNSEZ3cmV0aFFsM1FZNVRqWCs2WHhyS3MvbmhE%0D%0ARmJkQlBmazdKTk1zVnhWMjV2WHh1dHBlLyBXWnlLcmNjeVdQT3BkSlMzRHFKNWl3a0h5OHpZc01y%0D%0AUDF5d01JRGt0eGpoWlM0Mnd5ejdVbDgwRS9RNFY3Z0daNzNqZmhpM3YybkdpIHpvb2V1d05xa1JN%0D%0ANXBNaUM0bDU4YzBvWG4rUUtJSW1Rc0wvUHhzSml3dFQ0YzJwbHFHWFAyY2htQ2xuSVFBcUhnLzZJ%0D%0AMzJ5dzJDQkwgTm9vQnY1WnZ4SWtxeld6QVF3Z1dsTm1VeEFqUG45ck9sK1Y3K0t0RjZkaDVMSVYx%0D%0AMWRoeG9ObUxjNzgxWTg4UkMrNWU0MU9Yemc0eCBzMU9sZWlUZTJJaXpBbEV6TXFlS2NFVGkreit4%0D%0AOGorOTQyQ2x4MjNva095STVDWEFWY1J3dyt4ZTNENjFteGNsQlpIbFZaaS9rVnd2IExHdHhKeGk1%0D%0AeHB5aXdrT054QlFTNFl0RnVTZm9pY0ZnOU9rS21ldzlYWDVQZDZ1bko5R1luWWVVUk1vRDNoNU5H%0D%0AVDBtdUhZaGhSaEQgc04vSXJBR0ZMVXIyOGVLRkFYN3RPRGQvK1hnR08wangxWFRlanA1akZGOW56%0D%0AR3psRWorK3VkckhwMC9VbmdVeCtNV3pTRzJDZUdXMSBDWC9jNGNDZUEzYldFclREbjU0QTR6Z1RW%0D%0Ac3owNE80Wlhid2swNE8wQUUxR214RytnSkVwSXVhRXNXV3VnWWVZRzZlZ2owWVhuQ2xUIFVSUDJv%0D%0AOTdkUWp6THFiMU5JbU5lcmtNSjlFOGJuWmhXT0d2Y0V0N1ExSVdHcGlNWU40b3poMVdteksyN2pr%0D%0AaWsybk15UVlXQ0VrdWcgdUJpZkVrQkpvUWNGbzhQb2NOaFlLM09oMTJ2R3VWTXlqaDR6b3Rjblkz%0D%0AUldESW1qVkRSMUd2Q0h2emo1TXh1VHNLL0N4VnJ0U1loTyBjR0hxb2hBZXVicVZQelNuSFhQc0FU%0D%0AajdKQllsajRoRkNBMjFQalhpU0VoMGtTcUxCRnNNZFIxQlh0NDdpUmZOL1I3ZXJ6MHV2WGYwIHJY%0D%0AWkl0czBvNzZ5U01YZTBGeEhmbUVBc01udmNxRUtqek1kajB4dTFxS252d0xnOEkzTFNLRU5Kb2dJ%0D%0AUXdjZjFZbExFdTBLaEdKSlkgR21LWWxPblRGTXZNaXFMTjZtQWRQQUdkdlNhY09tYkFxUm9aNVEx%0D%0ARy91b2JUclo5VHhLcjVVa3NPRFlKQlNVY0QxM1h6aCtaMzRwbCB5WVBJOEVZWTkwcFNOR0prd3My%0D%0ASDRrOEFpY25Ba0pSQWRJdHdZY3ZId0I5MnB2S2NHZDlHV2tFK252emcrVmhiZDJzNWNhMW5VZEZK%0D%0AIDJXMStab1FxUklQUDIxUE1sVWp1L01uemFWNUc0YTNkTmV6d0tTOFVreGtGV1NxU1hRcmoranNR%0D%0AZXM2SlYxRGsyOHdVQnNzeVJvalEgK2pCbjdDRE1WTjQwbVJKWmQ4eUJwaFlacHl1TjdPeWdDd1Ba%0D%0AS1VpWmJjUnRLM3Y0WTh0YWNDM05aWTQwaGRtTXF5Ui8wTUY4dms0QyBwQmpFREFxTEVGOUdBcm1x%0D%0AU2dvZHFqTHluMjlqZU8rQUdjVlhiY0EvYkxpRmJhdDRXM3I3Nkk3Mm1OWDFJaUx5eDZqc0lKZjdw%0D%0ARU4wIE5udVVtTi9lT2RBNXhXSXhPVmN2WEltRTlDeDEvNmUxMkxldmwxVjNXT0Z3U2NqUFZLaWlW%0D%0AY0ZqZXVVMHBKam1FbEdpYVJITzhod2ggekNLbHB1WDVFSElaV0lQcXdpQzVvbUc4Q2RlczhPQ3hs%0D%0AUzM4anNsZG1Nd0lDZ2ZIUzJIbnQ1bDUxRDBrVHk2aWdTWVlvczB3VXFZVSB6OENNQkNCblcwejht%0D%0AYmV0K04zbUdNNTFtUG55ZjdpTFAvUlAzNVNPZFovQWN4OXU4ZzN3Nkhzd0p6eUxQM3dhQUlhZWRo%0D%0ANXREV05XIGRtdUl4eEliT3VzbkcwMnljVlhKTmF4d3lrU2M3bW5Ga2NPTjdPaEpNeHFwSHNsS1VZ%0D%0AaVd4Smg0Q1VvZ0QwZjg5Wjc0V3k0aTc3Z0kgVzhlbUJERnZIRmtnSTRxRVRKWDlZMGszZjJoK0c5%0D%0AVXlQcGJxSi9yajVleHMxMmowU3F1UWxIRVZXcnZjNkd3NWpOU2s4M0M2R0hvOSBCdjc4SGh2KzMy%0D%0AWXpEaHp4SVphWnd2LzU0WWR4OTQzcldGbm5hZmJrTzg5Rld6M3VvN0RaSHNldnlocUhleS9EQUQ1%0D%0AdUNvRnNvTTR2IGg1MTFIYlhGL25EQXVIVEdZbmJONG1Yb29mcjlhUFZaMUpURjJLZlZEcmlwVk00%0D%0AZEZVTmF1aUw2RUZDamVxNFd5S2dwUnNobW9NSXAgVllxaE9OT1BrbUl2RnFSNWtCMkpNdWFqUkJ1%0D%0AVG1DREgvbUNBd01LSG1zWnVLQU1mb2NCNUNNRndpTC8wb1JPLzNPYkFPN3VBdWxBQSArYXZtOGw4%0D%0AODlqTXNuRDZYN1R6OUVmdlBYYitOTlFZSFBrRy84cStFM1NkUTFzbi9XcUV6RFZSUldRZVE3enp0%0D%0ARDBmVWhyYmFvb2J1IEp2dlVzZE53eDZMVkxIbHNKcXFEamFnNTI4Vk9WVmh4L0x3Vm9oMldseDJE%0D%0ATTRrQ1NkV0E0cUw0b2dxWjJTakNVOGlVNXJES0JQVVIgTFdnMS92S1RqU3JPQkhNcjBneGxjT0VN%0D%0ATDYwSzgyZTNKTER0SDVoUTFSVUNLN0x4ZGZmZnkzNXh6Nk1zUFRtRFBiM3JCZmI2Z1ZjRCByWkhn%0D%0AKzdCWUhzT2h2a3E4Zi82aWw0d3VMdkRiUEJ6WFR4dEFPSG9tRkE3M3RQZTI1aDVycUV3M0VnbGNQ%0D%0AV3NGbXpkekRub1RvempaIGU1NTRuVXFsZ1FOVkxRYTRLSEJ6UjBlWmliSy85dkpsL1AyNDRUYTFv%0D%0Adk0yall5S0xZcDQ3WVpnT0VtRjFSN2hOZlZSL081TkkvNjAgMDhFcU8ySVl5T004Zi9rVS9PeWhI%0D%0AN0wxODFhaGx0eiswYTMvemc2ZlB0alRwNmdiWWJFOUNVZENOZDQ4bzF6NU82ZmZ2aW9aVWU5YyBT%0D%0AanpmR21WelhyZHM4aUxqM2N2dTRMbEphZnkxc2wxNGVlZWYwWHpzUExPN2JjZ2puNzltc1EvM1h1%0D%0AL0hsTUl3MDE1Nzgrc3RhRDEvIDZWeE9WWFF0cVZyVU12N3A4MmIrMHZ0MmtXVFJPTUF4bUJ6Z09i%0D%0AUEdzWHRXMzRVMVU1YVNOMW54NG9IWDJYdEgzbExPRDdwckVGV2YgaEN0MUwzNTl0UDJ5L2N2TEts%0D%0AVFdGc1R5NGxaRVFtVythTmpkMU5XUVYxWlhrV1MxSnVMRzZTdFl5ZFE1OEtkSXJDWll4N3Y2UXV6%0D%0AcyBLUWMrcWJUQVRlUTBKek5HZ2E0eWpXWEVNTnh0SVlZRGlmSkphN2VSYjN6SGdhYzJKV0ZQbVEz%0D%0ATmhqQ1VpUmErNnRhMTdQK3UrMThvIEdUY0hUWDBkZU96MUo5bEhGUjhNdEFYOVc4bWtQNlI4Y0Fp%0D%0AL09kcjMxZDhLRnN0M3JpSkoxRFNFQitkU3hyc3YwNXB3N1lJSjg4ejMgTEwrVEY2Wmw0LzNxdzN6%0D%0AVHZpMnM4a2daNUhZRDBrTW1UQjBYd1ByVmc3aHhTUUFwU1dTV3FFNkQzZjB5Zi91Z0RWdDNPSEd5%0D%0AMW9adSBTd1JLZG94UG16ZWIzYnRpQTc0eFlTRzVWeHRlL3VnVlZsbDdUS256dXFzb1NUd05TOEpC%0D%0AeU5ZbS9QclFGN1kxcjd4Yi9lZ1M0dlZkIHVaU0FickZMMHIyNUtWbUZhK2ZkaUp0bVhrTmhydkJY%0D%0AeXQ5am0vZThqcDZxVnBpNmJNZ2trRmd3YXhEM3JmZGlLWEc2QTFWbXZQQjYgQWtyTG5VUkdDZDNU%0D%0AQTBpYm1JMDdWcTdIN2JOV0VjMDM0TzN5M1hqenlOdXMyZDFlNjFmVnZlU2p6eU0xdXhaUEhyamkx%0D%0AN1crWFB2OSBrWVhFZEtPcDhQZlBJc1h1VHJYWWJwaVVPOUVwWXF1a1lCcE9kWnpGeHNQYjhjR2hQ%0D%0AVkFhUTdEMVdWR2NIRVpPVmdndFZGK2Q3VGZEIG54eUNSTlhueW9WWDQ3NEZ0MkpLVmhGSzYwN2c1%0D%0AZjJ2c0RQTlZZTzk0Y0JPRXV0bE9CS3JpWjQzNDVlbGY4Y1gwUyszZkwvRWhFSFAgYU1RaUs0MFM3%0D%0Ac3QySk0xZVNrRjh4NkwxZkhSaUtuWlZmNHhOQjdiaTFQRUtja01aVXNBQzFSYUNrcWxnOHF3WnVI%0D%0AZkplbHcvWVJGYSBQWDE0NWVOdGJQL0ovV2p6OVI4anZ2c2kwWVE5c0xwYVNaSEkzLy9OK2k5YS92%0D%0AZjhCUGo2eEFQVmRRa0d3MjI1cVRtajF5NVlTNkN4IG5LdXhDTjlhc1p1OXN2ZDFkRGJWSXlOdkRP%0D%0ANVlzUjRiWmx4SEUyL0NPeFg3OE1hUk4xbHpiMHVyVjRtK1JqWENOamhTeitMWlV1L1ggOTY4Q1Y3%0D%0ASTh2RkJDTkppQm9IY09DWFYzbXNWKzNlVGNpYmE3bHQ2bXVXRmxTeFZxTzg2ak1MTUEwM0ltbzdU%0D%0AK0pEWWZlSldkYmpvVCA2QTRGM2ljSlhvYk5VUWFqc1F0UGY2Sit2Zi83OEtYaWE3NEZnOTRjeEtK%0D%0AWEd5WDJUOW4ycEZrTEppN0E3UXZYOGJtNUUvQkpTelZlIFBiU2RsVllkUnR1Z3V6eXFLQnRoTW44%0D%0ASVoySUxuam9jK3AvNVo0NnZzbnh2UHRIcnZ2R1VmTlk2Wk5OdFl6UEc1R2VsNTZHOXB4bDEgWGZX%0D%0ATnZxaHdMLzRtcklubjhKc3l6Ly9zZjZkOFpXdk5reENKcHNFL09JM2k1VTdKWUZoS3RkWkJSWW4r%0D%0AbWFoK0paaWxCODhkVnIrTyBXMzg5Q2cyREJxRmh4SmROckRXTktyY2UyS3h0ZU9yVHlOZDV5LzhX%0D%0AWUFBTjFXQzlTbzVWVWdBQUFBQkpSVTVFcmtKZ2dnPT0iIHRyYW5zZm9ybT0ibWF0cml4KC41NiAw%0D%0AIDAgLjU2IDcuMzQgNi41MDgpIiBvdmVyZmxvdz0idmlzaWJsZSIvPjwvZz48L3N2Zz4=");
+                btnNationalLeague.color = "transparent";
+                btnNationalLeague.background = "transparent";
+                advancedTexture.addControl(btnNationalLeague);
+                btnNationalLeague.width = "60px";
+                btnNationalLeague.height = "90px";
+                btnNationalLeague.linkWithMesh(locNationalLeague);   
+                btnNationalLeague.linkOffsetY =-50;
+                btnNationalLeague.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createNationalLeague();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var btnKippaxLake = BABYLON.GUI.Button.CreateSimpleButton("btnKippaxLake", "Kippax Lake");
+                advancedTexture.addControl(btnKippaxLake);
+                btnKippaxLake.width = "80px";
+                btnKippaxLake.height = "80px";
+                btnKippaxLake.color = "white";
+                btnKippaxLake.background = "gray";
+                btnKippaxLake.fontSize=15;
+                btnKippaxLake.linkWithMesh(locKippaxLake);   
+                btnKippaxLake.linkOffsetY =-100;
+                btnKippaxLake.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createLake();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var lineKippaxLake = new BABYLON.GUI.Line();
+                lineKippaxLake.lineWidth = 2;
+                lineKippaxLake.color = "Gray";
+                lineKippaxLake.y2 = 20;
+                lineKippaxLake.linkOffsetY = -10;
+                advancedTexture.addControl(lineKippaxLake);
+                lineKippaxLake.linkWithMesh(locKippaxLake); 
+                lineKippaxLake.connectedControl = btnKippaxLake; 
+
+                var btnStadiumSportsPhysiotherapy = BABYLON.GUI.Button.CreateImageOnlyButton("btnStadiumSportsPhysiotherapy", "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0%0D%0AaD0iNDMiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA0MyA2MCI+PHN0eWxlPi5zdDB7ZmlsbDoj%0D%0AMzA4NTFmfS5zdDF7ZmlsbDojZmZmfTwvc3R5bGU+PHBhdGggY2xhc3M9InN0MCIgZD0iTTIxLjUg%0D%0ANjBjLS40IDAtLjgtLjItMS4xLS41QzE5LjYgNTguNC4yIDMyLjcuMiAyMS4zLjIgOS42IDkuNyAw%0D%0AIDIxLjUgMHMyMS4zIDkuNiAyMS4zIDIxLjNjMCAxMS40LTE5LjQgMzctMjAuMiAzOC4xLS4zLjQt%0D%0ALjcuNi0xLjEuNnoiLz48cGF0aCBjbGFzcz0ic3QxIiBkPSJNMjkuMiA3LjNjLTQgLjQtNyAyLjQt%0D%0AOC43IDUuMi0xLjIgMS40LTMuNSA1LjktNC4zIDguMi0xLjUgMi45LTIuOCA2LjMtMy45IDkuNC0u%0D%0ANiAxLjkgMi4yIDMuMSAyLjkgMS4yLjgtMi4zIDEuNy00LjggMi44LTcuMSAxLjEgMi40IDIuMSA0%0D%0ALjcgMy4zIDcgLjkgMS44IDMuNi4yIDIuNy0xLjYtMS4yLTIuNC0yLjMtNC44LTMuNC03LjJ2LS4x%0D%0AYy4yLjEuNC4xLjYgMCAxLjctLjMgMy4zLS42IDUtLjkuNy0uMSAxLS45LjktMS41LS4zLTEuOS0x%0D%0ALjQtMy4yLTIuNy00LjQtLjItLjctLjgtMS4zLTEuNi0xLjggMS41LTIuNCAzLjktMy43IDctMy45%0D%0AIDEuNi0uMiAxLTIuNi0uNi0yLjV6bS02IDEwLjZjLjQuNC44LjkgMSAxLjQtLjguMi0xLjYuMy0y%0D%0ALjQuNS40LS43LjktMS4zIDEuNC0xLjl6Ii8+PGNpcmNsZSBjbGFzcz0ic3QxIiBjeD0iMjYuNiIg%0D%0AY3k9IjEzLjYiIHI9IjIuMSIvPjwvc3ZnPg==");
+                btnStadiumSportsPhysiotherapy.color = "transparent";
+                btnStadiumSportsPhysiotherapy.background = "transparent";
+                advancedTexture.addControl(btnStadiumSportsPhysiotherapy);
+                btnStadiumSportsPhysiotherapy.width = "60px";
+                btnStadiumSportsPhysiotherapy.height = "90px";
+                btnStadiumSportsPhysiotherapy.linkWithMesh(locStadiumSportsPhysiotherapy);   
+                btnStadiumSportsPhysiotherapy.linkOffsetY =-50;
+                btnStadiumSportsPhysiotherapy.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createStadiumSportsPhysiotherapy();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var btnGateACricket = BABYLON.GUI.Button.CreateImageOnlyButton("btnGateACricket", "data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0%0D%0AaD0iNDIuNyIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDQyLjcgNjAiPjxzdHlsZT4uc3Qwe2Zp%0D%0AbGw6IzAyNjQzZX0uc3Qxe2ZpbGw6I2ZmZn08L3N0eWxlPjxnIGlkPSJwcmVjaW5jdC1zY2ctZ2F0%0D%0AZS1hIj48cGF0aCBpZD0icGF0aC1wcmVjaW5jdC1zY2ctZ2F0ZS1hIiBjbGFzcz0ic3QwIiBkPSJN%0D%0AMjEuMyA2MGMtLjQgMC0uOC0uMi0xLjEtLjVDMTkuNCA1OC40IDAgMzIuNyAwIDIxLjMgMCA5LjYg%0D%0AOS42IDAgMjEuMyAwczIxLjMgOS42IDIxLjMgMjEuM2MwIDExLjQtMTkuNCAzNy0yMC4yIDM4LjEt%0D%0ALjIuNC0uNi42LTEuMS42eiIvPjxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNi4xIDM3LjlsMy4yLTEw%0D%0ALjRoMy4zbDMuMiAxMC40aC0yLjlsLS41LTIuMmgtMi45bC0uNSAyLjJoLTIuOXptNC01LjFsLS4x%0D%0ALjhoMS45bC0uMi0uN2MtLjEtLjUtLjMtMS0uNC0xLjYtLjEtLjYtLjMtMS4xLS40LTEuN2gtLjFj%0D%0ALS4xLjUtLjIgMS4xLS40IDEuNyAwIC41LS4xIDEtLjMgMS41ek02LjkgMTkuNWMwLS43LjEtMS4y%0D%0ALjMtMS44LjItLjUuNS0uOS44LTEuMy4zLS4zLjctLjYgMS4yLS44LjQtLjIuOS0uMyAxLjQtLjMu%0D%0ANSAwIDEgLjEgMS40LjMuNC4yLjcuNCAxIC43bC0xLjEgMS4zYy0uMi0uMi0uMy0uMy0uNS0uNC0u%0D%0AMi0uMS0uNC0uMS0uNy0uMS0uMiAwLS40LjEtLjYuMi0uMi4xLS40LjMtLjUuNC0uMS4yLS4zLjQt%0D%0ALjMuNy0uMi4zLS4zLjctLjMgMSAwIC43LjEgMS4zLjQgMS43LjMuNC43LjYgMS4yLjZoLjNjLjEg%0D%0AMCAuMi0uMS4yLS4xdi0xLjFoLTF2LTEuN0gxM3YzLjdjLS4xLjEtLjMuMi0uNS40bC0uNi4zYy0u%0D%0AMi4xLS40LjItLjcuMi0uMi4xLS41LjEtLjcuMS0uNSAwLTEtLjEtMS40LS4yLS40LS4zLS44LS41%0D%0ALTEuMS0uOC0uMy0uMy0uNi0uNy0uOC0xLjItLjItLjYtLjMtMS4yLS4zLTEuOHptMTEuOSAyLjJo%0D%0ALTIuMWwtLjQgMS43aC0yLjFsMi40LTcuOEgxOWwyLjQgNy44aC0yLjJsLS40LTEuN3ptLS40LTEu%0D%0ANmwtLjEtLjUtLjMtMS4yYy0uMS0uNC0uMi0uOS0uMy0xLjItLjEuNC0uMi44LS4zIDEuM2wtLjMg%0D%0AMS4yLS4xLjRoMS40em01LjMtMi45aC0yLjJ2LTEuN0gyOHYxLjdoLTIuMnY2LjFoLTIuMXYtNi4x%0D%0Aem01LjktMS43aDUuM3YxLjdoLTMuMnYxLjJoMi43djEuN2gtMi43djEuNEgzNXYxLjdoLTUuNHYt%0D%0ANy43eiIvPjwvZz48L3N2Zz4=");
+                btnGateACricket.color = "transparent";
+                btnGateACricket.background = "transparent";
+                advancedTexture.addControl(btnGateACricket);
+                btnGateACricket.width = "60px";
+                btnGateACricket.height = "90px";
+                btnGateACricket.linkWithMesh(locGateACricket);   
+                btnGateACricket.linkOffsetY =-50;
+                btnGateACricket.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createGateACricket();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var btnSydneyCricketGround = BABYLON.GUI.Button.CreateSimpleButton("btnSydneyCricketGround", "Sydney Cricket Ground");
+                advancedTexture.addControl(btnSydneyCricketGround);
+                btnSydneyCricketGround.width = "80px";
+                btnSydneyCricketGround.height = "80px";
+                btnSydneyCricketGround.color = "white";
+                btnSydneyCricketGround.background = "gray";
+                btnSydneyCricketGround.fontSize=15;
+                btnSydneyCricketGround.linkWithMesh(locSydneyCricketGround);   
+                btnSydneyCricketGround.linkOffsetY =-100;
+                btnSydneyCricketGround.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createSydneyCricketGround();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
+                var lineSydneyCricketGroundt = new BABYLON.GUI.Line();
+                lineSydneyCricketGroundt.lineWidth = 2;
+                lineSydneyCricketGroundt.color = "Gray";
+                lineSydneyCricketGroundt.y2 = 20;
+                lineSydneyCricketGroundt.linkOffsetY = -10;
+                advancedTexture.addControl(lineSydneyCricketGroundt);
+                lineSydneyCricketGroundt.linkWithMesh(locSydneyCricketGround); 
+                lineSydneyCricketGroundt.connectedControl = btnSydneyCricketGround; 
+            
+                var btnStadiumForecourt = BABYLON.GUI.Button.CreateImageOnlyButton("btnStadiumForecourt", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MyIgaGVpZ2h0%0D%0APSI2MCIgdmlld0JveD0iMCAwIDQzIDYwIj48cGF0aCBmaWxsPSIjMDAzNzgxIiBkPSJNMjEuNSA2%0D%0AMGMtLjQzMiAwLS44MzktLjIwMi0xLjEwMS0uNTQ2QzE5LjU3MyA1OC4zNjcuMTYxIDMyLjY5Ni4x%0D%0ANjEgMjEuMzM5LjE2MSA5LjU3MyA5LjczMyAwIDIxLjUgMHMyMS4zMzkgOS41NzMgMjEuMzM5IDIx%0D%0ALjMzOWMwIDExLjM1Ny0xOS40MTIgMzcuMDI4LTIwLjIzOCAzOC4xMTVBMS4zODQgMS4zODQgMCAw%0D%0AIDEgMjEuNSA2MHoiLz48cGF0aCBkPSJNNy44NjkgMTguMjM5SDYuNzNsLjYwNi0xLjk3OC41MzMg%0D%0AMS45Nzh6TTYuMTQgMjAuNDJsLjM4OC0xLjI5OWgxLjUzNGwuMzYzIDEuMjk5aDEuNDIxbC0xLjQx%0D%0AMi00Ljk1OGMtLjA4MS0uMjkyLS4yNTgtLjQyOC0uNTY2LS40MjhoLTIuMDF2LjQ2OGguMTY5Yy4y%0D%0AMSAwIC4zMjMuMDgyLjMyMy4yNDIgMCAuMTA2LS4wMjQuMTk0LS4xMDcuNDM2bC0xLjQxMiA0LjI0%0D%0ASDYuMTR6bTUuMzQ0IDB2LTQuOTczYzAtLjI1OS0uMTUyLS40MTMtLjQwMy0uNDEzSDkuODM4di40%0D%0ANjhoLjA4MWMuMjEgMCAuMjk4LjA4OS4yOTguM3Y0LjYxN2gxLjI2N3ptMi4xNTUgMHYtNC45NzNj%0D%0AMC0uMjU5LS4xNTQtLjQxMy0uNDA0LS40MTNoLTEuMjQzdi40NjhoLjA4Yy4yMTEgMCAuMjk5LjA4%0D%0AOS4yOTkuM3Y0LjYxN2gxLjI2OHptMi4yMTEtNC44OTRjMC0uMzYxLS4yNjctLjU4LS43MjctLjU4%0D%0ALS40NTIgMC0uNzI4LjIxOS0uNzI4LjU4IDAgLjM2NS4yNzYuNTgxLjcyOC41ODEuNDU5IDAgLjcy%0D%0ANy0uMjE2LjcyNy0uNTgxbS0uMDI0IDQuODk0di0zLjYyNWMwLS4yNTktLjE1NC0uNDExLS40MDUt%0D%0ALjQxMWgtMS4yMjZ2LjQ1OWguMDcyYy4yMSAwIC4yOTguMDk2LjI5OC4zMDd2My4yN2gxLjI2MXpt%0D%0AMi43NzUtMS45Mzl2Ljc4NWMtLjIxMS4yMTktLjQ2OC4zNDktLjY4Ni4zNDktLjIyNyAwLS4zMDct%0D%0ALjExMi0uMzA3LS40MTQgMC0uMjk5LjA2My0uNDM1LjI5LS41MjMuMTctLjA3NC4zODgtLjEzOC43%0D%0AMDMtLjE5N20tMS43MDUtLjk0MmMuNDIxLS4yMDIuODgxLS4zMTUgMS4yNDQtLjMxNS4zNCAwIC40%0D%0ANjEuMTIxLjQ2MS40NzR2LjA5Yy0uNTE2LjA4Mi0uNjc4LjExNC0uOTY5LjE3OS0uMTY4LjA0LS4z%0D%0AMjQuMDg3LS40NzguMTUzLS41MDkuMjA0LS43NS41OTgtLjc1IDEuMjAzIDAgLjc2Ny4zMzEgMS4x%0D%0AMzggMS4wMTcgMS4xMzguMjUgMCAuNDc3LS4wNDguNjc5LS4xMjguMTc3LS4wNzkuMjgyLS4xNDUu%0D%0ANTQxLS4zNDd2LjA1N2MwIC4yNDkuMTI4LjM3OC4zNzkuMzc4aDEuMTU0di0uNDM1aC0uMDU3Yy0u%0D%0AMjE3IDAtLjI5OC0uMDk4LS4yOTgtLjM1NXYtMS45MjNjMC0xLjAyNS0uMzU2LTEuMzgyLTEuMzgy%0D%0ALTEuMzgyLS4zMzEgMC0uNjUzLjA0Mi0uOTY3LjExNC0uMzE3LjA3Mi0uNDc5LjEzNy0uODU2LjMy%0D%0AM2wuMjgyLjc3NnptNS4xMTkgMi44ODF2LTIuNzI5Yy4yMTEtLjIzNS40MjgtLjM0LjY3OC0uMzQu%0D%0AMjY3IDAgLjMzMS4xMDUuMzMxLjUxMnYyLjU1OGgxLjI1OXYtMi43NDVjMC0uNjM5LS4wNDYtLjg0%0D%0ALS4yNDktMS4wNTctLjE3LS4xODctLjQyOC0uMjgzLS43Ni0uMjgzLS40OTMgMC0uODQuMTUzLTEu%0D%0AMzA2LjU4OXYtLjE2MWMwLS4yNTEtLjEzMS0uMzc5LS4zODktLjM3OWgtMS4xOTZ2LjQ1OWguMDcy%0D%0AYy4yMSAwIC4zLjA5Ni4zLjMwN3YzLjI3aDEuMjZ6bTYuMDA2LS44NDhoLTEuNzZsMS42OC0yLjM1%0D%0ANnYtLjgzM2gtMi42MzJjLS4yOTkgMC0uNDM2LjEzNy0uNDM2LjQzN3YuNzMzaC40Njh2LS4wNzJj%0D%0AMC0uMTg1LjA5Ny0uMjc0LjI5OC0uMjc0aC45MDZsLTEuNjk2IDIuMzgzdi44M2gzLjE3M3YtLjg0%0D%0AOHptNi42MTEuNzQ1di00LjU2M2MwLS4zNjMtLjEyOS0uNDg2LS40ODItLjQ4NmgtMS4wNjh2LjUx%0D%0AaC4wNjRjLjI0NCAwIC4yOTEuMDU1LjI5MS4zNDl2NC4xOTFoMS4xOTV6bS41MjcgMGgxLjE4N3Yt%0D%0AMy41NTRjMC0uMzU3LS4xMzgtLjQ4NS0uNDg2LS40ODVoLS43MDF2NC4wMzl6bS0yLjI0NiAwdi00%0D%0ALjAzOWgtLjcwM2MtLjM0OCAwLS40ODQuMTI5LS40ODQuNDg1djMuNTU0aDEuMTg3em00LjU1NC0y%0D%0ALjMxOWMwIDIuMDExLTEuNDQ2IDMuNDcyLTMuNDMyIDMuNDcyLTEuOTg3IDAtMy40MzItMS40NjIt%0D%0AMy40MzItMy40NzIgMC0yLjAxMSAxLjQ0Ni0zLjQ3MyAzLjQzMi0zLjQ3MyAxLjk4Ny0uMDAxIDMu%0D%0ANDMyIDEuNDcgMy40MzIgMy40NzNtLjcwMiAwYzAtMi4zNjQtMS43NjktNC4xMzUtNC4xMzQtNC4x%0D%0AMzUtMi4zNjcgMC00LjEzNSAxLjc3MS00LjEzNSA0LjEzNSAwIDIuMzY3IDEuNzY4IDQuMTM0IDQu%0D%0AMTM1IDQuMTM0IDIuMzY2LS4wMDEgNC4xMzQtMS43NjcgNC4xMzQtNC4xMzRNMTEuNDEzIDI3LjQ3%0D%0AYy0uODM4IDAtMS4yMDItLjMxMi0xLjIwMi0uMzEybC0uMDM5LS44NThzLjMzMS40MzUgMS4xNS40%0D%0AMzVjLjQ2OCAwIC43MTQtLjE4OS43MTQtLjU0NiAwLS4zMTItLjEyMy0uNDA5LS40NjgtLjYxbC0u%0D%0ANTA3LS4yOTJjLS4zNTEtLjIwMi0uODMxLS40ODEtLjgzMS0xLjIzNCAwLS43NzkuNDc0LTEuMjcz%0D%0AIDEuNDQyLTEuMjczLjczNCAwIDEuMTExLjMwNSAxLjExMS4zMDV2LjgyNXMtLjMxOC0uMzk2LTEu%0D%0AMDU5LS4zOTZjLS40NjEgMC0uNjEuMTg4LS42MS40NjhzLjIwOC4zOTYuNTA2LjU3MmwuNDgxLjI4%0D%0AYy40NzQuMjczLjgzMS41OTcuODMxIDEuMjczLjAwMS43OTEtLjQ2NyAxLjM2My0xLjUxOSAxLjM2%0D%0AM20zLjc3NC0uMTVzLS4yMTQuMTMtLjY4OS4xM2MtLjMwNSAwLS41OTEtLjA2NS0uNzg2LS4zMjUt%0D%0ALjE0OS0uMjAxLS4xNzUtLjQ2OC0uMTc1LS44MzF2LTEuNjgzaC0uMzUxdi0uNjE3aC4zNTF2LS41%0D%0ANzhsLjg5LS4xODJ2Ljc2aC43Nzl2LjYxN2gtLjc3OXYxLjYzN2MwIC4xNzUuMDEzLjMwNS4wNjUu%0D%0AMzkuMDU5LjA5MS4xNjkuMTU2LjMzMS4xNTYuMjg2IDAgLjM5Ni0uMTE3LjM5Ni0uMTE3bC0uMDMy%0D%0ALjY0M3ptMi4xOS4xMDR2LS40MjlzLS4xNzYuNDU1LS44NjQuNDU1Yy0uNzAyIDAtLjk2OC0uNTMz%0D%0ALS45NjgtMS4wNDYgMC0xLjA1My44NjQtMS4xMDQgMS40MjktMS4xMzFsLjM3Ny0uMDE5di0uMTU2%0D%0AYzAtLjIwMS0uMDEzLS41Mi0uNjI0LS41Mi0uNTU4IDAtLjg0NC4zMDUtLjg0NC4zMDV2LS42NzZz%0D%0ALjMxMi0uMjYgMS4wOTgtLjI2YzEuMTg5IDAgMS4yMjguNjg5IDEuMjI4IDEuMTE3djIuMzA2bC0u%0D%0AODMyLjA1NHptLS4wMi0xLjYzbC0uMjg2LjAyYy0uMzc3LjAyNi0uNjYzLjExNy0uNjYzLjUyNiAw%0D%0AIC4xOTUuMDg1LjQ0OC40NDkuNDQ4LjMwNSAwIC41LS4yMTQuNS0uNDg3di0uNTA3em0zLjQzMiAx%0D%0ALjYzN3YtLjQ0MnMtLjIwMS40NjgtLjg2NC40NjhjLS43NjcgMC0xLjIzNC0uNTg0LTEuMjM0LTEu%0D%0ANjc2IDAtMS42MDUuODMxLTEuODM5IDEuNDIzLTEuODM5LjQzNSAwIC42NjMuMjQuNjYzLjI0VjIy%0D%0ALjVsLjg5LS4xMDR2NC45N2wtLjg3OC4wNjV6bS0uMDEzLTIuNjE4cy0uMTM2LS4yMDEtLjQ4Ny0u%0D%0AMjAxYy0uNDc0IDAtLjY5NS4zMTItLjY5NSAxLjA3MnMuMjIxIDEuMDM5LjY1IDEuMDM5Yy4yODYg%0D%0AMCAuNTMzLS4xNjkuNTMzLS41Mzl2LTEuMzcxem0xLjgyMi0xLjQyM2MtLjMxOCAwLS41MDctLjE2%0D%0AOS0uNTA3LS40NDIgMC0uMzU3LjI1My0uNDY4LjUwNy0uNDY4LjMxOCAwIC41MDcuMTY5LjUwNy40%0D%0ANDIgMCAuMzU4LS4yNTMuNDY4LS41MDcuNDY4bS0uNDQ4LjYwNGguODk3djMuNDA0aC0uODk3di0z%0D%0ALjQwNHptMy4zNzkgMy40M3YtLjQ0MnMtLjI0Ny40NjgtLjk0Mi40NjhjLS4zMzEgMC0uNTY1LS4x%0D%0AMDQtLjcyOC0uMjUzLS4zMDUtLjI4Ni0uMzE4LS43MDItLjMxOC0uOTYydi0yLjI0MWguODl2Mi4w%0D%0AMDdjMCAuMzI0LjAwNy43MDguNTM5LjcwOC4yMzQgMCAuNTQ2LS4xMzYuNTQ2LS41MTN2LTIuMjAy%0D%0AaC44OXYzLjM3MWwtLjg3Ny4wNTl6bTUuMjg0LS4wMjZ2LTEuOTk0YzAtLjMzMi0uMDEzLS43MjEt%0D%0ALjUyLS43MjEtLjI3MyAwLS41NTIuMTUtLjU1Mi41MTN2Mi4yMDJoLS44OXYtMS45OTRjMC0uMzMy%0D%0ALS4wMTMtLjcyMS0uNTItLjcyMS0uMjczIDAtLjU1My4xNS0uNTUzLjUxM3YyLjIwMmgtLjg5di0z%0D%0ALjQwNGguODc3di40MTVzLjI0Ny0uNDY4LjkyOS0uNDY4Yy42OTUgMCAuODgzLjQ3NC44ODMuNDc0%0D%0Acy4yNi0uNDgxIDEuMDI3LS40ODFjLjIwOCAwIC41MjYuMDI2Ljc3My4yNTMuMjk4LjI3My4zMjUu%0D%0ANjQ5LjMyNS45ODF2Mi4yMjhoLS44ODl6IiBmaWxsPSIjRkZGIi8+PC9zdmc+");
+                btnStadiumForecourt.color = "transparent";
+                btnStadiumForecourt.background = "transparent";
+                advancedTexture.addControl(btnStadiumForecourt);
+                btnStadiumForecourt.width = "60px";
+                btnStadiumForecourt.height = "90px";
+                btnStadiumForecourt.linkWithMesh(locStadiumForecourt);   
+                btnStadiumForecourt.linkOffsetY =-50;
+                btnStadiumForecourt.onPointerClickObservable.add(function(){
+                    advancedTexture.dispose();
+                    var scene1=createStadiumForecourt();
+                    engine.stopRenderLoop();
+                    engine.runRenderLoop(function () {               
+                        scene1.render();
+                    })
+                })
+
                 // Writing
                 optimizer.onSuccessObservable.add(function () {
                     logText.text = "Optimized";
@@ -428,6 +709,166 @@
                     }         
                 })
 
+                return scene;
+            }
+
+            var createStadium=function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var stadium = new BABYLON.PhotoDome(
+                    "stadium",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/Stadium_3.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createParking=function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var Parking = new BABYLON.PhotoDome(
+                    "parking",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/Parking.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createNationalLeague=function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var national_league = new BABYLON.PhotoDome(
+                    "nationalLeague",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/National%20Rugby%20League.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createStadiumSportsPhysiotherapy = function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var stadiumSportsPhysiotherapy = new BABYLON.PhotoDome(
+                    "stadiumSportsPhysiotherapy",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/STADIUM_SPORTS_PHYSIOTHERAPY.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createGateACricket = function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var gateACricket = new BABYLON.PhotoDome(
+                    "gateA_Cricket",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/GATE_A.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createSydneyCricketGround = function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var gateACricket = new BABYLON.PhotoDome(
+                    "sydneyCricketGround",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/Sydney_Cricket_Ground.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createStadiumForecourt=function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var stadiumForecourt = new BABYLON.PhotoDome(
+                    "stadiumForecourt",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/ALLIANZ_STADIUM_FORECOURT.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
+                return scene;
+            }
+
+            var createLake=function(){
+                var scene = new BABYLON.Scene(engine);
+                var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+                camera.lowerRadiusLimit = 1;
+                camera.upperRadiusLimit = 25;   
+            
+                var lake = new BABYLON.PhotoDome(
+                    "lake",
+                    "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/Kippax_Lake.jpg",
+                    {
+                        resolution: 100,
+                        size: 50
+                    },
+                    scene
+                );
+                createBtnClose();
                 return scene;
             }
 
