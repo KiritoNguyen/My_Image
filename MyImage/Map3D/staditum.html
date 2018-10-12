@@ -10,8 +10,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
         <script src="https://preview.babylonjs.com/cannon.js"></script>
         <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
         <script src="https://preview.babylonjs.com/earcut.min.js"></script>
-        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
         <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
         <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
@@ -69,7 +70,7 @@
                 //////////////// STADIUM MODEL //////////////////
                 var assetsManager = new BABYLON.AssetsManager(scene);
                 // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/StadiumExport/stadium.babylon");
-                var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/optimizeStadium1/stadium.babylon");
+                var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/stadium.babylon");
                 meshTask.onSuccess = function (task) {
                     task.loadedMeshes[0].position = new BABYLON.Vector3(0, -50, 0);
                 }	
@@ -140,9 +141,9 @@
 
                 btnChangeCamera.onPointerClickObservable.add(function() {
                     camera.dispose();
-                    camera = new BABYLON.VirtualJoysticksCamera("VJC", new BABYLON.Vector3(0, 2, -10), scene);
+                    camera = new BABYLON.VirtualJoysticksCamera("VJC", new BABYLON.Vector3(0, 100, -500), scene);
                     camera.inertia = 0;
-                    camera.speed = 20;
+                    camera.speed = 15;
                     camera.inputs.attached.virtualJoystick.camera.inertia = 0; 
 
                     scene.activeCamera = camera;
