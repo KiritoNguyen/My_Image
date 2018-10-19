@@ -306,6 +306,7 @@
                     canvas.removeEventListener("pointerup", onPointerUp);
                     canvas.removeEventListener("pointermove", onPointerMove);
                 };
+               
 
                 //////////////// STADIUM MODEL //////////////////
                 var assetsManager = new BABYLON.AssetsManager(scene);
@@ -506,6 +507,89 @@
                     intervalTimeMobile = setInterval(() => {
                         timeMobile--;
                     }, 1000)
+                }); 
+
+                 ////////////////// DRAW PATH ////////////////////////
+                 var btnRecordPath = BABYLON.GUI.Button.CreateSimpleButton("btnRecordPath", "Record Path");
+                advancedTexture.addControl(btnRecordPath);
+                btnRecordPath.width = 0.08;
+                btnRecordPath.height = "50px";
+                btnRecordPath.cornerRadius = 20;
+                btnRecordPath.color = "Orange";
+                btnRecordPath.thickness = 4;
+                btnRecordPath.background = "green";
+                btnRecordPath.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnRecordPath.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnRecordPath.top = "-250px";
+                btnRecordPath.left = "-10px";   
+
+                var clicksRecordPath = 0;
+                var RecordPath=false;
+                var Record=false;
+                btnRecordPath.onPointerClickObservable.add(function() {
+                    if (clicksRecordPath % 2 == 0) {
+                        Record=true;
+                    }
+                    else {
+                        Record=false;
+                    }
+                    clicksRecordPath++;
+                }); 
+                
+                function Point3(_x,_y,_z){
+                    this.x=_x;
+                    this.y=_y;
+                    this.z=_z;
+                }
+                var preRecord=new BABYLON.Vector3(0,0,0);
+                var DirData=[];
+                var RecordPointData=[];
+
+                var btnPlayRecord = BABYLON.GUI.Button.CreateSimpleButton("btnPlayRecord", "Play Record");
+                advancedTexture.addControl(btnPlayRecord);
+                btnPlayRecord.width = 0.08;
+                btnPlayRecord.height = "50px";
+                btnPlayRecord.cornerRadius = 20;
+                btnPlayRecord.color = "Orange";
+                btnPlayRecord.thickness = 4;
+                btnPlayRecord.background = "green";
+                btnPlayRecord.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnPlayRecord.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                btnPlayRecord.top = "-400px";
+
+                btnPlayRecord.onPointerDownObservable.add(function() {
+                    if(Record==false){
+                        var count=0;
+                        var frameRate = 60;
+                        var movein_keys = []; 
+                        var dir_keys=[];
+
+                        RecordPointData.forEach(p=>{
+                            movein_keys.push({
+                                frame: count*frameRate/10,
+                                value: new BABYLON.Vector3(p.x, p.y, p.z)
+                            });
+                            count++;
+                        })
+                        count=0;
+                        DirData.forEach(d => {
+                            dir_keys.push({
+                                frame: count*frameRate/10,
+                                value: new BABYLON.Vector3(d.x,d.y,d.z)
+                            });
+                            count++;
+                        })
+                        
+                        var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+                        var dirin = new BABYLON.Animation("dirin", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+                        movein.setKeys(movein_keys);
+                        dirin.setKeys(dir_keys);
+                        scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
+                    }
                 }); 
 
                 btnOptimize.onPointerClickObservable.add(function() {
@@ -820,6 +904,20 @@
                         camera.checkCollisions = true;
                         camera.attachControl(canvas, false);
                     }   
+
+                    if(Record)
+                    {
+                        var currentPos=new BABYLON.Vector3(camera.position.x,camera.position.y,camera.position.z);
+                
+                        if(Math.abs(preMove.x-currentPos.x)>1||Math.abs(preMove.y-currentPos.y)>1||Math.abs(preMove.z-currentPos.z)>1){
+                            var point=new Point3(currentPos.x,currentPos.y,currentPos.z);
+                            RecordPointData.push(point);
+                            console.log(currentPos);
+                            preMove=currentPos;
+                            var dir=new BABYLON.Vector3(camera.rotation.x, camera.rotation.y,camera.rotation.z);
+                            DirData.push(dir);
+                        }
+                    }
 
                     if (timeMobile <= 15 && timeMobile > 0)
                         txtTimeMobile.text = 'Time Mobile: ' + timeMobile;
