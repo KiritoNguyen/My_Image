@@ -464,7 +464,7 @@
                 btnChangeCamera.onPointerClickObservable.add(function() {
                     if (clicks % 2 == 0) {
                         camera.dispose();
-                        camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
                         camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
                         btnChangeCamera.children[0].text = 'Free Camera';
                         camera.speed = 20;
@@ -506,7 +506,7 @@
                     intervalTimeMobile = setInterval(() => {
                         timeMobile--;
                     }, 1000)
-                }); 
+                });
 
                 btnOptimize.onPointerClickObservable.add(function() {
                     btnOptimize.isVisible = false;
@@ -560,7 +560,7 @@
                         DrawMode = false;
                         camera.dispose();
                         btnDrawMode.children[0].text = 'Draw Route';
-                        camera = new BABYLON.FreeCamera("", new BABYLON.Vector3(0, 100, -500), scene);
+                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
                         camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
                         camera.speed = 20;
                         camera.checkCollisions = true;
@@ -811,10 +811,10 @@
                             txtTimeMobile.top = 5;
                         }, 12000)
                     }
-                    
+
                     if (btnMoveTank.isVisible == false) {
                         camera.dispose();
-                        camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(tank.position.x, tank.position.y + 100, tank.position.z + 400), scene);
+                        camera = new BABYLON.UniversalCamera("Camera", new BABYLON.Vector3(tank.position.x, tank.position.y + 100, tank.position.z + 400), scene);
                         camera.rotation.y = Math.PI;
                         camera.speed = 20;
                         camera.checkCollisions = true;
@@ -1003,7 +1003,6 @@
             window.addEventListener("resize", function () {
                 engine.resize();
             });
-        </script>
-
+        </script>       
     </body>
 </html>
