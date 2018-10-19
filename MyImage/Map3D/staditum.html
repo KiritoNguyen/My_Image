@@ -470,7 +470,7 @@
                         btnChangeCamera.children[0].text = 'Free Camera';
                         camera.speed = 20;
                         camera.checkCollisions = true;
-                        camera.attachControl(canvas, false);
+                        camera.attachControl(canvas, true);
                     }
                     else {
                         camera.dispose();
@@ -528,9 +528,17 @@
                 var Record=false;
                 btnRecordPath.onPointerClickObservable.add(function() {
                     if (clicksRecordPath % 2 == 0) {
+                        btnRecordPath.children[0].text = 'Recording';
                         Record=true;
+                        camera.dispose();
+                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
+                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
+                        camera.speed = 20;
+                        camera.checkCollisions = true;
+                        camera.attachControl(canvas, true); 
                     }
                     else {
+                        btnRecordPath.children[0].text = 'Record Path';
                         Record=false;
                     }
                     clicksRecordPath++;
@@ -553,9 +561,10 @@
                 btnPlayRecord.color = "Orange";
                 btnPlayRecord.thickness = 4;
                 btnPlayRecord.background = "green";
-                btnPlayRecord.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                btnPlayRecord.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 btnPlayRecord.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnPlayRecord.top = "-400px";
+                btnPlayRecord.top = "70px";
+                btnPlayRecord.left = "-10px";  
 
                 btnPlayRecord.onPointerDownObservable.add(function() {
                     if(Record==false){
@@ -648,7 +657,6 @@
                         camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
                         camera.speed = 20;
                         camera.checkCollisions = true;
-                        camera.attachControl(canvas, false);
                         camera.attachControl(canvas, true); 
                     }
                     clicksDraw++;
@@ -902,7 +910,7 @@
                         camera.rotation.y = Math.PI;
                         camera.speed = 20;
                         camera.checkCollisions = true;
-                        camera.attachControl(canvas, false);
+                        camera.attachControl(canvas, true);
                     }   
 
                     if(Record)
