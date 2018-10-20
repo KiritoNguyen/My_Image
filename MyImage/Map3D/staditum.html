@@ -502,6 +502,14 @@
 
                     setTimeout(() => {
                         camera.inputs.attached.virtualJoystick.detachControl();
+                        var currentPos=new BABYLON.Vector3(camera.position.x,camera.position.y,camera.position.z);
+                        var dir=new BABYLON.Vector3(camera.rotation.x, camera.rotation.y,camera.rotation.z);
+                        camera.dispose();
+                        camera = new BABYLON.UniversalCamera("", currentPos, scene);
+                        camera.rotation = dir;
+                        camera.speed = 15;
+                        camera.checkCollisions = true;
+                        camera.attachControl(canvas, true); 
                     }, parseInt(timeMobile) * 1000);
                     
                     intervalTimeMobile = setInterval(() => {
@@ -927,9 +935,9 @@
                         }
                     }
 
-                    if (timeMobile <= 15 && timeMobile > 0)
+                    if (timeMobile > 0)
                         txtTimeMobile.text = 'Time Mobile: ' + timeMobile;
-                    else if (timeMobile >= -5) {
+                    else if (timeMobile <= 0) {
                         clearInterval(intervalTimeMobile);   
                         txtTimeMobile.text = "Time's up";
                     } 
