@@ -151,10 +151,34 @@
                 particleSystem.start();
 
                 ///////////////// INVISIBLE WALL/////////////////
-                var inviWall= new BABYLON.MeshBuilder.CreateBox('inviWall', {width: 4000, height: 3500, depth: 4000}, scene);
-                inviWall.checkCollisions = true;
-                inviWall.visibility = 0;
-                inviWall.position = new BABYLON.Vector3(0, 800, 0);
+                var inviWallTop = new BABYLON.MeshBuilder.CreatePlane('inviWallTop', {size: 4000}, scene);
+                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {height: 2000, width: 4000}, scene);
+                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {height: 2000, width: 4000}, scene);
+                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {height: 2000, width: 4000}, scene);
+                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {height: 2000, width: 4000}, scene);
+
+                inviWallTop.visibility = 1;
+                inviWallFront.visibility = 1;
+                inviWallBack.visibility = 0;
+                inviWallLeft.visibility = 0;
+                inviWallRight.visibility = 0;
+
+                inviWallTop.checkCollisions = true;
+                inviWallFront.checkCollisions = true;
+                inviWallBack.checkCollisions = true;
+                inviWallLeft.checkCollisions = true;
+                inviWallRight.checkCollisions = true;
+
+                inviWallTop.position = new BABYLON.Vector3(0, 1800, 0);
+                inviWallFront.position = new BABYLON.Vector3(0, 800, -2000);
+                inviWallBack.position = new BABYLON.Vector3(0, 800, 2000);
+                inviWallLeft.position = new BABYLON.Vector3(-2000, 800, 0);
+                inviWallRight.position = new BABYLON.Vector3(2000, 800, 0);
+
+                inviWallTop.rotation.x = -Math.PI / 2;
+                inviWallLeft.rotation.y = -Math.PI / 2;
+                inviWallRight.rotation.y = Math.PI / 2; 
+                inviWallFront.rotation.y = Math.PI;
 
                 ///////////////// GROUND TO DRAW/////////////////
                 var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
@@ -493,7 +517,7 @@
                     camera.dispose();
                     camera = new BABYLON.VirtualJoysticksCamera("VJC", new BABYLON.Vector3(0, 100, -500), scene);
                     camera.inertia = 0;
-                    camera.speed = 15;
+                    camera.speed = 20;
                     camera.checkCollisions = true;
                     camera.inputs.attached.virtualJoystick.camera.inertia = 0; 
 
@@ -507,7 +531,7 @@
                         camera.dispose();
                         camera = new BABYLON.UniversalCamera("", currentPos, scene);
                         camera.rotation = dir;
-                        camera.speed = 15;
+                        camera.speed = 20;
                         camera.checkCollisions = true;
                         camera.attachControl(canvas, true); 
                     }, parseInt(timeMobile) * 1000);
@@ -1106,6 +1130,13 @@
                 );
                 createBtnClose();
                 return scene;
+            }
+
+            //////Register service worker
+            if('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                .register('/service-worker.js')
+                .then(function() { console.log("Service Worker Registered"); });
             }
 
             var scene = createScene();
