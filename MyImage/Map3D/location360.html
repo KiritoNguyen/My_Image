@@ -6,6 +6,8 @@
         <title>Location 360 Map</title>
 
         <!-- Babylon.js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
         <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
         <script src="https://preview.babylonjs.com/cannon.js"></script>
@@ -230,6 +232,7 @@
                     camera.upperRadiusLimit = 175; 
                     camera.upperBetaLimit = Math.PI / 2.3;
                     camera.attachControl(canvas, true); 
+                    writedata();
                 }
                 clicksDraw++;
             }); 
@@ -354,7 +357,55 @@
                     groundTexture.update(invertY);
                 }
             };
-	
+            
+            var arrayData=[];
+            var writedata=()=>{
+                jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                    for (var i = 0; i < obj.length; i++) {
+                    arrayData.push(obj[i]);
+                }
+                var newData=JSON.stringify(PointData);
+                var id =1;
+                if(arrayData.length>=1)
+                {
+                    id=arrayData.length+1;
+                }
+                var standardJson=`{"id": ${id},"location":${newData}}`;
+                standardJson=JSON.parse(standardJson);
+                arrayData.push(standardJson);
+                var updatedData=JSON.stringify(arrayData);
+                // do update
+                $.ajax({
+                    url: "https://api.myjson.com/bins/vf6v4", //JSON API
+                    type: "PUT",
+                    data: updatedData,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                });
+                arrayData=[];
+                PointData=[];
+                });   
+            }
+            
+            var showdata= ()=> {
+                var newPointData=[];           
+                jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                    for (var i = 0; i < obj.length; i++) {
+                        for (var j = 0; j < obj[i].location.length; j++) {
+                            var counter = obj[i].location[j];
+                            // console.log(obj[i].location[j]);
+                            var point=new Point(counter.x,counter.y);
+                            newPointData.push(point);
+                        }
+                    }
+            
+                newPointData.forEach(p => {
+                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                    groundTexture.update(invertY);
+                    });
+                });            
+            }
+            showdata();
             canvas.addEventListener("pointerdown", onPointerDown, false);
             canvas.addEventListener("pointerup", onPointerUp, false);
             canvas.addEventListener("pointermove", onPointerMove, false);
