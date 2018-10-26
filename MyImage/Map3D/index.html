@@ -75,7 +75,12 @@
                     </div>
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
+<<<<<<< HEAD
                         <select name="route" style="width: 90%;">
+=======
+                        <select id="route" style="width: 90%;">
+                            
+>>>>>>> 9863c9b8d8897346f4d51d1f43c0efc128bc05b8
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -723,7 +728,11 @@
                 document.getElementById("moveTank").onclick = moveTankFunction;
 
                 /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////////
+<<<<<<< HEAD
                 var DrawMode = false;
+=======
+                var DrawMode=false;
+>>>>>>> 9863c9b8d8897346f4d51d1f43c0efc128bc05b8
                 var drawFunction = function() {
                     DrawMode = true;
                     camera.dispose();
@@ -782,6 +791,54 @@
 
                     movein.setKeys(movein_keys);
                     scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
+                });
+                var newPointData=[]; 
+                var namePointData=[];
+                var PointObject=[];   
+                var loadRouteData= ()=> {         
+                    jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                        for (var i = 0; i < obj.length; i++) {
+                            var nameObj=obj[i].name;
+                            namePointData.push(nameObj);
+                            PointObject.push(obj[i]);
+                            for (var j = 0; j < obj[i].location.length; j++) {
+                                var counter = obj[i].location[j];
+                                var point=new Point(counter.x,counter.y);
+                                newPointData.push(point);
+                            }
+                        }
+                        var i=0; 
+                        var myDiv = document.getElementById("route");
+                        namePointData.forEach(p => {
+                            var option = document.createElement("option");
+                            option.textContent = namePointData[i];
+                            myDiv.add(option);
+                            i++;
+                        });
+                        
+                        newPointData=[]; 
+                        namePointData=[];   
+
+                    // newPointData.forEach(p => {
+                    //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                    //     groundTexture.update(invertY);
+                    //     });
+                    });  
+ 
+                }
+                loadRouteData();
+                document.getElementById("route").addEventListener("change", e => {
+                    if (e.target.value !=null) {
+                        var i=0;
+                        PointObject.forEach(p => {
+                            if(e.target.value==PointObject[i].name)
+                            {
+                                DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                groundTexture.update(invertY);
+                            }
+                            i++;
+                        });
+                    }
                 });
 
                 /////////////////////////// BUTTON LOCATION //////////////////////////
