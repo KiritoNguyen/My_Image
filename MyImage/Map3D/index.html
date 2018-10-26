@@ -568,11 +568,11 @@
                     var newDirData=[];         
                     var namePointData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) => {
-                        for (var i = 0; i < obj.length; i++) {
-                            var nameObj = obj[i].id;
-                            console.log(nameObj);
-                            namePointData.push(nameObj);
-                        }
+                        // for (var i = 0; i < obj.length; i++) {
+                            // var nameObj = obj[i].id;
+                            // console.log(nameObj);
+                            // namePointData.push(nameObj);
+                        // }
                         if(obj.length >= 1) {
                             for (var i = 0; i < obj.length; i++) {
                                 for (var j = 0; j < obj[i].point.length; j++) {
@@ -596,14 +596,14 @@
                             DirData.push(d);
                         })         
 
-                        var i = 0;
-                        var myDiv = document.getElementById('path');
-                        namePointData.forEach(p => {
-                            var option = document.createElement('option');
-                            option.textContent = namePointData[i];
-                            myDiv.add(option);
-                            i++;
-                        });           
+                        // var i = 0;
+                        // var myDiv = document.getElementById('path');
+                        // namePointData.forEach(p => {
+                        //     var option = document.createElement('option');
+                        //     option.textContent = namePointData[i];
+                        //     myDiv.add(option);
+                        //     i++;
+                        // });           
                     })
                 }
 
@@ -612,7 +612,7 @@
                 var writeRecordData=()=>{
                     jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
-                                arrayData.push(obj[i]);
+                            arrayData.push(obj[i]);
                         }
                         var newDataPoint=JSON.stringify(RecordPointData);
                         var newDataDir=JSON.stringify(DirData);
@@ -784,10 +784,12 @@
                     movein.setKeys(movein_keys);
                     scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
                 });
-                var newPointData=[]; 
-                var namePointData=[];
+
+                ///////////////////////////// LOAD Route Data ////////////////////////////
                 var PointObject=[];   
-                var loadRouteData= ()=> {         
+                var loadRouteData = () => {   
+                    var newPointData=[]; 
+                    var namePointData=[];      
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             var nameObj=obj[i].name;
