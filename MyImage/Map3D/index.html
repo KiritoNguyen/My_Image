@@ -22,7 +22,7 @@
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
 
         <style>
-            html, body {
+            /* html, body {
                 overflow: hidden;
                 width: 100%;
                 height: 100%;
@@ -34,11 +34,79 @@
                 width: 100%;
                 height: 100%;
                 touch-action: none;
+            } */
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+            .menu {
+                width: 9%;
+                float: right;
+                padding-right: 10px;
+                text-align: center;
+            }
+            .main {
+                width: 90%;
+                height: 100%;
+                float: left;
+            }
+            .btn {
+                width: 90%;
+                height: 40px;
+            }
+            .list {
+                margin-left: 5%;
+                border-style: solid;
+                height: 200px;
+                text-align: center;
             }
         </style>
     </head>
     <body>
-        <canvas id="renderCanvas"></canvas>
+        <div class="menu">
+            <ul style="list-style-type:none; margin: 0; padding: 0; font-size: 22px; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">
+                <li>Camera</li>
+                    <button id="cameraChange" class="btn">Arc Rotate Camera</button>
+                <li>Path Record</li>
+                    <div class="list">
+                        <select name="path" style="width: 90%;">
+                            <option itemid="id1">Path 1</option>
+                            <option itemid="id2">Path 2</option>
+                            <option itemid="id3">Path 3</option>
+                        </select> 
+                        <button id="playRecord" class="btn" style="margin-top: 18%; margin-left: 5%">Play</button> <br>
+                        <button id="addRecord" class="btn" style="margin-top: 10%; margin-left: 5%">Record</button> <br>
+                        <button id="deleteRecord" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
+                    </div>
+                <li>Draw Route</li>
+                    <div class="list" style="height: 150px;">
+                        <select name="route" style="width: 90%;">
+                            <option itemid="id1">Route 1</option>
+                            <option itemid="id2">Route 2</option>
+                            <option itemid="id3">Route 3</option>
+                        </select> 
+                        <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
+                        <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
+                    </div>
+                <li>Others</li>
+                    <button id="mobileControl" class="btn" style="margin-top: 10%; margin-left: 5%">Mobile Control</button>
+                    <button id="moveTank" class="btn" style="margin-top: 10%; margin-left: 5%">Move tank</button>
+                    <button id="optimize" class="btn" style="margin-top: 10%; margin-left: 5%">Optimize</button>
+            </ul>
+        </div>
+
+        <div class="main">
+            <canvas id="renderCanvas"></canvas>
+        </div>
         <script>
             var canvas = document.getElementById("renderCanvas"); 
             // var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
@@ -388,88 +456,7 @@
                 logText.fontSize = 24;
                 logText.top = 1;
                 logText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                advancedTexture.addControl(logText);
-
-                var btnOptimize = BABYLON.GUI.Button.CreateSimpleButton("btnOptimize", "Optimize");
-                advancedTexture.addControl(btnOptimize);
-                btnOptimize.width = "120px";
-                btnOptimize.height = "40px";
-                btnOptimize.background = "green";
-                btnOptimize.color = "Orange";
-                btnOptimize.cornerRadius = 20;
-                btnOptimize.thickness = 4;
-                btnOptimize.top = 10;
-                btnOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-
-                var btnMoveTank = BABYLON.GUI.Button.CreateSimpleButton("btnMoveTank", "Move Tank");
-                advancedTexture.addControl(btnMoveTank);
-                btnMoveTank.width = 0.08;
-                btnMoveTank.height = "50px";
-                btnMoveTank.cornerRadius = 20;
-                btnMoveTank.color = "Orange";
-                btnMoveTank.thickness = 4;
-                btnMoveTank.background = "green";
-                btnMoveTank.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMoveTank.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnMoveTank.top = "-70px";
-                btnMoveTank.left = "-10px";   
-
-                /////////////////////////////// BUTTON MOBILE CONTROL /////////////////////////////////
-                var btnChangeCamera = BABYLON.GUI.Button.CreateSimpleButton("btnChangeCamera", "Arc Rotate Camera");
-                advancedTexture.addControl(btnChangeCamera);
-                btnChangeCamera.width = 0.08;
-                btnChangeCamera.height = "50px";
-                btnChangeCamera.cornerRadius = 20;
-                btnChangeCamera.color = "Orange";
-                btnChangeCamera.thickness = 4;
-                btnChangeCamera.background = "green";
-                btnChangeCamera.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnChangeCamera.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                btnChangeCamera.top = "-10px";
-                btnChangeCamera.left = "10px";  
-
-                /////////////////////////////// BUTTON MOBILE CONTROL /////////////////////////////////
-                var btnMobileControl = BABYLON.GUI.Button.CreateSimpleButton("btnMobileControl", "Mobile Control");
-                advancedTexture.addControl(btnMobileControl);
-                btnMobileControl.width = 0.08;
-                btnMobileControl.height = "50px";
-                btnMobileControl.cornerRadius = 20;
-                btnMobileControl.color = "Orange";
-                btnMobileControl.thickness = 4;
-                btnMobileControl.background = "green";
-                btnMobileControl.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnMobileControl.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnMobileControl.top = "-10px";
-                btnMobileControl.left = "-10px";   
-
-                //////////////////////////////////Button Draw////////////////////////////////////////
-                var btnDrawMode = BABYLON.GUI.Button.CreateSimpleButton("btnDrawMode", "Draw Route");
-                advancedTexture.addControl(btnDrawMode);
-                btnDrawMode.width = 0.08;
-                btnDrawMode.height = "50px";
-                btnDrawMode.cornerRadius = 20;
-                btnDrawMode.color = "Orange";
-                btnDrawMode.thickness = 4;
-                btnDrawMode.background = "green";
-                btnDrawMode.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnDrawMode.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnDrawMode.top = "-130px";
-                btnDrawMode.left = "-10px";   
-
-                /////////////////////////////////Button Clear/////////////////////////////////////
-                var btnClear = BABYLON.GUI.Button.CreateSimpleButton("btnClear", "Clear Route");
-                advancedTexture.addControl(btnClear);
-                btnClear.width = 0.08;
-                btnClear.height = "50px";
-                btnClear.cornerRadius = 20;
-                btnClear.color = "Orange";
-                btnClear.thickness = 4;
-                btnClear.background = "green";
-                btnClear.children[0].text = 'Clear Route';
-                btnClear.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnClear.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnClear.top = "-190px";
-                btnClear.left = "-10px";   
+                advancedTexture.addControl(logText);  
 
                 /////////////////////////////////Button Go/////////////////////////////////////
                 var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
@@ -485,31 +472,32 @@
                 btnGo.top = "10px";
                 btnGo.left = "-10px";
 
-                var clicks = 0;
-                btnChangeCamera.onPointerClickObservable.add(function() {
-                    if (clicks % 2 == 0) {
-                        camera.dispose();
-                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
-                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
-                        btnChangeCamera.children[0].text = 'Free Camera';
-                        camera.speed = 20;
-                        camera.checkCollisions = true;
-                        camera.attachControl(canvas, true);
-                    }
-                    else {
-                        camera.dispose();
-                        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
-                        camera.target = new BABYLON.Vector3.Zero();
-                        btnChangeCamera.children[0].text = 'Arc Rotate Camera';
-                        camera.lowerRadiusLimit = 200;
-                        camera.upperRadiusLimit = 2800;      
-                        camera.upperBetaLimit = Math.PI / 2;
-                        camera.attachControl(canvas, true); 
-                    }
-                    clicks++;
-                }); 
+                /////////////////////////////////BUTTON CHANGE CAMERA/////////////////////////////////////
+                var cameraFreeFunction = function() {
+                    camera.dispose();
+                    camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+                    camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
+                    camera.speed = 20;
+                    camera.checkCollisions = true;
+                    camera.attachControl(canvas, true);
+                    document.getElementById("cameraChange").onclick = cameraRotateFunction;
+                    document.getElementById('cameraChange').innerHTML = "Free Camera";
+                }
+                var cameraRotateFunction = function() {
+                    camera.dispose();
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera.target = new BABYLON.Vector3.Zero();
+                    camera.lowerRadiusLimit = 200;
+                    camera.upperRadiusLimit = 2800;      
+                    camera.upperBetaLimit = Math.PI / 2;
+                    camera.attachControl(canvas, true);      
+                    document.getElementById("cameraChange").onclick = cameraFreeFunction;       
+                    document.getElementById('cameraChange').innerHTML = "Arc Rotate Camera";
+                }
+                document.getElementById("cameraChange").onclick = cameraFreeFunction;   
 
-                btnMobileControl.onPointerClickObservable.add(function() {
+                /////////////////////////////////BUTTON MOBILE CONTROL/////////////////////////////////////
+                var mobileControlFunction = function() {
                     do {
                         timeMobile = parseInt(window.prompt('Enter time out for mobile control (10 seconds < time < 60 seconds): ', '20'));
                     } while(isNaN(timeMobile) || timeMobile > 60 || timeMobile < 10);
@@ -538,43 +526,36 @@
                     
                     intervalTimeMobile = setInterval(() => {
                         timeMobile--;
-                    }, 1000)
-                });
+                    }, 1000);
+                    // document.getElementById("mobileControl").onclick = test;
+                }
 
-                 ////////////////// DRAW PATH ////////////////////////
-                 var btnRecordPath = BABYLON.GUI.Button.CreateSimpleButton("btnRecordPath", "Record Path");
-                advancedTexture.addControl(btnRecordPath);
-                btnRecordPath.width = 0.08;
-                btnRecordPath.height = "50px";
-                btnRecordPath.cornerRadius = 20;
-                btnRecordPath.color = "Orange";
-                btnRecordPath.thickness = 4;
-                btnRecordPath.background = "green";
-                btnRecordPath.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                btnRecordPath.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnRecordPath.top = "-250px";
-                btnRecordPath.left = "-10px";   
+                // function test() {
+                //     camera.inputs.attached.virtualJoystick.detachControl();
+                //     document.getElementById("mobileControl").onclick = mobileControlFunction;
+                // }
+                document.getElementById("mobileControl").onclick = mobileControlFunction;
 
-                var clicksRecordPath = 0;
+                 ////////////////// BUTTON RECORD PATH ////////////////////////
                 var RecordPath=false;
                 var Record=false;
-                btnRecordPath.onPointerClickObservable.add(function() {
-                    if (clicksRecordPath % 2 == 0) {
-                        btnRecordPath.children[0].text = 'Recording';
-                        Record=true;
-                        camera.dispose();
-                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
-                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
-                        camera.speed = 20;
-                        camera.checkCollisions = true;
-                        camera.attachControl(canvas, true); 
-                    }
-                    else {
-                        btnRecordPath.children[0].text = 'Record Path';
-                        Record=false;
-                    }
-                    clicksRecordPath++;
-                }); 
+                var recordFunction = function() {
+                    Record=true;
+                    camera.dispose();
+                    camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
+                    camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
+                    camera.speed = 20;
+                    camera.checkCollisions = true;
+                    camera.attachControl(canvas, true); 
+                    document.getElementById('addRecord').innerHTML = 'Save Path';
+                    document.getElementById('addRecord').onclick = savePathFunction;
+                }
+                var savePathFunction = function() {
+                    Record=false;
+                    document.getElementById('addRecord').innerHTML = 'Record';
+                    document.getElementById('addRecord').onclick = recordFunction;
+                }
+                document.getElementById('addRecord').onclick = recordFunction;
                 
                 function Point3(_x,_y,_z){
                     this.x=_x;
@@ -585,20 +566,8 @@
                 var DirData=[];
                 var RecordPointData=[];
 
-                var btnPlayRecord = BABYLON.GUI.Button.CreateSimpleButton("btnPlayRecord", "Play Record");
-                advancedTexture.addControl(btnPlayRecord);
-                btnPlayRecord.width = 0.08;
-                btnPlayRecord.height = "50px";
-                btnPlayRecord.cornerRadius = 20;
-                btnPlayRecord.color = "Orange";
-                btnPlayRecord.thickness = 4;
-                btnPlayRecord.background = "green";
-                btnPlayRecord.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                btnPlayRecord.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-                btnPlayRecord.top = "70px";
-                btnPlayRecord.left = "-10px";  
-
-                btnPlayRecord.onPointerDownObservable.add(function() {
+                /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
+                var playRecordFunction = function() {
                     if(Record==false){
                         var count=0;
                         var frameRate = 60;
@@ -631,18 +600,22 @@
                         dirin.setKeys(dir_keys);
                         scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
                     }
-                }); 
+                }
+                document.getElementById('playRecord').onclick = playRecordFunction;
 
-                btnOptimize.onPointerClickObservable.add(function() {
-                    btnOptimize.isVisible = false;
+                /////////////////////////////////BUTTON OPTIMIZE/////////////////////////////////////
+                var optimizeFunction = function() {
+                    document.getElementById('optimize').hidden = true;
                     optimizer.start();
-                });
+                }
+                document.getElementById("optimize").onclick = optimizeFunction;
 
-                btnMoveTank.onPointerDownObservable.add(function() {
-                    if(btnMoveTank.isVisible) {
-                        btnMoveTank.isVisible = false;
+                /////////////////////////////////BUTTON MOVE TANK/////////////////////////////////////
+                var moveTankFunction = function() {
+                    if(document.getElementById('moveTank').hidden == false) {
+                        document.getElementById('moveTank').hidden = true;
                         setTimeout(function(){
-                            btnMoveTank.isVisible = true;
+                            document.getElementById('moveTank').hidden = false;
                         }, 12000);
                     }
  
@@ -655,68 +628,47 @@
                         frame: 0,
                         value: new BABYLON.Vector3(-1350, -40, 500)
                     });
-
                     movein_keys.push({
                         frame: 6 * frameRate,
                         value: new BABYLON.Vector3(-1150, -40, -700)
                     });
-
                     movein_keys.push({
                         frame: 12 * frameRate,
                         value: new BABYLON.Vector3(-1050, -40, -1200)
                     });
 
                     movein.setKeys(movein_keys);
-
                     scene.beginDirectAnimation(tank, [movein], 0, 12 * frameRate, false);
-                });
+                }
+                document.getElementById("moveTank").onclick = moveTankFunction;
 
-                var clicksDraw = 0;
-                var DrawMode = false;
-                btnDrawMode.onPointerClickObservable.add(function() {
-                    if (clicksDraw % 2 == 0) {
-                        DrawMode = true;
-                        camera.dispose();
-                        btnDrawMode.children[0].text = 'Drawing';
-                        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
-                        camera.target = new BABYLON.Vector3.Zero();
-                    }
-                    else {
-                        DrawMode = false;
-                        camera.dispose();
-                        btnDrawMode.children[0].text = 'Draw Route';
-                        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
-                        camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
-                        camera.speed = 20;
-                        camera.checkCollisions = true;
-                        camera.attachControl(canvas, true); 
-                    }
-                    clicksDraw++;
-                }); 
-
-                btnClear.onPointerClickObservable.add(function() {
-                    var clearColor = "#555555";
-                    var invertY = true;
-                    var context = groundTexture._context;
-                    var size = groundTexture.getSize();
-
-                    groundTexture.update(invertY);
-                }); 
+                /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////////
+                var drawFunction = function() {
+                    DrawMode = true;
+                    camera.dispose();
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera.target = new BABYLON.Vector3.Zero();
+                    document.getElementById("addRoute").innerHTML = 'Save Route';
+                    document.getElementById("addRoute").onclick = saveRouteFunction;
+                }
+                var saveRouteFunction = function() {
+                    DrawMode = false;
+                    camera.dispose();
+                    camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
+                    camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
+                    camera.speed = 20;
+                    camera.checkCollisions = true;
+                    camera.attachControl(canvas, true); 
+                    document.getElementById("addRoute").innerHTML = 'Draw';
+                    document.getElementById("addRoute").onclick = drawFunction;
+                }
+                document.getElementById("addRoute").onclick = drawFunction;
 
                 function Point(_x,_y){
                     this.x=_x;
                     this.y=_y;
                 }
                 ///////////////////////////Draw Point/////////////////////////////////
-                var point = new Point(3,3);
-                // var PointList=[point];
-                // for(var i=0;i<3;i++){
-                //     var x=Math.random()*200+100;
-                //     var y=Math.random()*200+100;
-                //     var point=new Point(x,y);
-                //     PointList.push(point);
-                // }
-
                 var DrawOnePoint=function(groundTexture,invertY,x,y){
                     var context = groundTexture._context;
                     context.beginPath();
@@ -928,7 +880,7 @@
 
                 scene.registerBeforeRender(function() {
                     txtFps.text = 'FPS: ' + engine.getFps().toFixed();
-                    if (btnOptimize.isVisible == false) {
+                    if (document.getElementById('optimize').hidden == true) {
                         setTimeout(function(){
                             logText.text = "";
                             txtFps.top = -10;
@@ -936,7 +888,7 @@
                         }, 12000)
                     }
 
-                    if (btnMoveTank.isVisible == false) {
+                    if (document.getElementById('moveTank').hidden == true) {
                         camera.dispose();
                         camera = new BABYLON.UniversalCamera("Camera", new BABYLON.Vector3(tank.position.x, tank.position.y + 100, tank.position.z + 400), scene);
                         camera.rotation.y = Math.PI;
