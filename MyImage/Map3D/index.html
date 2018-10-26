@@ -6,6 +6,8 @@
         <title>Stadium Model 3D</title>
 
         <!-- Babylon.js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
         <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
         <script src="https://preview.babylonjs.com/cannon.js"></script>
@@ -22,19 +24,6 @@
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
 
         <style>
-            /* html, body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            #renderCanvas {
-                width: 100%;
-                height: 100%;
-                touch-action: none;
-            } */
             html, body {
                 overflow: hidden;
                 width: 100%;
@@ -79,9 +68,6 @@
                 <li>Path Record</li>
                     <div class="list">
                         <select name="path" style="width: 90%;">
-                            <option itemid="id1">Path 1</option>
-                            <option itemid="id2">Path 2</option>
-                            <option itemid="id3">Path 3</option>
                         </select> 
                         <button id="playRecord" class="btn" style="margin-top: 18%; margin-left: 5%">Play</button> <br>
                         <button id="addRecord" class="btn" style="margin-top: 10%; margin-left: 5%">Record</button> <br>
@@ -90,9 +76,6 @@
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
                         <select name="route" style="width: 90%;">
-                            <option itemid="id1">Route 1</option>
-                            <option itemid="id2">Route 2</option>
-                            <option itemid="id3">Route 3</option>
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -284,56 +267,66 @@
                     }, 5000)                       
                 }, 20000);
 
-                //////Data of Points////
+                //////Lists of Data////
                 var PointData=[];
-
+                var PosLocation=[];
+                
+                ////////Position of Location/////////////
+                var loadLocation = () => {
+                    var newPosition=[];   
+                    jQuery.getJSON('https://api.myjson.com/bins/kwbd6', (obj) =>{
+                        {
+                            for (var i = 0; i < obj.length; i++) {
+                                var counter = obj[i].position[0];
+                                var pos=new Point3(counter.x,counter.y,counter.z);
+                                newPosition.push(pos);
+                            }
+                        }
+                        var i=0;
+                        newPosition.forEach(p=>{
+                            PosLocation[i]=new Point3(p.x,p.y,p.z);
+                            i++;
+                        })  
+                    })
+                    
+                }
+                loadLocation();
+                
                 var locStadium = new BABYLON.Mesh.CreateBox("locStadium", 0, scene);
                 locStadium.visibility = 0;
-                locStadium.position.x -= 100;
-                locStadium.position.z += 700;
-                locStadium.position.y -= 10;
 
                 var locParking = new BABYLON.Mesh.CreateBox("locParking", 0, scene);
                 locParking.visibility = 0;
-                locParking.position.x -= 600;
-                locParking.position.z += 900;
-                locParking.position.y -= 10;
   
                 var locNationalLeague = new BABYLON.Mesh.CreateBox("locNationalLeague", 0, scene);
                 locNationalLeague.visibility = 0;
-                locNationalLeague.position.x -= 650;
-                locNationalLeague.position.z += 750;
-                locNationalLeague.position.y -= 10;
                 
                 var locKippaxLake = new BABYLON.Mesh.CreateBox("locKippaxLake", 0, scene);
                 locKippaxLake.visibility = 0;
-                locKippaxLake.position.x -= 920;
-                locKippaxLake.position.z += 600;
-                locKippaxLake.position.y -= 10;
 
                 var locStadiumSportsPhysiotherapy = new BABYLON.Mesh.CreateBox("locStadiumSportsPhysiotherapy", 0, scene);
                 locStadiumSportsPhysiotherapy.visibility = 0;
-                locStadiumSportsPhysiotherapy.position.x -= 300;
-                locStadiumSportsPhysiotherapy.position.z += 1100;
-                locStadiumSportsPhysiotherapy.position.y -= 10;
 
                 var locGateACricket = new BABYLON.Mesh.CreateBox("locGateACricket", 0, scene);
                 locGateACricket.visibility = 0;
-                locGateACricket.position.x -= 600;
-                locGateACricket.position.z += 0;
-                locGateACricket.position.y -= 10;
 
                 var locSydneyCricketGround = new BABYLON.Mesh.CreateBox("locSydneyCricketGround", 0, scene);
                 locSydneyCricketGround.visibility = 0;
-                locSydneyCricketGround.position.x -= 300;
-                locSydneyCricketGround.position.z -= 250
-                locSydneyCricketGround.position.y -= 10;
 
                 var locStadiumForecourt = new BABYLON.Mesh.CreateBox("locStadiumForecourt", 0, scene);
                 locStadiumForecourt.visibility = 0;
-                locStadiumForecourt.position.x -= 650;
-                locStadiumForecourt.position.z += 650;
-                locStadiumForecourt.position.y -= 10;
+
+                setTimeout(function(){
+                    console.log(PosLocation[1].x);
+                    locStadium.position= new BABYLON.Vector3(PosLocation[0].x,PosLocation[0].z,PosLocation[0].y);
+                    locParking.position= new BABYLON.Vector3(PosLocation[1].x,PosLocation[1].z,PosLocation[1].y);
+                    locNationalLeague.position= new BABYLON.Vector3(PosLocation[2].x,PosLocation[2].z,PosLocation[2].y);
+                    locKippaxLake.position= new BABYLON.Vector3(PosLocation[3].x,PosLocation[3].z,PosLocation[3].y);
+                    locStadiumSportsPhysiotherapy.position= new BABYLON.Vector3(PosLocation[4].x,PosLocation[4].z,PosLocation[4].y);
+                    locGateACricket.position= new BABYLON.Vector3(PosLocation[5].x,PosLocation[5].z,PosLocation[5].y);
+                    locSydneyCricketGround.position= new BABYLON.Vector3(PosLocation[6].x,PosLocation[6].z,PosLocation[6].y);
+                    locStadiumForecourt.position= new BABYLON.Vector3(PosLocation[7].x,PosLocation[7].z,PosLocation[7].y);
+                }, 5000);
 
                 var clearColor = "#555555";
                 var invertY = true;
@@ -552,6 +545,8 @@
                 }
                 var savePathFunction = function() {
                     Record=false;
+                    writeRecordData();
+                    loadRecordData();
                     document.getElementById('addRecord').innerHTML = 'Record';
                     document.getElementById('addRecord').onclick = recordFunction;
                 }
@@ -566,39 +561,124 @@
                 var DirData=[];
                 var RecordPointData=[];
 
+                /////////////LOAD Record Data//////////////
+                var loadRecordData = () => {
+                    var newPointData=[];  
+                    var newDirData=[];         
+                    var namePointData=[];
+                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) => {
+                        for (var i = 0; i < obj.length; i++) {
+                            var nameObj = obj[i].id;
+                            console.log(nameObj);
+                            namePointData.push(nameObj);
+                        }
+                        if(obj.length >= 1) {
+                            for (var i = 0; i < obj.length; i++) {
+                                for (var j = 0; j < obj[i].point.length; j++) {
+                                    var counter = obj[i].point[j];
+                                    var point=new Point3(counter.x,counter.y,counter.z);
+                                    newPointData.push(point);
+                                }
+                            }
+                            for (var i = 0; i < obj.length; i++) {
+                                for (var j = 0; j < obj[i].direct.length; j++) {
+                                    var counter = obj[i].direct[j];
+                                    var dir=new Point3(counter.x,counter.y,counter.z);
+                                    newDirData.push(dir);
+                                }
+                            }
+                        }
+                        newPointData.forEach(p=>{
+                            RecordPointData.push(p);
+                        })
+                        newDirData.forEach(d=>{
+                            DirData.push(d);
+                        })         
+
+                        var i = 0;
+                        var myDiv = document.getElementById('path');
+                        namePointData.forEach(p => {
+                            var option = document.createElement('option');
+                            option.textContent = namePointData[i];
+                            myDiv.add(option);
+                            i++;
+                        });           
+                    })
+                }
+
+                /////////////WRITE Record Data//////////////
+                var arrayData=[];
+                var writeRecordData=()=>{
+                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
+                        for (var i = 0; i < obj.length; i++) {
+                                arrayData.push(obj[i]);
+                        }
+                        var newDataPoint=JSON.stringify(RecordPointData);
+                        var newDataDir=JSON.stringify(DirData);
+                        var id = 1;
+                        if(arrayData.length >= 1)
+                            id=arrayData.length++;
+                        
+                        var standardJson=`{"id": ${id},"point":${newDataPoint},"direct":${newDataDir}}`;
+                        standardJson=JSON.parse(standardJson);
+                        arrayData.push(standardJson);
+                        var updatedData=JSON.stringify(arrayData);
+                        // do update
+                        $.ajax({
+                            url: "https://api.myjson.com/bins/12ibcs", //JSON API
+                            type: "PUT",
+                            data: updatedData,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        });
+                        arrayData=[];
+                        PointData=[];
+                    });   
+                }
+
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
                 var playRecordFunction = function() {
                     if(Record==false){
-                        var count=0;
-                        var frameRate = 60;
-                        var movein_keys = []; 
-                        var dir_keys=[];
+                        loadRecordData();
+                        setTimeout(function() {
+                            camera.dispose();
+                            camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+                            camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
+                            document.getElementById('cameraChange').innerHTML = 'Free Camera';
+                            camera.speed = 20;
+                            camera.checkCollisions = true;
+                            camera.attachControl(canvas, true);
+                            var count=0;
+                            var frameRate = 60;
+                            var movein_keys = []; 
+                            var dir_keys=[];
+                            console.log(RecordPointData);
+                            RecordPointData.forEach(p=>{
+                                movein_keys.push({
+                                    frame: count*frameRate/10,
+                                    value: new BABYLON.Vector3(p.x, p.y, p.z)
+                                });
+                                count++;
+                            })
+                            count=0;
+                            DirData.forEach(d => {
+                                dir_keys.push({
+                                    frame: count*frameRate/10,
+                                    value: new BABYLON.Vector3(d.x,d.y,d.z)
+                                });
+                                count++;
+                            })
+                            
+                            var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-                        RecordPointData.forEach(p=>{
-                            movein_keys.push({
-                                frame: count*frameRate/10,
-                                value: new BABYLON.Vector3(p.x, p.y, p.z)
-                            });
-                            count++;
-                        })
-                        count=0;
-                        DirData.forEach(d => {
-                            dir_keys.push({
-                                frame: count*frameRate/10,
-                                value: new BABYLON.Vector3(d.x,d.y,d.z)
-                            });
-                            count++;
-                        })
-                        
-                        var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
-                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                            var dirin = new BABYLON.Animation("dirin", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-                        var dirin = new BABYLON.Animation("dirin", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
-                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-
-                        movein.setKeys(movein_keys);
-                        dirin.setKeys(dir_keys);
-                        scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
+                            movein.setKeys(movein_keys);
+                            dirin.setKeys(dir_keys);
+                            scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
+                        },3000);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
@@ -643,6 +723,7 @@
                 document.getElementById("moveTank").onclick = moveTankFunction;
 
                 /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////////
+                var DrawMode = false;
                 var drawFunction = function() {
                     DrawMode = true;
                     camera.dispose();
