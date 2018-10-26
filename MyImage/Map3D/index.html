@@ -6,6 +6,8 @@
         <title>Stadium Model 3D</title>
 
         <!-- Babylon.js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
         <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
         <script src="https://preview.babylonjs.com/cannon.js"></script>
@@ -22,19 +24,6 @@
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
 
         <style>
-            /* html, body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            #renderCanvas {
-                width: 100%;
-                height: 100%;
-                touch-action: none;
-            } */
             html, body {
                 overflow: hidden;
                 width: 100%;
@@ -89,10 +78,8 @@
                     </div>
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
-                        <select name="route" style="width: 90%;">
-                            <option itemid="id1">Route 1</option>
-                            <option itemid="id2">Route 2</option>
-                            <option itemid="id3">Route 3</option>
+                        <select id="route" style="width: 90%;">
+                            
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -643,6 +630,7 @@
                 document.getElementById("moveTank").onclick = moveTankFunction;
 
                 /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////////
+                var DrawMode=false;
                 var drawFunction = function() {
                     DrawMode = true;
                     camera.dispose();
@@ -701,6 +689,54 @@
 
                     movein.setKeys(movein_keys);
                     scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
+                });
+                var newPointData=[]; 
+                var namePointData=[];
+                var PointObject=[];   
+                var loadRouteData= ()=> {         
+                    jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                        for (var i = 0; i < obj.length; i++) {
+                            var nameObj=obj[i].name;
+                            namePointData.push(nameObj);
+                            PointObject.push(obj[i]);
+                            for (var j = 0; j < obj[i].location.length; j++) {
+                                var counter = obj[i].location[j];
+                                var point=new Point(counter.x,counter.y);
+                                newPointData.push(point);
+                            }
+                        }
+                        var i=0; 
+                        var myDiv = document.getElementById("route");
+                        namePointData.forEach(p => {
+                            var option = document.createElement("option");
+                            option.textContent = namePointData[i];
+                            myDiv.add(option);
+                            i++;
+                        });
+                        
+                        newPointData=[]; 
+                        namePointData=[];   
+
+                    // newPointData.forEach(p => {
+                    //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                    //     groundTexture.update(invertY);
+                    //     });
+                    });  
+ 
+                }
+                loadRouteData();
+                document.getElementById("route").addEventListener("change", e => {
+                    if (e.target.value !=null) {
+                        var i=0;
+                        PointObject.forEach(p => {
+                            if(e.target.value==PointObject[i].name)
+                            {
+                                DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                groundTexture.update(invertY);
+                            }
+                            i++;
+                        });
+                    }
                 });
 
                 /////////////////////////// BUTTON LOCATION //////////////////////////
