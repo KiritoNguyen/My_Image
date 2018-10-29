@@ -418,7 +418,15 @@
                 // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/StadiumExport/stadium.babylon");
                 var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/stadium.babylon");
                 meshTask.onSuccess = function (task) {
-                    task.loadedMeshes[0].position = new BABYLON.Vector3(500, -50, 500);
+                    m = task.loadedMeshes;
+                    m[0].position = new BABYLON.Vector3(500, -50, 500);
+
+                    for(var i = 0; i < m.length; i++) {
+                        m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                        // m[i].material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+                        // m[i].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/H3Zoom_3DModelBuilding/Model_1.jpg", scene);
+                    }
+                    BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
                 }	
                 
                 assetsManager.onFinish = function (tasks) {
