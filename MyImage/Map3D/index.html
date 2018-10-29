@@ -767,16 +767,127 @@
                     camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
                     camera.speed = 20;
                     camera.checkCollisions = true;
-                    camera.attachControl(canvas, true); 
+                    camera.attachControl(canvas, true);
+                    do{
+                        var nameOfRoute = prompt("Please enter route name:");      
+                    }while(nameOfRoute==="" );
+                    if(nameOfRoute!=null)
+                    {
+                        writeData(nameOfRoute);
+                    } 
                     document.getElementById("addRoute").innerHTML = 'Draw';
                     document.getElementById("addRoute").onclick = drawFunction;
                 }
+                var arrayData=[];
+                var writeData=(nameOfRoute)=>{
+                    var id=1;
+                    jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                        for (var i = 0; i < obj.length; i++) {
+                        arrayData.push(obj[i]);
+                    }    
+                    if(obj.length!=0){
+                        id=obj[obj.length-1].id+1;
+                    }
+                    var newData=JSON.stringify(PointData);            
+                    var standardJson=`{"id": ${id},"name":"${nameOfRoute}","location":${newData}}`;
+                    standardJson=JSON.parse(standardJson);
+                    arrayData.push(standardJson);
+                    var updatedData=JSON.stringify(arrayData);
+                    // do update
+                    $.ajax({
+                        url: "https://api.myjson.com/bins/vf6v4",
+                        type: "PUT",
+                        data: updatedData,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    });
+                    arrayData=[];
+                    PointData=[];  
+                    function removeOptions(selectbox)
+                    {
+                        var i;
+                        for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+                        {
+                            selectbox.remove(i);
+                        }
+                    }
+                    removeOptions(document.getElementById("route"));
+                    loadRouteData();                
+                    });                             
+                }
                 document.getElementById("addRoute").onclick = drawFunction;
-
+                
                 function Point(_x,_y){
                     this.x=_x;
                     this.y=_y;
                 }
+
+                /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
+
+                var deleteFunction=()=>{
+                    arrayData=[];
+                    jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
+                        var e = document.getElementById("route");
+                        var getItem = e.options[e.selectedIndex].text;
+                        for (var i = 0; i < obj.length; i++) {
+                            arrayData.push(obj[i]);
+                        } 
+
+                        function removeArrayEl(arr, RouteName){
+                            newArr = [];
+                            index=-1;
+                            for(var i = 0, l = arr.length;i < l; i++){
+                                var counter = arr[i].name;
+                                    if(counter == RouteName){
+                                        index=arr[i].id;
+                                }
+                            }
+                            for(var i = 0, l = arr.length;i < l; i++){
+                                var counter = arr[i].id;
+                                    if(counter != index){
+                                        newArr.push(arr[i]);
+                                }
+                            }
+                        return newArr;
+                        }
+                    var newarray=removeArrayEl(arrayData,getItem);                          
+
+                    var updatedData=JSON.stringify(newarray);     
+                    // do update
+                        $.ajax({
+                            url: "https://api.myjson.com/bins/vf6v4",
+                            type: "PUT",
+                            data: updatedData,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        });
+                    function removeOptions(selectbox)
+                    {
+                        var i;
+                        for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+                        {
+                            selectbox.remove(i);
+                        }
+                    }
+                    removeOptions(document.getElementById("route"));
+                    loadRouteData();
+                    });
+                    ///CLEAR ALL
+
+                    // arrayData=[];
+                    // var updatedData=JSON.stringify(arrayData);         
+                    // // do update
+                    // $.ajax({
+                    //     url: "https://api.myjson.com/bins/vf6v4",
+                    //     type: "PUT",
+                    //     data: updatedData,
+                    //     contentType: "application/json; charset=utf-8",
+                    //     dataType: "json"
+                    // });
+                    // });
+                }
+
+                document.getElementById("deleteRoute").onclick = deleteFunction;
                 ///////////////////////////Draw Point/////////////////////////////////
                 var DrawOnePoint=function(groundTexture,invertY,x,y){
                     var context = groundTexture._context;
@@ -813,14 +924,14 @@
                 });
 
                 ///////////////////////////// LOAD Route Data ////////////////////////////
-                var PointObject=[];   
                 var loadRouteData = () => {   
-                    var newPointData=[]; 
-                    var namePointData=[];      
+                    var newPointData=[];  
+                    var PointObject=[]; 
+                    var PointName=[];      
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             var nameObj=obj[i].name;
-                            namePointData.push(nameObj);
+                            PointName.push(nameObj);
                             PointObject.push(obj[i]);
                             for (var j = 0; j < obj[i].location.length; j++) {
                                 var counter = obj[i].location[j];
@@ -830,37 +941,58 @@
                         }
                         var i=0; 
                         var myDiv = document.getElementById("route");
-                        namePointData.forEach(p => {
+                        PointName.forEach(p => {
                             var option = document.createElement("option");
-                            option.textContent = namePointData[i];
+                            option.textContent = PointName[i];
                             myDiv.add(option);
                             i++;
                         });
                         
                         newPointData=[]; 
-                        namePointData=[];   
-
-                    // newPointData.forEach(p => {
-                    //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                    //     groundTexture.update(invertY);
-                    //     });
+                        PointName=[];   
+                        //Show all route
+                        // newPointData.forEach(p => {
+                        //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                        //     groundTexture.update(invertY);
+                        //     });
                     });  
- 
+                    var count=-1;
+                    document.getElementById("route").addEventListener("change", e => {
+                        if (e.target.value !=null) {
+                            var i=0;             
+                            PointObject.forEach(p => {                      
+                                if(e.target.value==PointObject[i].name)
+                                {
+                                    newPointData=[];
+                                    for (var j = 0; j < PointObject[i].location.length; j++) {              
+                                        var counter = PointObject[i].location[j];                             
+                                        var point=new Point(counter.x,counter.y);
+                                        newPointData.push(point);
+
+                                    }
+                                    if(count!=i){
+                                        groundTexture.dispose();    
+                                        groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                                        dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                                        dynamicMaterial.diffuseTexture = groundTexture;
+
+                                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                        groundDraw.position.y = -45;
+                                        dynamicMaterial.diffuseTexture.hasAlpha = true;
+                                        groundDraw.material = dynamicMaterial;
+                                    }
+                                    newPointData.forEach(p => {
+                                        DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                        groundTexture.update(invertY);  
+                                    });
+                                    count=i;
+                                }
+                                i++;
+                            });
+                        }
+                    });
                 }
                 loadRouteData();
-                document.getElementById("route").addEventListener("change", e => {
-                    if (e.target.value !=null) {
-                        var i=0;
-                        PointObject.forEach(p => {
-                            if(e.target.value==PointObject[i].name)
-                            {
-                                DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                                groundTexture.update(invertY);
-                            }
-                            i++;
-                        });
-                    }
-                });
 
                 /////////////////////////// BUTTON LOCATION //////////////////////////
                 var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");
