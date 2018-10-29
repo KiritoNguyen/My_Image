@@ -68,6 +68,7 @@
                 <li>Path Record</li>
                     <div class="list">
                         <select name="path" style="width: 90%;">
+                            <option value="allPath">All Path</option>
                         </select> 
                         <button id="playRecord" class="btn" style="margin-top: 18%; margin-left: 5%">Play</button> <br>
                         <button id="addRecord" class="btn" style="margin-top: 10%; margin-left: 5%">Record</button> <br>
@@ -76,7 +77,8 @@
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
                         <select id="route" style="width: 90%;">
-                            
+                            <option value="none">None</option>
+                            <option value="allRoute">All Route</option>
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -557,7 +559,7 @@
                 // }
                 document.getElementById("mobileControl").onclick = mobileControlFunction;
 
-                 ////////////////// BUTTON RECORD PATH ////////////////////////
+                ////////////////// BUTTON RECORD PATH ////////////////////////
                 var RecordPath=false;
                 var Record=false;
                 var recordFunction = function() {
@@ -771,8 +773,7 @@
                     do{
                         var nameOfRoute = prompt("Please enter route name:");      
                     }while(nameOfRoute==="" );
-                    if(nameOfRoute!=null)
-                    {
+                    if(nameOfRoute!=null) {
                         writeData(nameOfRoute);
                     } 
                     document.getElementById("addRoute").innerHTML = 'Draw';
@@ -783,36 +784,33 @@
                     var id=1;
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
-                        arrayData.push(obj[i]);
-                    }    
-                    if(obj.length!=0){
-                        id=obj[obj.length-1].id+1;
-                    }
-                    var newData=JSON.stringify(PointData);            
-                    var standardJson=`{"id": ${id},"name":"${nameOfRoute}","location":${newData}}`;
-                    standardJson=JSON.parse(standardJson);
-                    arrayData.push(standardJson);
-                    var updatedData=JSON.stringify(arrayData);
-                    // do update
-                    $.ajax({
-                        url: "https://api.myjson.com/bins/vf6v4",
-                        type: "PUT",
-                        data: updatedData,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json"
-                    });
-                    arrayData=[];
-                    PointData=[];  
-                    function removeOptions(selectbox)
-                    {
-                        var i;
-                        for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-                        {
-                            selectbox.remove(i);
+                            arrayData.push(obj[i]);
+                        }    
+                        if(obj.length!=0){
+                            id=obj[obj.length-1].id+1;
                         }
-                    }
-                    removeOptions(document.getElementById("route"));
-                    loadRouteData();                
+                        var newData=JSON.stringify(PointData);            
+                        var standardJson=`{"id": ${id},"name":"${nameOfRoute}","location":${newData}}`;
+                        standardJson=JSON.parse(standardJson);
+                        arrayData.push(standardJson);
+                        var updatedData=JSON.stringify(arrayData);
+                        // do update
+                        $.ajax({
+                            url: "https://api.myjson.com/bins/vf6v4",
+                            type: "PUT",
+                            data: updatedData,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        });
+                        arrayData=[];
+                        PointData=[];  
+                        function removeOptions(selectbox) {
+                            for(i = selectbox.options.length - 1; i >= 0; i--) {
+                                selectbox.remove(i);
+                            }
+                        }
+                        removeOptions(document.getElementById("route"));
+                        loadRouteData();                
                     });                             
                 }
                 document.getElementById("addRoute").onclick = drawFunction;
@@ -838,39 +836,36 @@
                             index=-1;
                             for(var i = 0, l = arr.length;i < l; i++){
                                 var counter = arr[i].name;
-                                    if(counter == RouteName){
-                                        index=arr[i].id;
+                                if(counter == RouteName){
+                                    index=arr[i].id;
                                 }
                             }
                             for(var i = 0, l = arr.length;i < l; i++){
                                 var counter = arr[i].id;
-                                    if(counter != index){
-                                        newArr.push(arr[i]);
+                                if(counter != index){
+                                    newArr.push(arr[i]);
                                 }
                             }
-                        return newArr;
+                            return newArr;
                         }
-                    var newarray=removeArrayEl(arrayData,getItem);                          
+                        var newarray=removeArrayEl(arrayData,getItem);                          
 
-                    var updatedData=JSON.stringify(newarray);     
-                    // do update
-                        $.ajax({
-                            url: "https://api.myjson.com/bins/vf6v4",
-                            type: "PUT",
-                            data: updatedData,
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        });
-                    function removeOptions(selectbox)
-                    {
-                        var i;
-                        for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-                        {
-                            selectbox.remove(i);
+                        var updatedData=JSON.stringify(newarray);     
+                        // do update
+                            $.ajax({
+                                url: "https://api.myjson.com/bins/vf6v4",
+                                type: "PUT",
+                                data: updatedData,
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json"
+                            });
+                        function removeOptions(selectbox) {
+                            for(i = selectbox.options.length - 1; i >= 0; i--) {
+                                selectbox.remove(i);
+                            }
                         }
-                    }
-                    removeOptions(document.getElementById("route"));
-                    loadRouteData();
+                        removeOptions(document.getElementById("route"));
+                        loadRouteData();
                     });
                     ///CLEAR ALL
 
@@ -968,7 +963,6 @@
                                         var counter = PointObject[i].location[j];                             
                                         var point=new Point(counter.x,counter.y);
                                         newPointData.push(point);
-
                                     }
                                     if(count!=i){
                                         groundTexture.dispose();    
