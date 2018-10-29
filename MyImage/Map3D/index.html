@@ -126,7 +126,8 @@
                 scene.collisionsEnabled = true;
 
                 ///////////////// LIGHT //////////////////
-                var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 200, 100), scene);
+                var light = new BABYLON.PointLight("light", new BABYLON.Vector3(-5000, 6000, -16000), scene);
+                light.intensity = 2;
 
                 /////////////// CAMERA ///////////////
                 camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
@@ -135,6 +136,24 @@
                 camera.upperRadiusLimit = 2800;      
                 camera.upperBetaLimit = Math.PI / 2;
                 camera.attachControl(canvas, true); 
+
+                // Creating light sphere
+                var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
+                    
+                lightSphere0.material = new BABYLON.StandardMaterial("white", scene);
+                lightSphere0.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                lightSphere0.material.specularColor = new BABYLON.Color3(0, 0, 0);
+                lightSphere0.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+
+                lightSphere0.position = light.position;
+                
+                var lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", light, scene);
+                var flare00 = new BABYLON.LensFlare(0.2, 0, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/Flare2.png", lensFlareSystem);
+                var flare01 = new BABYLON.LensFlare(0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare3.png", lensFlareSystem);
+                var flare02 = new BABYLON.LensFlare(0.2, 1.0, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare3.png", lensFlareSystem);
+                var flare03 = new BABYLON.LensFlare(0.4, 0.4, new BABYLON.Color3(1, 0.5, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare.png", lensFlareSystem);
+                var flare04 = new BABYLON.LensFlare(0.1, 0.6, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/Flare2.png", lensFlareSystem);
+                var flare05 = new BABYLON.LensFlare(0.3, 0.8, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare3.png", lensFlareSystem);
 
                 /////////////////SKY BOX/////////////////
                 // var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12600}, scene);
@@ -233,15 +252,15 @@
                 inviWallFront.rotation.y = Math.PI;
 
                 ///////////////// GROUND TO DRAW/////////////////
-                var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);    /////////////// A
         
-                var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);                       /////////////// B
                 dynamicMaterial.diffuseTexture = groundTexture;
 
-                var ground = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
-                ground.position.y = -45;
+                var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);         /////////////// C => A là con B và B là con C => ....
+                groundDraw.position.y = -45;
                 dynamicMaterial.diffuseTexture.hasAlpha = true;
-                ground.material = dynamicMaterial;
+                groundDraw.material = dynamicMaterial;
 
                 ///////////////// GROUND VISIBLE/////////////////
                 var ground = BABYLON.Mesh.CreateGround("groundVisible", 4000, 4000, 2, scene);
