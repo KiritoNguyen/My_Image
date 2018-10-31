@@ -575,8 +575,13 @@
                 }
                 var savePathFunction = function() {
                     Record=false;
-                    writeRecordData();
-                    loadRecordData();
+                    do{
+                        var nameOfPath = prompt("Please enter route name:");      
+                    }while(nameOfPath==="" );
+                    if(nameOfPath!=null) {
+                        writeRecordData(nameOfPath);
+                    } 
+                    
                     document.getElementById('addRecord').innerHTML = 'Record';
                     document.getElementById('addRecord').onclick = recordFunction;
                 }
@@ -590,12 +595,13 @@
                 var preRecord=new BABYLON.Vector3(0,0,0);
                 var DirData=[];
                 var RecordPointData=[];
+                var NamePathData=[];
 
                 /////////////LOAD Record Data//////////////
                 var loadRecordData = () => {
                     var newPointData=[];  
                     var newDirData=[];         
-                    var namePointData=[];
+                    var newNamePathData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) => {
                         // for (var i = 0; i < obj.length; i++) {
                             // var nameObj = obj[i].id;
@@ -617,6 +623,10 @@
                                     newDirData.push(dir);
                                 }
                             }
+                            for (var i = 0; i < obj.length; i++) {
+                                var name=obj[i].name;
+                                newNamePathData.push(name);
+                            }
                         }
                         newPointData.forEach(p=>{
                             RecordPointData.push(p);
@@ -624,21 +634,24 @@
                         newDirData.forEach(d=>{
                             DirData.push(d);
                         })         
+                        newNamePathData.forEach(n=>{
+                            NamePathData.push(n);
+                        })
 
-                        // var i = 0;
-                        // var myDiv = document.getElementById('path');
-                        // namePointData.forEach(p => {
-                        //     var option = document.createElement('option');
-                        //     option.textContent = namePointData[i];
-                        //     myDiv.add(option);
-                        //     i++;
-                        // });           
+                        var i = 0;
+                        var myDiv = document.getElementById('path');
+                        newNamePathData.forEach(p => {
+                            var option = document.createElement('option');
+                            option.textContent = newNamePathData[i];
+                            myDiv.add(option);
+                            i++;
+                        });           
                     })
                 }
 
                 /////////////WRITE Record Data//////////////
                 var arrayData=[];
-                var writeRecordData=()=>{
+                var writeRecordData=(nameOfPath)=>{
                     jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
@@ -646,10 +659,11 @@
                         var newDataPoint=JSON.stringify(RecordPointData);
                         var newDataDir=JSON.stringify(DirData);
                         var id = 1;
-                        if(arrayData.length >= 1)
-                            id=arrayData.length++;
+                        if(obj.length!=0){
+                            id=obj[obj.length-1].id+1;
+                        }
                         
-                        var standardJson=`{"id": ${id},"point":${newDataPoint},"direct":${newDataDir}}`;
+                        var standardJson=`{"id": ${id},"name":"${nameOfPath}","point":${newDataPoint},"direct":${newDataDir}}`;
                         standardJson=JSON.parse(standardJson);
                         arrayData.push(standardJson);
                         var updatedData=JSON.stringify(arrayData);
@@ -663,6 +677,13 @@
                         });
                         arrayData=[];
                         PointData=[];
+                        function removeOptions(selectbox) {
+                            for(i = selectbox.options.length - 1; i >= 0; i--) {
+                                selectbox.remove(i);
+                            }
+                        }
+                        //removeOptions(document.getElementById("path"));
+                        loadRecordData();    
                     });   
                 }
 
@@ -712,6 +733,70 @@
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
+
+                                /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
+
+                var deletePathFunction=()=>{
+                    arrayData=[];
+                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
+                        var e = document.getElementById("path");
+                        var getItem = e.options[e.selectedIndex].text;
+                        for (var i = 0; i < obj.length; i++) {
+                            arrayData.push(obj[i]);
+                        } 
+
+                        function removeArrayEl(arr, PathName){
+                            newArr = [];
+                            index=-1;
+                            for(var i = 0, l = arr.length;i < l; i++){
+                                var counter = arr[i].name;
+                                if(counter == PathName){
+                                    index=arr[i].id;
+                                }
+                            }
+                            for(var i = 0, l = arr.length;i < l; i++){
+                                var counter = arr[i].id;
+                                if(counter != index){
+                                    newArr.push(arr[i]);
+                                }
+                            }
+                            return newArr;
+                        }
+                        var newarray=removeArrayEl(arrayData,getItem);                          
+
+                        var updatedData=JSON.stringify(newarray);     
+                        // do update
+                            $.ajax({
+                                url: "https://api.myjson.com/bins/12ibcs",
+                                type: "PUT",
+                                data: updatedData,
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json"
+                            });
+                        function removeOptions(selectbox) {
+                            for(i = selectbox.options.length - 1; i >= 0; i--) {
+                                selectbox.remove(i);
+                            }
+                        }
+                        removeOptions(document.getElementById("path"));
+                        loadRecordData();
+                    });
+                    ///CLEAR ALL
+
+                    // arrayData=[];
+                    // var updatedData=JSON.stringify(arrayData);         
+                    // // do update
+                    // $.ajax({
+                    //     url: "https://api.myjson.com/bins/vf6v4",
+                    //     type: "PUT",
+                    //     data: updatedData,
+                    //     contentType: "application/json; charset=utf-8",
+                    //     dataType: "json"
+                    // });
+                    // });
+                }
+
+                document.getElementById("deleteRoute").onclick = deleteFunction;
 
                 /////////////////////////////////BUTTON OPTIMIZE/////////////////////////////////////
                 var optimizeFunction = function() {
