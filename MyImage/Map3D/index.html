@@ -597,54 +597,20 @@
                 var NamePathData=[];
 
                 /////////////LOAD Record Data//////////////
-                var loadRecordData = () => {
-                    var newPointData=[];  
-                    var newDirData=[];         
+                var loadRecordData = () => {     
                     var newNamePathData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
-                        // for (var i = 0; i < obj.length; i++) {
-                            // var nameObj = obj[i].id;
-                            // console.log(nameObj);
-                            // namePointData.push(nameObj);
-                        // }
                         if(obj.length >= 1) {
-                            for (var i = 0; i < obj.length; i++) {
-                                for (var j = 0; j < obj[i].point.length; j++) {
-                                    var counter = obj[i].point[j];
-                                    var point=new Point3(counter.x,counter.y,counter.z);
-                                    newPointData.push(point);
-                                }
-                            }
-                            for (var i = 0; i < obj.length; i++) {
-                                for (var j = 0; j < obj[i].direct.length; j++) {
-                                    var counter = obj[i].direct[j];
-                                    var dir=new Point3(counter.x,counter.y,counter.z);
-                                    newDirData.push(dir);
-                                }
-                            }
                             for (var i = 0; i < obj.length; i++) {
                                 var name=obj[i].name;
                                 newNamePathData.push(name);
                             }
                         }
-                        RecordPointData=[];
-                        DirData=[];
-                        NamePathData=[];
-                        newPointData.forEach(p=>{
-                            RecordPointData.push(p);
-                        })
-                        newDirData.forEach(d=>{
-                            DirData.push(d);
-                        })         
                         newNamePathData.forEach(n=>{
                             NamePathData.push(n);
                         })
-
-                        console.log(RecordPointData);
-                        console.log(DirData);
-                        console.log(newNamePathData);
-
                         var i = 0;
+                        document.getElementById('path').innerHTML="";
                         var myDiv = document.getElementById('path');
                         newNamePathData.forEach(p => {
                             var option = document.createElement('option');
@@ -655,6 +621,42 @@
                     })
                 }
                 loadRecordData();
+
+                var loadRecordDataByName = (nameOfPath) => {
+                    var newPointData=[];  
+                    var newDirData=[];         
+                    jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
+                        if(obj.length >= 1) {
+                            for (var i = 0; i < obj.length; i++) {
+                                if(obj[i].name==nameOfPath){
+                                    for (var j = 0; j < obj[i].point.length; j++) {
+                                        var counter = obj[i].point[j];
+                                        var point=new Point3(counter.x,counter.y,counter.z);
+                                        newPointData.push(point);
+                                    }
+                                }
+                            }
+                            for (var i = 0; i < obj.length; i++) {
+                                if(obj[i].name==nameOfPath){
+                                    for (var j = 0; j < obj[i].direct.length; j++) {
+                                        var counter = obj[i].direct[j];
+                                        var dir=new Point3(counter.x,counter.y,counter.z);
+                                        newDirData.push(dir);
+                                    }
+                                }
+                            }
+                        }
+                        RecordPointData=[];
+                        DirData=[];
+                        NamePathData=[];
+                        newPointData.forEach(p=>{
+                            RecordPointData.push(p);
+                        })
+                        newDirData.forEach(d=>{
+                            DirData.push(d);
+                        })             
+                    })
+                }
 
                 /////////////WRITE Record Data//////////////
                 var arrayData=[];
@@ -690,14 +692,18 @@
                             }
                         }
                         //removeOptions(document.getElementById("path"));
-                        loadRecordData();    
+                          
                     });   
+                    setTimeout(function(){
+                        loadRecordData();  
+                    },3000);
+                    
                 }
 
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
                 var playRecordFunction = function() {
                     if(Record==false){
-                        loadRecordData();
+                        loadRecordDataByName(document.getElementById('path').value);                 
                         setTimeout(function() {
                             camera.dispose();
                             camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
@@ -746,64 +752,27 @@
                 var deletePathFunction=()=>{
                     arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
-                        var e = document.getElementById("path");
-                        var getItem = e.options[e.selectedIndex].text;
                         for (var i = 0; i < obj.length; i++) {
-                            arrayData.push(obj[i]);
-                        } 
-
-                        function removeArrayEl(arr, PathName){
-                            newArr = [];
-                            index=-1;
-                            for(var i = 0, l = arr.length;i < l; i++){
-                                var counter = arr[i].name;
-                                if(counter == PathName){
-                                    index=arr[i].id;
-                                }
-                            }
-                            for(var i = 0, l = arr.length;i < l; i++){
-                                var counter = arr[i].id;
-                                if(counter != index){
-                                    newArr.push(arr[i]);
-                                }
-                            }
-                            return newArr;
+                            if(obj[i].name!=document.getElementById('path').value)
+                                arrayData.push(obj[i]);
                         }
-                        var newarray=removeArrayEl(arrayData,getItem);                          
-
-                        var updatedData=JSON.stringify(newarray);     
+                        var updatedData=JSON.stringify(arrayData);
                         // do update
-                            $.ajax({
-                                url: "https://api.myjson.com/bins/13o8p6",
-                                type: "PUT",
-                                data: updatedData,
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json"
-                            });
-                        function removeOptions(selectbox) {
-                            for(i = selectbox.options.length - 1; i >= 0; i--) {
-                                selectbox.remove(i);
-                            }
-                        }
-                        removeOptions(document.getElementById("path"));
-                        loadRecordData();
-                    });
-                    ///CLEAR ALL
-
-                    // arrayData=[];
-                    // var updatedData=JSON.stringify(arrayData);         
-                    // // do update
-                    // $.ajax({
-                    //     url: "https://api.myjson.com/bins/vf6v4",
-                    //     type: "PUT",
-                    //     data: updatedData,
-                    //     contentType: "application/json; charset=utf-8",
-                    //     dataType: "json"
-                    // });
-                    // });
+                        $.ajax({
+                            url: "https://api.myjson.com/bins/13o8p6", //JSON API
+                            type: "PUT",
+                            data: updatedData,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        });
+                        arrayData=[];     
+                    });   
+                    setTimeout(function(){
+                        loadRecordData();  
+                    },3000);
                 }
 
-                document.getElementById("deleteRoute").onclick = deleteFunction;
+                document.getElementById("deleteRecord").onclick = deletePathFunction;
 
                 /////////////////////////////////BUTTON OPTIMIZE/////////////////////////////////////
                 var optimizeFunction = function() {
