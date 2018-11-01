@@ -1224,6 +1224,9 @@
                     logText.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
                 });
 
+                var prePos=new BABYLON.Vector3.Zero();
+                var preDir=new BABYLON.Vector3.Zero();
+
                 scene.registerBeforeRender(function() {
                     txtFps.text = 'FPS: ' + engine.getFps().toFixed();
                     if (document.getElementById('optimize').hidden == true) {
@@ -1246,14 +1249,17 @@
                     if(Record)
                     {
                         var currentPos=new BABYLON.Vector3(camera.position.x,camera.position.y,camera.position.z);
+                        var currentDir=new BABYLON.Vector3(camera.rotation.x,camera.rotation.y,camera.rotation.z);
                 
-                        if(Math.abs(preMove.x-currentPos.x)>1||Math.abs(preMove.y-currentPos.y)>1||Math.abs(preMove.z-currentPos.z)>1){
+                        if(Math.abs(prePos.x-currentPos.x)>1||Math.abs(prePos.y-currentPos.y)>1||Math.abs(prePos.z-currentPos.z)>1
+                            ||Math.abs(preDir.x-currentDir.x)>0.1||Math.abs(preDir.y-currentDir.y)>0.1||Math.abs(preDir.z-currentDir.z)>0.1){
                             var point=new Point3(currentPos.x,currentPos.y,currentPos.z);
                             RecordPointData.push(point);
                             console.log(currentPos);
-                            preMove=currentPos;
+                            prePos=currentPos;
                             var dir=new BABYLON.Vector3(camera.rotation.x, camera.rotation.y,camera.rotation.z);
                             DirData.push(dir);
+                            preDir=currentDir;
                         }
                     }
 
