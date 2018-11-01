@@ -67,7 +67,7 @@
                     <button id="cameraChange" class="btn">Arc Rotate Camera</button>
                 <li>Path Record</li>
                     <div class="list">
-                        <select name="path" style="width: 90%;">
+                        <select id="path" style="width: 90%;">
                             <option value="allPath">All Path</option>
                         </select> 
                         <button id="playRecord" class="btn" style="margin-top: 18%; margin-left: 5%">Play</button> <br>
@@ -655,6 +655,7 @@
                         });           
                     })
                 }
+                loadRecordData();
 
                 /////////////WRITE Record Data//////////////
                 var arrayData=[];
