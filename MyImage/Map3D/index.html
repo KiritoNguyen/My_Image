@@ -602,7 +602,7 @@
                     var newPointData=[];  
                     var newDirData=[];         
                     var newNamePathData=[];
-                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) => {
+                    jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
                         // for (var i = 0; i < obj.length; i++) {
                             // var nameObj = obj[i].id;
                             // console.log(nameObj);
@@ -652,7 +652,7 @@
                 /////////////WRITE Record Data//////////////
                 var arrayData=[];
                 var writeRecordData=(nameOfPath)=>{
-                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
+                    jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
                         }
@@ -669,7 +669,7 @@
                         var updatedData=JSON.stringify(arrayData);
                         // do update
                         $.ajax({
-                            url: "https://api.myjson.com/bins/12ibcs", //JSON API
+                            url: "https://api.myjson.com/bins/13o8p6", //JSON API
                             type: "PUT",
                             data: updatedData,
                             contentType: "application/json; charset=utf-8",
@@ -738,7 +738,7 @@
 
                 var deletePathFunction=()=>{
                     arrayData=[];
-                    jQuery.getJSON('https://api.myjson.com/bins/12ibcs', (obj) =>{
+                    jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         var e = document.getElementById("path");
                         var getItem = e.options[e.selectedIndex].text;
                         for (var i = 0; i < obj.length; i++) {
@@ -767,7 +767,7 @@
                         var updatedData=JSON.stringify(newarray);     
                         // do update
                             $.ajax({
-                                url: "https://api.myjson.com/bins/12ibcs",
+                                url: "https://api.myjson.com/bins/13o8p6",
                                 type: "PUT",
                                 data: updatedData,
                                 contentType: "application/json; charset=utf-8",
