@@ -628,6 +628,9 @@
                                 newNamePathData.push(name);
                             }
                         }
+                        RecordPointData=[];
+                        DirData=[];
+                        NamePathData=[];
                         newPointData.forEach(p=>{
                             RecordPointData.push(p);
                         })
@@ -637,6 +640,10 @@
                         newNamePathData.forEach(n=>{
                             NamePathData.push(n);
                         })
+
+                        console.log(RecordPointData);
+                        console.log(DirData);
+                        console.log(newNamePathData);
 
                         var i = 0;
                         var myDiv = document.getElementById('path');
