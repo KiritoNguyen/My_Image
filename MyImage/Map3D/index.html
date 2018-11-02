@@ -76,8 +76,8 @@
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
                         <select id="route" style="width: 90%;">
-                            <option value="none">None</option>
-                            <option value="allRoute">All Route</option>
+                            <option>None</option>
+                            <option>All Route</option>
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -99,6 +99,7 @@
             var camera;
             var particleSystem;
             var timeMobile, intervalTimeMobile;
+            var delaySuper=3000;
 
             var createBtnClose = function() {
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -358,11 +359,6 @@
 
                 groundTexture.update(invertY);
         
-                PointData.forEach(p => {
-                    console.log(p);
-                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                    groundTexture.update(invertY);
-                });
                 var draw = false;
                 
                 var onPointerDown = function (evt) {
@@ -482,6 +478,16 @@
                 txtNotification.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 advancedTexture.addControl(txtNotification);  
 
+                var notificationText=new BABYLON.GUI.TextBlock();
+                notificationText.height = "40px";
+                notificationText.color = "red";
+                notificationText.fontSize = 24;
+                notificationText.top = 1;
+                notificationText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                notificationText.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                advancedTexture.addControl(notificationText);  
+
+
                 /////////////////////////////////Button Go/////////////////////////////////////
                 var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
                 advancedTexture.addControl(btnGo);
@@ -560,6 +566,11 @@
                 //     document.getElementById("mobileControl").onclick = mobileControlFunction;
                 // }
                 document.getElementById("mobileControl").onclick = mobileControlFunction;
+                ///////////Set Notification/////////////////
+
+                var setNotification=function(text){
+                    notificationText.text=text;
+                }
 
                 ////////////////// BUTTON RECORD PATH ////////////////////////
                 var RecordPath=false;
@@ -577,13 +588,30 @@
                     document.getElementById('addRecord').innerHTML = 'Save Path';
                     document.getElementById('addRecord').onclick = savePathFunction;
                 }
+
+                var checkNamePath=function(newName){
+                    var count =0;
+                    NamePathData.forEach(n=>{
+                        if(n!=newName)
+                        {
+                            count++;
+                        }
+                    })
+                    if(count==NamePathData.length)
+                        return true;
+                    else
+                        return false;
+                }
+
                 var savePathFunction = function() {
                     Record=false;
                     do{
                         var nameOfPath = prompt("Please enter route name:");      
-                    }while(nameOfPath==="" );
-                    if(nameOfPath!=null) {
+                        console.log(checkNamePath(nameOfPath));
+                    }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
+                    if(nameOfPath!=null&&checkNamePath(nameOfPath)) {
                         writeRecordData(nameOfPath);
+                        console.log(checkNamePath(nameOfPath));
                     } 
                     
                     document.getElementById('addRecord').innerHTML = 'Record';
@@ -596,6 +624,9 @@
                     this.y=_y;
                     this.z=_z;
                 }
+
+               
+
                 var preRecord=new BABYLON.Vector3(0,0,0);
                 var DirData=[];
                 var RecordPointData=[];
@@ -653,7 +684,6 @@
                         }
                         RecordPointData=[];
                         DirData=[];
-                        NamePathData=[];
                         newPointData.forEach(p=>{
                             RecordPointData.push(p);
                         })
@@ -667,6 +697,7 @@
 
                 var writeRecordData=(nameOfPath)=>{
                     var arrayData=[];
+                    setNotification("SAVING ...");
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
@@ -693,16 +724,23 @@
                           
                     });   
                     setTimeout(function(){
+                        setNotification("SAVED!")
                         loadRecordData();  
-                    },3000);
+                        
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                     
                 }
 
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
                 var playRecordFunction = function() {
                     if(Record==false){
+                        setNotification("LOADING ...");
                         loadRecordDataByName(document.getElementById('path').value);                 
                         setTimeout(function() {
+                            setNotification("");
                             camera.dispose();
                             camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
                             camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
@@ -740,7 +778,7 @@
                             movein.setKeys(movein_keys);
                             dirin.setKeys(dir_keys);
                             scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
-                        },3000);
+                        },delaySuper);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
@@ -748,6 +786,7 @@
                                 /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deletePathFunction=()=>{
+                    setNotification("DELETING ...");
                     var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
@@ -767,7 +806,11 @@
                     });   
                     setTimeout(function(){
                         loadRecordData();  
-                    },3000);
+                        setNotification("DELETED!");
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                 }
 
                 document.getElementById("deleteRecord").onclick = deletePathFunction;
@@ -868,7 +911,7 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        loadRouteData();                
+                        setTimeout(loadRouteData(),500);            
                     });                             
                 }
                 document.getElementById("addRoute").onclick = drawFunction;
@@ -892,6 +935,21 @@
                         function removeArrayEl(arr, RouteName){
                             newArr = [];
                             index=-1;
+                            if(RouteName==="All Route")
+                            {
+                                arrayData=[];
+                                var updatedData=JSON.stringify(arrayData);         
+                                // do update
+                                $.ajax({
+                                    url: "https://api.myjson.com/bins/vf6v4",
+                                    type: "PUT",
+                                    data: updatedData,
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json"
+                                });
+                                return;                    
+                            }
+                            
                             for(var i = 0, l = arr.length;i < l; i++){
                                 var counter = arr[i].name;
                                 if(counter == RouteName){
@@ -923,7 +981,9 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        loadRouteData();
+                        setTimeout(() => {
+                            loadRouteData();
+                        }, 500); 
                     });
                     ///CLEAR ALL
 
@@ -979,12 +1039,9 @@
                 ///////////////////////////// LOAD Route Data ////////////////////////////
                 var loadRouteData = () => {   
                     var newPointData=[];  
-                    var PointObject=[]; 
-                    var PointName=[];      
+                    var PointObject=[];      
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
-                            var nameObj=obj[i].name;
-                            PointName.push(nameObj);
                             PointObject.push(obj[i]);
                             for (var j = 0; j < obj[i].location.length; j++) {
                                 var counter = obj[i].location[j];
@@ -994,15 +1051,15 @@
                         }
                         var i=0; 
                         var myDiv = document.getElementById("route");
-                        PointName.forEach(p => {
+                        PointObject.forEach(p => {
                             var option = document.createElement("option");
-                            option.textContent = PointName[i];
+                            option.textContent = PointObject[i].name;
+                            option.value=PointObject[i].id;
                             myDiv.add(option);
                             i++;
                         });
                         
-                        newPointData=[]; 
-                        PointName=[];   
+                        newPointData=[];    
                         //Show all route
                         // newPointData.forEach(p => {
                         //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
@@ -1011,36 +1068,69 @@
                     });  
                     var count=-1;
                     document.getElementById("route").addEventListener("change", e => {
-                        if (e.target.value !=null) {
-                            var i=0;             
-                            PointObject.forEach(p => {                      
-                                if(e.target.value==PointObject[i].name)
+                        if (e.target.value !=null) {                        
+                            if(e.target.value==="All Route")
                                 {
-                                    newPointData=[];
-                                    for (var j = 0; j < PointObject[i].location.length; j++) {              
-                                        var counter = PointObject[i].location[j];                             
-                                        var point=new Point(counter.x,counter.y);
-                                        newPointData.push(point);
-                                    }
-                                    if(count!=i){
-                                        groundTexture.dispose();    
-                                        groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-                                        dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
-                                        dynamicMaterial.diffuseTexture = groundTexture;
-
-                                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
-                                        groundDraw.position.y = -45;
-                                        dynamicMaterial.diffuseTexture.hasAlpha = true;
-                                        groundDraw.material = dynamicMaterial;
+                                    for (var i = 0; i < PointObject.length; i++) {
+                                        for (var j = 0; j < PointObject[i].location.length; j++) {
+                                            var counter = PointObject[i].location[j];
+                                            var point=new Point(counter.x,counter.y);
+                                            newPointData.push(point);
+                                        }
                                     }
                                     newPointData.forEach(p => {
-                                        DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                                        groundTexture.update(invertY);  
-                                    });
-                                    count=i;
-                                }
-                                i++;
-                            });
+                                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                    groundTexture.update(invertY);
+                                    }); 
+                                } 
+                            else if(e.target.value ==="None"){
+                                groundTexture.dispose();    
+                                groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                                dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                                dynamicMaterial.diffuseTexture = groundTexture;
+                                    
+                                groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                groundDraw.position.y = -45;
+                                dynamicMaterial.diffuseTexture.hasAlpha = true;
+                                groundDraw.material = dynamicMaterial;
+
+                                context = groundTexture._context;
+                                size = groundTexture.getSize();
+                            }     
+                            else{
+                                var i=0;
+                                PointObject.forEach(p => {
+                                    if(e.target.value==PointObject[i].id)
+                                    { 
+                                        newPointData=[];
+                                        for (var j = 0; j < PointObject[i].location.length; j++) {              
+                                            var counter = PointObject[i].location[j];                             
+                                            var point=new Point(counter.x,counter.y);
+                                            newPointData.push(point);
+                                        }
+                                        if(count!=i){
+                                            groundTexture.dispose();    
+                                            groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                                            dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                                            dynamicMaterial.diffuseTexture = groundTexture;
+                                                
+                                            groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                            groundDraw.position.y = -45;
+                                            dynamicMaterial.diffuseTexture.hasAlpha = true;
+                                            groundDraw.material = dynamicMaterial;
+
+                                            context = groundTexture._context;
+                                            size = groundTexture.getSize();
+
+                                            newPointData.forEach(p => {
+                                                DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                            });
+                                        }
+                                        count=i;
+                                    }                              
+                                    i++;
+                                });
+                            }
                         }
                     });
                 }
@@ -1064,7 +1154,7 @@
                         scene1.render();
                     })
                 })
-                
+            
                 var lineStadium = new BABYLON.GUI.Line();
                 lineStadium.lineWidth = 2;
                 lineStadium.color = "Gray";
