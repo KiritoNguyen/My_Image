@@ -889,6 +889,7 @@
                     camera.dispose();
                     camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
+                    document.getElementById("cameraChange").disabled = true;
                     document.getElementById("addRoute").innerHTML = 'Save Route';
                     document.getElementById("addRoute").onclick = saveRouteFunction;
                 }
@@ -899,6 +900,7 @@
                     camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
                     camera.speed = 20;
                     camera.checkCollisions = true;
+                    document.getElementById("cameraChange").disabled = false;
                     camera.attachControl(canvas, true);
                     do{
                         var nameOfRoute = prompt("Please enter route name:");      
@@ -1577,11 +1579,11 @@
             }
 
             //////Register service worker
-            if('serviceWorker' in navigator) {
-            navigator.serviceWorker
-                .register('/service-worker.js')
-                .then(function() { console.log("Service Worker Registered"); });
-            }
+            // if('serviceWorker' in navigator) {
+            // navigator.serviceWorker
+            //     .register('/service-worker.js')
+            //     .then(function() { console.log("Service Worker Registered"); });
+            // }
 
             var scene = createScene();
             engine.runRenderLoop(function () {
