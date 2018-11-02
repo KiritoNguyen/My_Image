@@ -38,13 +38,13 @@
                 touch-action: none;
             }
             .menu {
-                width: 9%;
+                width: 8%;
                 float: right;
-                padding-right: 10px;
+                padding-right: 25px;
                 text-align: center;
             }
             .main {
-                width: 90%;
+                width: 89%;
                 height: 100%;
                 float: left;
             }
@@ -68,7 +68,6 @@
                 <li>Path Record</li>
                     <div class="list">
                         <select id="path" style="width: 90%;">
-                            <option value="allPath">All Path</option>
                         </select> 
                         <button id="playRecord" class="btn" style="margin-top: 18%; margin-left: 5%">Play</button> <br>
                         <button id="addRecord" class="btn" style="margin-top: 10%; margin-left: 5%">Record</button> <br>
@@ -100,6 +99,7 @@
             var camera;
             var particleSystem;
             var timeMobile, intervalTimeMobile;
+            var delaySuper=3000;
 
             var createBtnClose = function() {
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -123,6 +123,8 @@
                 })
             }
 
+
+
             var createScene = function() {
                 scene = new BABYLON.Scene(engine);
                 scene.collisionsEnabled = true;
@@ -132,10 +134,11 @@
                 light.intensity = 2;
 
                 /////////////// CAMERA ///////////////
-                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                 camera.target = new BABYLON.Vector3.Zero();
+                camera.wheelPrecision = 1;
                 camera.lowerRadiusLimit = 200;
-                camera.upperRadiusLimit = 2800;      
+                camera.upperRadiusLimit = 4000;      
                 camera.upperBetaLimit = Math.PI / 2;
                 camera.attachControl(canvas, true); 
 
@@ -182,8 +185,8 @@
 
                 // Where the particles come from
                 particleSystem.emitter = fountain; // the starting object, the emitter
-                particleSystem.minEmitBox = new BABYLON.Vector3(-1500, 20, -1500); // Starting all from
-                particleSystem.maxEmitBox = new BABYLON.Vector3(1500, 20, 1500); // To...
+                particleSystem.minEmitBox = new BABYLON.Vector3(-2000, 20, -2000); // Starting all from
+                particleSystem.maxEmitBox = new BABYLON.Vector3(2000, 20, 2000); // To...
 
                 // Colors of all particles
                 particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
@@ -259,9 +262,9 @@
                 var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);                       /////////////// B
                 dynamicMaterial.diffuseTexture = groundTexture;
 
-                var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);         /////////////// C => A là con B và B là con C => ....
+                var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);         /////////////// C => A là con B và B là con C => ....
                 groundDraw.position.y = -45;
-                dynamicMaterial.diffuseTexture.hasAlpha = true;
+                // dynamicMaterial.diffuseTexture.hasAlpha = true;
                 groundDraw.material = dynamicMaterial;
 
                 ///////////////// GROUND VISIBLE/////////////////
@@ -467,13 +470,23 @@
                 txtTimeMobile.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 advancedTexture.addControl(txtTimeMobile);
 
-                var logText = new BABYLON.GUI.TextBlock();
-                logText.height = "40px";
-                logText.color = "red";
-                logText.fontSize = 24;
-                logText.top = 1;
-                logText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                advancedTexture.addControl(logText);  
+                var txtNotification = new BABYLON.GUI.TextBlock();
+                txtNotification.height = "40px";
+                txtNotification.color = "red";
+                txtNotification.fontSize = 24;
+                txtNotification.top = 1;
+                txtNotification.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                advancedTexture.addControl(txtNotification);  
+
+                var notificationText=new BABYLON.GUI.TextBlock();
+                notificationText.height = "40px";
+                notificationText.color = "red";
+                notificationText.fontSize = 24;
+                notificationText.top = 1;
+                notificationText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                notificationText.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                advancedTexture.addControl(notificationText);  
+
 
                 /////////////////////////////////Button Go/////////////////////////////////////
                 var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
@@ -502,10 +515,11 @@
                 }
                 var cameraRotateFunction = function() {
                     camera.dispose();
-                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
+                    camera.wheelPrecision = 1;
                     camera.lowerRadiusLimit = 200;
-                    camera.upperRadiusLimit = 2800;      
+                    camera.upperRadiusLimit = 4000;      
                     camera.upperBetaLimit = Math.PI / 2;
                     camera.attachControl(canvas, true);      
                     document.getElementById("cameraChange").onclick = cameraFreeFunction;       
@@ -552,11 +566,18 @@
                 //     document.getElementById("mobileControl").onclick = mobileControlFunction;
                 // }
                 document.getElementById("mobileControl").onclick = mobileControlFunction;
+                ///////////Set Notification/////////////////
+
+                var setNotification=function(text){
+                    notificationText.text=text;
+                }
 
                 ////////////////// BUTTON RECORD PATH ////////////////////////
                 var RecordPath=false;
                 var Record=false;
                 var recordFunction = function() {
+                    RecordPointData=[];
+                    DirData=[];
                     Record=true;
                     camera.dispose();
                     camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
@@ -567,13 +588,30 @@
                     document.getElementById('addRecord').innerHTML = 'Save Path';
                     document.getElementById('addRecord').onclick = savePathFunction;
                 }
+
+                var checkNamePath=function(newName){
+                    var count =0;
+                    NamePathData.forEach(n=>{
+                        if(n!=newName)
+                        {
+                            count++;
+                        }
+                    })
+                    if(count==NamePathData.length)
+                        return true;
+                    else
+                        return false;
+                }
+
                 var savePathFunction = function() {
                     Record=false;
                     do{
                         var nameOfPath = prompt("Please enter route name:");      
-                    }while(nameOfPath==="" );
-                    if(nameOfPath!=null) {
+                        console.log(checkNamePath(nameOfPath));
+                    }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
+                    if(nameOfPath!=null&&checkNamePath(nameOfPath)) {
                         writeRecordData(nameOfPath);
+                        console.log(checkNamePath(nameOfPath));
                     } 
                     
                     document.getElementById('addRecord').innerHTML = 'Record';
@@ -586,6 +624,9 @@
                     this.y=_y;
                     this.z=_z;
                 }
+
+               
+
                 var preRecord=new BABYLON.Vector3(0,0,0);
                 var DirData=[];
                 var RecordPointData=[];
@@ -643,7 +684,6 @@
                         }
                         RecordPointData=[];
                         DirData=[];
-                        NamePathData=[];
                         newPointData.forEach(p=>{
                             RecordPointData.push(p);
                         })
@@ -654,8 +694,10 @@
                 }
 
                 /////////////WRITE Record Data//////////////
-                var arrayData=[];
+
                 var writeRecordData=(nameOfPath)=>{
+                    var arrayData=[];
+                    setNotification("SAVING ...");
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
@@ -679,27 +721,26 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
                         });
-                        arrayData=[];
-                        PointData=[];
-                        function removeOptions(selectbox) {
-                            for(i = selectbox.options.length - 1; i >= 0; i--) {
-                                selectbox.remove(i);
-                            }
-                        }
-                        //removeOptions(document.getElementById("path"));
                           
                     });   
                     setTimeout(function(){
+                        setNotification("SAVED!")
                         loadRecordData();  
-                    },3000);
+                        
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                     
                 }
 
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
                 var playRecordFunction = function() {
                     if(Record==false){
+                        setNotification("LOADING ...");
                         loadRecordDataByName(document.getElementById('path').value);                 
                         setTimeout(function() {
+                            setNotification("");
                             camera.dispose();
                             camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
                             camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
@@ -737,7 +778,7 @@
                             movein.setKeys(movein_keys);
                             dirin.setKeys(dir_keys);
                             scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
-                        },3000);
+                        },delaySuper);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
@@ -745,7 +786,8 @@
                                 /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deletePathFunction=()=>{
-                    arrayData=[];
+                    setNotification("DELETING ...");
+                    var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             if(obj[i].name!=document.getElementById('path').value)
@@ -764,7 +806,11 @@
                     });   
                     setTimeout(function(){
                         loadRecordData();  
-                    },3000);
+                        setNotification("DELETED!");
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                 }
 
                 document.getElementById("deleteRecord").onclick = deletePathFunction;
@@ -813,7 +859,7 @@
                 var drawFunction = function() {
                     DrawMode = true;
                     camera.dispose();
-                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
                     document.getElementById("addRoute").innerHTML = 'Save Route';
                     document.getElementById("addRoute").onclick = saveRouteFunction;
@@ -830,14 +876,14 @@
                         var nameOfRoute = prompt("Please enter route name:");      
                     }while(nameOfRoute==="" );
                     if(nameOfRoute!=null) {
-                        writeData(nameOfRoute);
+                        writeRouteData(nameOfRoute);
                     } 
                     document.getElementById("addRoute").innerHTML = 'Draw';
                     document.getElementById("addRoute").onclick = drawFunction;
                 }
-                var arrayData=[];
-                var writeData=(nameOfRoute)=>{
+                var writeRouteData=(nameOfRoute)=>{
                     var id=1;
+                    var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
@@ -858,7 +904,6 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
                         });
-                        arrayData=[];
                         PointData=[];  
                         function removeOptions(selectbox) {
                             for(i = selectbox.options.length - 1; i >= 0; i--) {
@@ -879,7 +924,7 @@
                 /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deleteFunction=()=>{
-                    arrayData=[];
+                    var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         var e = document.getElementById("route");
                         var getItem = e.options[e.selectedIndex].text;
@@ -1244,11 +1289,11 @@
                 })
 
                 // Writing
-                optimizer.onSuccessObservable.add(function () {
-                    logText.text = "Optimized";
+                optimizer.onNewOptimizationAppliedObservable.add(function () {
+                    txtNotification.text = "Optimizing ...";
                 });
                 optimizer.onFailureObservable.add(function () {
-                    logText.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
+                    txtNotification.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
                 });
 
                 var prePos=new BABYLON.Vector3.Zero();
@@ -1258,10 +1303,44 @@
                     txtFps.text = 'FPS: ' + engine.getFps().toFixed();
                     if (document.getElementById('optimize').hidden == true) {
                         setTimeout(function(){
-                            logText.text = "";
+                            txtNotification.text = "";
                             txtFps.top = -10;
                             txtTimeMobile.top = 5;
-                        }, 12000)
+                            btnGo.top = -10;
+
+                            btnGo.scaleX = 0.5;              
+                            btnGateACricket.scaleX = 0.5;  
+                            btnKippaxLake.scaleX = 0.5;  
+                            btnNationalLeague.scaleX = 0.5;  
+                            btnParking.scaleX = 0.5; 
+                            btnStadium.scaleX = 0.5; 
+                            btnStadiumForecourt.scaleX = 0.5;  
+                            btnStadiumSportsPhysiotherapy.scaleX =  0.5;  
+                            btnSydneyCricketGround.scaleX = 0.5;  
+                            
+                            btnGateACricket.scaleY = 0.5;  
+                            btnGo.scaleY = 0.5;  
+                            btnKippaxLake.scaleY = 0.5;
+                            btnNationalLeague.scaleY = 0.5;
+                            btnParking.scaleY = 0.5;
+                            btnStadium.scaleY = 0.5;
+                            btnStadiumForecourt.scaleY = 0.5;
+                            btnStadiumSportsPhysiotherapy.scaleY = 0.5;
+                            btnSydneyCricketGround.scaleY = 0.5;
+           
+                            btnGateACricket.linkOffsetY = -50;
+                            btnKippaxLake.linkOffsetY = -60;
+                            btnNationalLeague.linkOffsetY = -50; 
+                            btnParking.linkOffsetY = -50;
+                            btnStadium.linkOffsetY = -60;
+                            btnStadiumForecourt.linkOffsetY = -50;
+                            btnStadiumSportsPhysiotherapy.linkOffsetY = -50;
+                            btnSydneyCricketGround.linkOffsetY = -60;
+
+                            lineKippaxLake.linkOffsetY = -5;
+                            lineStadium.linkOffsetY = -5;
+                            lineSydneyCricketGroundt.linkOffsetY = -5;
+                        }, 10000)
                     }
 
                     if (document.getElementById('moveTank').hidden == true) {
