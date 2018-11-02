@@ -77,8 +77,8 @@
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
                         <select id="route" style="width: 90%;">
-                            <option value="none">None</option>
-                            <option value="allRoute">All Route</option>
+                            <option>None</option>
+                            <option>All Route</option>
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -356,11 +356,6 @@
 
                 groundTexture.update(invertY);
         
-                PointData.forEach(p => {
-                    console.log(p);
-                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                    groundTexture.update(invertY);
-                });
                 var draw = false;
                 
                 var onPointerDown = function (evt) {
@@ -871,7 +866,7 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        loadRouteData();                
+                        setTimeout(loadRouteData(),500);            
                     });                             
                 }
                 document.getElementById("addRoute").onclick = drawFunction;
@@ -926,7 +921,9 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        loadRouteData();
+                        setTimeout(() => {
+                            loadRouteData();
+                        }, 500); 
                     });
                     ///CLEAR ALL
 
@@ -982,12 +979,9 @@
                 ///////////////////////////// LOAD Route Data ////////////////////////////
                 var loadRouteData = () => {   
                     var newPointData=[];  
-                    var PointObject=[]; 
-                    var PointName=[];      
+                    var PointObject=[];      
                     jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
-                            var nameObj=obj[i].name;
-                            PointName.push(nameObj);
                             PointObject.push(obj[i]);
                             for (var j = 0; j < obj[i].location.length; j++) {
                                 var counter = obj[i].location[j];
@@ -997,15 +991,15 @@
                         }
                         var i=0; 
                         var myDiv = document.getElementById("route");
-                        PointName.forEach(p => {
+                        PointObject.forEach(p => {
                             var option = document.createElement("option");
-                            option.textContent = PointName[i];
+                            option.textContent = PointObject[i].name;
+                            option.value=PointObject[i].id;
                             myDiv.add(option);
                             i++;
                         });
                         
-                        newPointData=[]; 
-                        PointName=[];   
+                        newPointData=[];    
                         //Show all route
                         // newPointData.forEach(p => {
                         //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
@@ -1014,36 +1008,69 @@
                     });  
                     var count=-1;
                     document.getElementById("route").addEventListener("change", e => {
-                        if (e.target.value !=null) {
-                            var i=0;             
-                            PointObject.forEach(p => {                      
-                                if(e.target.value==PointObject[i].name)
+                        if (e.target.value !=null) {                        
+                            if(e.target.value==="All Route")
                                 {
-                                    newPointData=[];
-                                    for (var j = 0; j < PointObject[i].location.length; j++) {              
-                                        var counter = PointObject[i].location[j];                             
-                                        var point=new Point(counter.x,counter.y);
-                                        newPointData.push(point);
-                                    }
-                                    if(count!=i){
-                                        groundTexture.dispose();    
-                                        groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-                                        dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
-                                        dynamicMaterial.diffuseTexture = groundTexture;
-
-                                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
-                                        groundDraw.position.y = -45;
-                                        dynamicMaterial.diffuseTexture.hasAlpha = true;
-                                        groundDraw.material = dynamicMaterial;
+                                    for (var i = 0; i < PointObject.length; i++) {
+                                        for (var j = 0; j < PointObject[i].location.length; j++) {
+                                            var counter = PointObject[i].location[j];
+                                            var point=new Point(counter.x,counter.y);
+                                            newPointData.push(point);
+                                        }
                                     }
                                     newPointData.forEach(p => {
-                                        DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                                        groundTexture.update(invertY);  
-                                    });
-                                    count=i;
-                                }
-                                i++;
-                            });
+                                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                    groundTexture.update(invertY);
+                                    }); 
+                                } 
+                            else if(e.target.value ==="None"){
+                                groundTexture.dispose();    
+                                groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                                dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                                dynamicMaterial.diffuseTexture = groundTexture;
+                                    
+                                groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                groundDraw.position.y = -45;
+                                dynamicMaterial.diffuseTexture.hasAlpha = true;
+                                groundDraw.material = dynamicMaterial;
+
+                                context = groundTexture._context;
+                                size = groundTexture.getSize();
+                            }     
+                            else{
+                                var i=0;
+                                PointObject.forEach(p => {
+                                    if(e.target.value==PointObject[i].id)
+                                    { 
+                                        newPointData=[];
+                                        for (var j = 0; j < PointObject[i].location.length; j++) {              
+                                            var counter = PointObject[i].location[j];                             
+                                            var point=new Point(counter.x,counter.y);
+                                            newPointData.push(point);
+                                        }
+                                        if(count!=i){
+                                            groundTexture.dispose();    
+                                            groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                                            dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                                            dynamicMaterial.diffuseTexture = groundTexture;
+                                                
+                                            groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                            groundDraw.position.y = -45;
+                                            dynamicMaterial.diffuseTexture.hasAlpha = true;
+                                            groundDraw.material = dynamicMaterial;
+
+                                            context = groundTexture._context;
+                                            size = groundTexture.getSize();
+
+                                            newPointData.forEach(p => {
+                                                DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                                            });
+                                        }
+                                        count=i;
+                                    }                              
+                                    i++;
+                                });
+                            }
                         }
                     });
                 }
@@ -1067,7 +1094,7 @@
                         scene1.render();
                     })
                 })
-                
+            
                 var lineStadium = new BABYLON.GUI.Line();
                 lineStadium.lineWidth = 2;
                 lineStadium.color = "Gray";
