@@ -122,6 +122,8 @@
                 })
             }
 
+
+
             var createScene = function() {
                 scene = new BABYLON.Scene(engine);
                 scene.collisionsEnabled = true;
@@ -563,6 +565,8 @@
                 var RecordPath=false;
                 var Record=false;
                 var recordFunction = function() {
+                    RecordPointData=[];
+                    DirData=[];
                     Record=true;
                     camera.dispose();
                     camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
