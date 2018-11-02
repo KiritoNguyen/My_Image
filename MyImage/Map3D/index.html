@@ -97,7 +97,7 @@
             var camera;
             var particleSystem;
             var timeMobile, intervalTimeMobile;
-            var delaySuper=3000;
+            var delaySuper=4000;
 
             var createBtnClose = function() {
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -226,10 +226,10 @@
 
                 ///////////////// INVISIBLE WALL/////////////////
                 var inviWallTop = new BABYLON.MeshBuilder.CreatePlane('inviWallTop', {size: 4000}, scene);
-                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {height: 5000, width: 4000}, scene);
-                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {height: 5000, width: 4000}, scene);
-                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {height: 5000, width: 4000}, scene);
-                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {height: 5000, width: 4000}, scene);
+                var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {height: 3500, width: 4000}, scene);
+                var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {height: 3500, width: 4000}, scene);
+                var inviWallLeft = new BABYLON.MeshBuilder.CreatePlane('inviWallLeft', {height: 3500, width: 4000}, scene);
+                var inviWallRight = new BABYLON.MeshBuilder.CreatePlane('inviWallRight', {height: 3500, width: 4000}, scene);
 
                 inviWallTop.visibility = 0;
                 inviWallFront.visibility = 0;
@@ -243,11 +243,11 @@
                 inviWallLeft.checkCollisions = true;
                 inviWallRight.checkCollisions = true;
 
-                inviWallTop.position = new BABYLON.Vector3(0, 4000, 0);
-                inviWallFront.position = new BABYLON.Vector3(0, 1500, -2000);
-                inviWallBack.position = new BABYLON.Vector3(0, 1500, 2000);
-                inviWallLeft.position = new BABYLON.Vector3(-2000, 1500, 0);
-                inviWallRight.position = new BABYLON.Vector3(2000, 1500, 0);
+                inviWallTop.position = new BABYLON.Vector3(0, 2500, 0);
+                inviWallFront.position = new BABYLON.Vector3(0, 800, -2000);
+                inviWallBack.position = new BABYLON.Vector3(0, 800, 2000);
+                inviWallLeft.position = new BABYLON.Vector3(-2000, 800, 0);
+                inviWallRight.position = new BABYLON.Vector3(2000, 800, 0);
 
                 inviWallTop.rotation.x = -Math.PI / 2;
                 inviWallLeft.rotation.y = -Math.PI / 2;
@@ -1092,7 +1092,7 @@
                                 dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
                                 dynamicMaterial.diffuseTexture = groundTexture;
                                     
-                                groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
                                 groundDraw.position.y = -45;
                                 dynamicMaterial.diffuseTexture.hasAlpha = true;
                                 groundDraw.material = dynamicMaterial;
@@ -1117,7 +1117,7 @@
                                             dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
                                             dynamicMaterial.diffuseTexture = groundTexture;
                                                 
-                                            groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                            groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
                                             groundDraw.position.y = -45;
                                             dynamicMaterial.diffuseTexture.hasAlpha = true;
                                             groundDraw.material = dynamicMaterial;
