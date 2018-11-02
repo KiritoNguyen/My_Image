@@ -919,6 +919,21 @@
                     this.y=_y;
                 }
 
+                var resetFuntion=()=>{
+                    groundTexture.dispose();    
+                    groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+                    dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
+                    dynamicMaterial.diffuseTexture = groundTexture;
+                        
+                    groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
+                    groundDraw.position.y = -45;
+                    dynamicMaterial.diffuseTexture.hasAlpha = true;
+                    groundDraw.material = dynamicMaterial;
+
+                    context = groundTexture._context;
+                    size = groundTexture.getSize();
+                }
+
                 /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deleteFunction=()=>{
@@ -980,21 +995,8 @@
                         }
                         removeOptions(document.getElementById("route"));
                             loadRouteData();
-
+                            resetFuntion();
                     });
-                    ///CLEAR ALL
-
-                    // arrayData=[];
-                    // var updatedData=JSON.stringify(arrayData);         
-                    // // do update
-                    // $.ajax({
-                    //     url: "https://api.myjson.com/bins/vf6v4",
-                    //     type: "PUT",
-                    //     data: updatedData,
-                    //     contentType: "application/json; charset=utf-8",
-                    //     dataType: "json"
-                    // });
-                    // });
                 }
 
                 document.getElementById("deleteRoute").onclick = deleteFunction;
@@ -1063,11 +1065,6 @@
                         });
                         
                         newPointData=[];    
-                        //Show all route
-                        // newPointData.forEach(p => {
-                        //     DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                        //     groundTexture.update(invertY);
-                        //     });
                     });  
                     var count=-1;
                     document.getElementById("route").addEventListener("change", e => {
@@ -1087,18 +1084,7 @@
                                     }); 
                                 } 
                             else if(e.target.value ==="None"){
-                                groundTexture.dispose();    
-                                groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-                                dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
-                                dynamicMaterial.diffuseTexture = groundTexture;
-                                    
-                                groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
-                                groundDraw.position.y = -45;
-                                dynamicMaterial.diffuseTexture.hasAlpha = true;
-                                groundDraw.material = dynamicMaterial;
-
-                                context = groundTexture._context;
-                                size = groundTexture.getSize();
+                                resetFuntion();
                             }     
                             else{
                                 var i=0;
