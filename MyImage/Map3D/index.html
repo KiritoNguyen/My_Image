@@ -38,13 +38,13 @@
                 touch-action: none;
             }
             .menu {
-                width: 9%;
+                width: 8%;
                 float: right;
-                padding-right: 10px;
+                padding-right: 25px;
                 text-align: center;
             }
             .main {
-                width: 90%;
+                width: 89%;
                 height: 100%;
                 float: left;
             }
@@ -134,10 +134,11 @@
                 light.intensity = 2;
 
                 /////////////// CAMERA ///////////////
-                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                 camera.target = new BABYLON.Vector3.Zero();
+                camera.wheelPrecision = 1;
                 camera.lowerRadiusLimit = 200;
-                camera.upperRadiusLimit = 2800;      
+                camera.upperRadiusLimit = 4000;      
                 camera.upperBetaLimit = Math.PI / 2;
                 camera.attachControl(canvas, true); 
 
@@ -184,8 +185,8 @@
 
                 // Where the particles come from
                 particleSystem.emitter = fountain; // the starting object, the emitter
-                particleSystem.minEmitBox = new BABYLON.Vector3(-1500, 20, -1500); // Starting all from
-                particleSystem.maxEmitBox = new BABYLON.Vector3(1500, 20, 1500); // To...
+                particleSystem.minEmitBox = new BABYLON.Vector3(-2000, 20, -2000); // Starting all from
+                particleSystem.maxEmitBox = new BABYLON.Vector3(2000, 20, 2000); // To...
 
                 // Colors of all particles
                 particleSystem.color1 = new BABYLON.Color4(1, 1, 1.0, 1.0);
@@ -261,9 +262,9 @@
                 var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);                       /////////////// B
                 dynamicMaterial.diffuseTexture = groundTexture;
 
-                var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);         /////////////// C => A là con B và B là con C => ....
+                var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);         /////////////// C => A là con B và B là con C => ....
                 groundDraw.position.y = -45;
-                dynamicMaterial.diffuseTexture.hasAlpha = true;
+                // dynamicMaterial.diffuseTexture.hasAlpha = true;
                 groundDraw.material = dynamicMaterial;
 
                 ///////////////// GROUND VISIBLE/////////////////
@@ -474,13 +475,13 @@
                 txtTimeMobile.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 advancedTexture.addControl(txtTimeMobile);
 
-                var logText = new BABYLON.GUI.TextBlock();
-                logText.height = "40px";
-                logText.color = "red";
-                logText.fontSize = 24;
-                logText.top = 1;
-                logText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                advancedTexture.addControl(logText);  
+                var txtNotification = new BABYLON.GUI.TextBlock();
+                txtNotification.height = "40px";
+                txtNotification.color = "red";
+                txtNotification.fontSize = 24;
+                txtNotification.top = 1;
+                txtNotification.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                advancedTexture.addControl(txtNotification);  
 
                 var notificationText=new BABYLON.GUI.TextBlock();
                 notificationText.height = "40px";
@@ -519,10 +520,11 @@
                 }
                 var cameraRotateFunction = function() {
                     camera.dispose();
-                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
+                    camera.wheelPrecision = 1;
                     camera.lowerRadiusLimit = 200;
-                    camera.upperRadiusLimit = 2800;      
+                    camera.upperRadiusLimit = 4000;      
                     camera.upperBetaLimit = Math.PI / 2;
                     camera.attachControl(canvas, true);      
                     document.getElementById("cameraChange").onclick = cameraFreeFunction;       
@@ -862,7 +864,7 @@
                 var drawFunction = function() {
                     DrawMode = true;
                     camera.dispose();
-                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI / 2,  -Math.PI/2, 2500, BABYLON.Vector3.Zero(), scene);
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
                     document.getElementById("addRoute").innerHTML = 'Save Route';
                     document.getElementById("addRoute").onclick = saveRouteFunction;
@@ -1074,7 +1076,7 @@
                                         dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
                                         dynamicMaterial.diffuseTexture = groundTexture;
 
-                                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3500, 3500, 2, scene);
+                                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
                                         groundDraw.position.y = -45;
                                         dynamicMaterial.diffuseTexture.hasAlpha = true;
                                         groundDraw.material = dynamicMaterial;
@@ -1260,11 +1262,11 @@
                 })
 
                 // Writing
-                optimizer.onSuccessObservable.add(function () {
-                    logText.text = "Optimized";
+                optimizer.onNewOptimizationAppliedObservable.add(function () {
+                    txtNotification.text = "Optimizing ...";
                 });
                 optimizer.onFailureObservable.add(function () {
-                    logText.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
+                    txtNotification.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
                 });
 
                 var prePos=new BABYLON.Vector3.Zero();
@@ -1274,10 +1276,44 @@
                     txtFps.text = 'FPS: ' + engine.getFps().toFixed();
                     if (document.getElementById('optimize').hidden == true) {
                         setTimeout(function(){
-                            logText.text = "";
+                            txtNotification.text = "";
                             txtFps.top = -10;
                             txtTimeMobile.top = 5;
-                        }, 12000)
+                            btnGo.top = -10;
+
+                            btnGo.scaleX = 0.5;              
+                            btnGateACricket.scaleX = 0.5;  
+                            btnKippaxLake.scaleX = 0.5;  
+                            btnNationalLeague.scaleX = 0.5;  
+                            btnParking.scaleX = 0.5; 
+                            btnStadium.scaleX = 0.5; 
+                            btnStadiumForecourt.scaleX = 0.5;  
+                            btnStadiumSportsPhysiotherapy.scaleX =  0.5;  
+                            btnSydneyCricketGround.scaleX = 0.5;  
+                            
+                            btnGateACricket.scaleY = 0.5;  
+                            btnGo.scaleY = 0.5;  
+                            btnKippaxLake.scaleY = 0.5;
+                            btnNationalLeague.scaleY = 0.5;
+                            btnParking.scaleY = 0.5;
+                            btnStadium.scaleY = 0.5;
+                            btnStadiumForecourt.scaleY = 0.5;
+                            btnStadiumSportsPhysiotherapy.scaleY = 0.5;
+                            btnSydneyCricketGround.scaleY = 0.5;
+           
+                            btnGateACricket.linkOffsetY = -50;
+                            btnKippaxLake.linkOffsetY = -60;
+                            btnNationalLeague.linkOffsetY = -50; 
+                            btnParking.linkOffsetY = -50;
+                            btnStadium.linkOffsetY = -60;
+                            btnStadiumForecourt.linkOffsetY = -50;
+                            btnStadiumSportsPhysiotherapy.linkOffsetY = -50;
+                            btnSydneyCricketGround.linkOffsetY = -60;
+
+                            lineKippaxLake.linkOffsetY = -5;
+                            lineStadium.linkOffsetY = -5;
+                            lineSydneyCricketGroundt.linkOffsetY = -5;
+                        }, 10000)
                     }
 
                     if (document.getElementById('moveTank').hidden == true) {
