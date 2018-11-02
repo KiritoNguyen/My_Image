@@ -778,7 +778,7 @@
                             movein.setKeys(movein_keys);
                             dirin.setKeys(dir_keys);
                             scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
-                        },delaySuper);
+                        },delaySuper*1.5);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
