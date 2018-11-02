@@ -935,6 +935,21 @@
                         function removeArrayEl(arr, RouteName){
                             newArr = [];
                             index=-1;
+                            if(RouteName==="All Route")
+                            {
+                                arrayData=[];
+                                var updatedData=JSON.stringify(arrayData);         
+                                // do update
+                                $.ajax({
+                                    url: "https://api.myjson.com/bins/vf6v4",
+                                    type: "PUT",
+                                    data: updatedData,
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json"
+                                });
+                                return;                    
+                            }
+                            
                             for(var i = 0, l = arr.length;i < l; i++){
                                 var counter = arr[i].name;
                                 if(counter == RouteName){
