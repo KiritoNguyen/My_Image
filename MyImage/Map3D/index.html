@@ -133,7 +133,7 @@
                 light.intensity = 2;
 
                 /////////////// CAMERA ///////////////
-                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
+                camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
                 camera.target = new BABYLON.Vector3.Zero();
                 camera.wheelPrecision = 1;
                 camera.lowerRadiusLimit = 200;
@@ -509,7 +509,7 @@
                 }
                 var cameraRotateFunction = function() {
                     camera.dispose();
-                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
+                    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
                     camera.target = new BABYLON.Vector3.Zero();
                     camera.wheelPrecision = 1;
                     camera.lowerRadiusLimit = 200;
