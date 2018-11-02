@@ -76,8 +76,6 @@
                 <li>Draw Route</li>
                     <div class="list" style="height: 150px;">
                         <select id="route" style="width: 90%;">
-                            <option>None</option>
-                            <option>All Route</option>
                         </select> 
                         <button id="addRoute" class="btn" style="margin-top: 20%; margin-left: 5%">Draw</button> <br>
                         <button id="deleteRoute" class="btn" style="margin-top: 10%; margin-left: 5%">Delete</button> <br>
@@ -911,7 +909,7 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        setTimeout(loadRouteData(),500);            
+                        loadRouteData();       
                     });                             
                 }
                 document.getElementById("addRoute").onclick = drawFunction;
@@ -981,9 +979,8 @@
                             }
                         }
                         removeOptions(document.getElementById("route"));
-                        setTimeout(() => {
                             loadRouteData();
-                        }, 500); 
+
                     });
                     ///CLEAR ALL
 
@@ -1051,6 +1048,12 @@
                         }
                         var i=0; 
                         var myDiv = document.getElementById("route");
+                        var default_option_none = document.createElement("option");
+                        var default_option_all = document.createElement("option");
+                        default_option_none.textContent = "None";
+                        default_option_all.textContent = "All Route";
+                        myDiv.add(default_option_none);
+                        myDiv.add(default_option_all);
                         PointObject.forEach(p => {
                             var option = document.createElement("option");
                             option.textContent = PointObject[i].name;
