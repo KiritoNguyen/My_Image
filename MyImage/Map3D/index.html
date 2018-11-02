@@ -99,6 +99,7 @@
             var camera;
             var particleSystem;
             var timeMobile, intervalTimeMobile;
+            var delaySuper=3000;
 
             var createBtnClose = function() {
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -481,6 +482,16 @@
                 logText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 advancedTexture.addControl(logText);  
 
+                var notificationText=new BABYLON.GUI.TextBlock();
+                notificationText.height = "40px";
+                notificationText.color = "red";
+                notificationText.fontSize = 24;
+                notificationText.top = 1;
+                notificationText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                notificationText.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                advancedTexture.addControl(notificationText);  
+
+
                 /////////////////////////////////Button Go/////////////////////////////////////
                 var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
                 advancedTexture.addControl(btnGo);
@@ -558,6 +569,11 @@
                 //     document.getElementById("mobileControl").onclick = mobileControlFunction;
                 // }
                 document.getElementById("mobileControl").onclick = mobileControlFunction;
+                ///////////Set Notification/////////////////
+
+                var setNotification=function(text){
+                    notificationText.text=text;
+                }
 
                 ////////////////// BUTTON RECORD PATH ////////////////////////
                 var RecordPath=false;
@@ -575,13 +591,30 @@
                     document.getElementById('addRecord').innerHTML = 'Save Path';
                     document.getElementById('addRecord').onclick = savePathFunction;
                 }
+
+                var checkNamePath=function(newName){
+                    var count =0;
+                    NamePathData.forEach(n=>{
+                        if(n!=newName)
+                        {
+                            count++;
+                        }
+                    })
+                    if(count==NamePathData.length)
+                        return true;
+                    else
+                        return false;
+                }
+
                 var savePathFunction = function() {
                     Record=false;
                     do{
                         var nameOfPath = prompt("Please enter route name:");      
-                    }while(nameOfPath==="" );
-                    if(nameOfPath!=null) {
+                        console.log(checkNamePath(nameOfPath));
+                    }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
+                    if(nameOfPath!=null&&checkNamePath(nameOfPath)) {
                         writeRecordData(nameOfPath);
+                        console.log(checkNamePath(nameOfPath));
                     } 
                     
                     document.getElementById('addRecord').innerHTML = 'Record';
@@ -594,6 +627,9 @@
                     this.y=_y;
                     this.z=_z;
                 }
+
+               
+
                 var preRecord=new BABYLON.Vector3(0,0,0);
                 var DirData=[];
                 var RecordPointData=[];
@@ -651,7 +687,6 @@
                         }
                         RecordPointData=[];
                         DirData=[];
-                        NamePathData=[];
                         newPointData.forEach(p=>{
                             RecordPointData.push(p);
                         })
@@ -665,6 +700,7 @@
 
                 var writeRecordData=(nameOfPath)=>{
                     var arrayData=[];
+                    setNotification("SAVING ...");
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
                             arrayData.push(obj[i]);
@@ -691,16 +727,23 @@
                           
                     });   
                     setTimeout(function(){
+                        setNotification("SAVED!")
                         loadRecordData();  
-                    },3000);
+                        
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                     
                 }
 
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
                 var playRecordFunction = function() {
                     if(Record==false){
+                        setNotification("LOADING ...");
                         loadRecordDataByName(document.getElementById('path').value);                 
                         setTimeout(function() {
+                            setNotification("");
                             camera.dispose();
                             camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
                             camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
@@ -738,7 +781,7 @@
                             movein.setKeys(movein_keys);
                             dirin.setKeys(dir_keys);
                             scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
-                        },3000);
+                        },delaySuper);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
@@ -746,6 +789,7 @@
                                 /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deletePathFunction=()=>{
+                    setNotification("DELETING ...");
                     var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
                         for (var i = 0; i < obj.length; i++) {
@@ -765,7 +809,11 @@
                     });   
                     setTimeout(function(){
                         loadRecordData();  
-                    },3000);
+                        setNotification("DELETED!");
+                    },delaySuper);
+                    setTimeout(function(){
+                        setNotification("");
+                    },delaySuper+1000);
                 }
 
                 document.getElementById("deleteRecord").onclick = deletePathFunction;
