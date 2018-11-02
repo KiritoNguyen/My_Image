@@ -97,7 +97,8 @@
             var camera;
             var particleSystem;
             var timeMobile, intervalTimeMobile;
-            var delaySuper=4000;
+            var delaySuper=6000;
+            var connect=false;
 
             var createBtnClose = function() {
                 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -631,7 +632,8 @@
                 var NamePathData=[];
 
                 /////////////LOAD Record Data//////////////
-                var loadRecordData = () => {     
+                var loadRecordData = () => {  
+                    connect=false;   
                     var newNamePathData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
                         if(obj.length >= 1) {
@@ -652,11 +654,13 @@
                             myDiv.add(option);
                             i++;
                         });           
+                        connect=true;
                     })
                 }
                 loadRecordData();
 
                 var loadRecordDataByName = (nameOfPath) => {
+                    connect=false;
                     var newPointData=[];  
                     var newDirData=[];         
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
@@ -688,12 +692,15 @@
                         newDirData.forEach(d=>{
                             DirData.push(d);
                         })             
+                        connect=true;
                     })
+                    
                 }
 
                 /////////////WRITE Record Data//////////////
 
                 var writeRecordData=(nameOfPath)=>{
+                    connect=false;
                     var arrayData=[];
                     setNotification("SAVING ...");
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
@@ -719,16 +726,21 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
                         });
+                        connect=true;
                           
                     });   
-                    setTimeout(function(){
-                        setNotification("SAVED!")
-                        loadRecordData();  
-                        
-                    },delaySuper);
-                    setTimeout(function(){
-                        setNotification("");
-                    },delaySuper+1000);
+                    var check=setInterval(function(){
+                        console.log(connect);
+                        if(connect){
+                            setNotification("SAVED!")
+                            loadRecordData();
+                            setTimeout(function(){
+                                setNotification("");
+                            },1000);
+                            connect=false;
+                            clearInterval(check);
+                        }
+                    },100);
                     
                 }
 
@@ -736,54 +748,61 @@
                 var playRecordFunction = function() {
                     if(Record==false){
                         setNotification("LOADING ...");
-                        loadRecordDataByName(document.getElementById('path').value);                 
-                        setTimeout(function() {
-                            setNotification("");
-                            camera.dispose();
-                            camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
-                            camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
-                            document.getElementById('cameraChange').innerHTML = 'Free Camera';
-                            camera.speed = 20;
-                            camera.checkCollisions = true;
-                            camera.attachControl(canvas, true);
-                            var count=0;
-                            var frameRate = 60;
-                            var movein_keys = []; 
-                            var dir_keys=[];
-                            console.log(RecordPointData);
-                            RecordPointData.forEach(p=>{
-                                movein_keys.push({
-                                    frame: count*frameRate/10,
-                                    value: new BABYLON.Vector3(p.x, p.y, p.z)
-                                });
-                                count++;
-                            })
-                            count=0;
-                            DirData.forEach(d => {
-                                dir_keys.push({
-                                    frame: count*frameRate/10,
-                                    value: new BABYLON.Vector3(d.x,d.y,d.z)
-                                });
-                                count++;
-                            })
-                            
-                            var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
-                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                        console.log(connect);
+                        loadRecordDataByName(document.getElementById('path').value);
+                        var check=setInterval(function(){
+                            console.log(connect);
+                            if(connect){
+                                setNotification("");
+                                camera.dispose();
+                                camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+                                camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
+                                document.getElementById('cameraChange').innerHTML = 'Free Camera';
+                                camera.speed = 20;
+                                camera.checkCollisions = true;
+                                camera.attachControl(canvas, true);
+                                var count=0;
+                                var frameRate = 60;
+                                var movein_keys = []; 
+                                var dir_keys=[];
+                                console.log(RecordPointData);
+                                RecordPointData.forEach(p=>{
+                                    movein_keys.push({
+                                        frame: count*frameRate/10,
+                                        value: new BABYLON.Vector3(p.x, p.y, p.z)
+                                    });
+                                    count++;
+                                })
+                                count=0;
+                                DirData.forEach(d => {
+                                    dir_keys.push({
+                                        frame: count*frameRate/10,
+                                        value: new BABYLON.Vector3(d.x,d.y,d.z)
+                                    });
+                                    count++;
+                                })
+                                
+                                var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-                            var dirin = new BABYLON.Animation("dirin", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
-                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                                var dirin = new BABYLON.Animation("dirin", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
+                                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-                            movein.setKeys(movein_keys);
-                            dirin.setKeys(dir_keys);
-                            scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
-                        },delaySuper*1.5);
+                                movein.setKeys(movein_keys);
+                                dirin.setKeys(dir_keys);
+                                scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
+                                connect=false;
+                                clearInterval(check);
+                            }
+                        },100);
                     }
                 }
                 document.getElementById('playRecord').onclick = playRecordFunction;
 
-                                /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
+                /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
 
                 var deletePathFunction=()=>{
+                    connect=false;
                     setNotification("DELETING ...");
                     var arrayData=[];
                     jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) =>{
@@ -801,14 +820,25 @@
                             dataType: "json"
                         });
                         arrayData=[];     
+                        connect=true;
                     });   
-                    setTimeout(function(){
-                        loadRecordData();  
-                        setNotification("DELETED!");
-                    },delaySuper);
-                    setTimeout(function(){
-                        setNotification("");
-                    },delaySuper+1000);
+                    var check=setInterval(function(){
+                        if(connect)
+                        {
+                            connect=false;
+                            loadRecordData();
+                            var check2=setTimeout(function(){
+                                if(connect){
+                                    connect=false;
+                                    clearInterval(check);
+                                }
+                            },100);
+                            setNotification("DELETED!");
+                            setTimeout(function(){
+                                setNotification("");
+                            },1000);
+                        }
+                    },100);
                 }
 
                 document.getElementById("deleteRecord").onclick = deletePathFunction;
