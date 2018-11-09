@@ -608,9 +608,9 @@
                         var nameOfPath = prompt("Please enter route name:");      
                         console.log(checkNamePath(nameOfPath));
                     }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
-                    if(nameOfPath!=null&&checkNamePath(nameOfPath)) {
+                    if(nameOfPath!=null&&checkNamePath(nameOfPath)&&RecordPointData.length>=1) {
                         writeRecordData(nameOfPath);
-                        console.log(checkNamePath(nameOfPath));
+                        //console.log(checkNamePath(nameOfPath));
                     } 
                     
                     document.getElementById('addRecord').innerHTML = 'Record';
@@ -644,7 +644,7 @@
                         }
                         newNamePathData.forEach(n=>{
                             NamePathData.push(n);
-                        })
+                        })           
                         var i = 0;
                         document.getElementById('path').innerHTML="";
                         var myDiv = document.getElementById('path');
@@ -653,9 +653,14 @@
                             option.textContent = newNamePathData[i];
                             myDiv.add(option);
                             i++;
-                        });           
-                        connect=true;
+
+                        })
+                        connect=true;                       
                     })
+                   // if(connect)
+                    {
+                        console.log("II");
+                    }
                 }
                 loadRecordData();
 
@@ -731,17 +736,25 @@
                     });   
                     var check=setInterval(function(){
                         console.log(connect);
-                        if(connect){
-                            setNotification("SAVED!")
-                            loadRecordData();
-                            setTimeout(function(){
-                                setNotification("");
-                            },1000);
-                            connect=false;
+                        if(connect)
+                        {
                             clearInterval(check);
+                            connect=false;
+                            console.log("I");
+                            loadRecordData();
+                            console.log("III");
+                            var check2=setInterval(function(){
+                                if(connect){
+                                    clearInterval(check2);
+                                    setNotification("SAVED!");
+                                    setTimeout(function(){
+                                        setNotification("");
+                                    },1000);
+                                    connect=false;
+                                }
+                            },200);
                         }
-                    },100);
-                    
+                    },200);
                 }
 
                 /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
@@ -753,6 +766,7 @@
                         var check=setInterval(function(){
                             console.log(connect);
                             if(connect){
+                                clearInterval(check);
                                 setNotification("");
                                 camera.dispose();
                                 camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
@@ -792,7 +806,6 @@
                                 dirin.setKeys(dir_keys);
                                 scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
                                 connect=false;
-                                clearInterval(check);
                             }
                         },100);
                     }
@@ -825,18 +838,19 @@
                     var check=setInterval(function(){
                         if(connect)
                         {
+                            clearInterval(check);
                             connect=false;
                             loadRecordData();
-                            var check2=setTimeout(function(){
+                            var check2=setInterval(function(){
                                 if(connect){
+                                    clearInterval(check2);
+                                    setNotification("DELETED!");
+                                    setTimeout(function(){
+                                        setNotification("");
+                                    },1000);
                                     connect=false;
-                                    clearInterval(check);
                                 }
-                            },100);
-                            setNotification("DELETED!");
-                            setTimeout(function(){
-                                setNotification("");
-                            },1000);
+                            },100);   
                         }
                     },100);
                 }
