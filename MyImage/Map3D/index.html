@@ -266,30 +266,31 @@
                 dynamicMaterial.diffuseTexture.hasAlpha = true;
                 groundDraw.material = dynamicMaterial;
 
-                // ///////////////// GROUND VISIBLE/////////////////
-                // var ground = BABYLON.Mesh.CreateGround("groundVisible", 4000, 4000, 2, scene);
-                // ground.position.y = -47;
-                // ground.checkCollisions = true;
-                // ground.material = new BABYLON.StandardMaterial('groundMaterial', scene);
-                // // ground tuyết
-                // ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);
-                // // ground cỏ
-                // ground.material.diffuseTexture = new BABYLON.Texture('https://media.istockphoto.com/photos/green-grass-background-picture-id185317174?k=6&m=185317174&s=612x612&w=0&h=v54pzF3CUQqhVfTU1cBB9KQGLh-f7hZC701ZPKlG5pM=', scene);        
-                // ground.material.backFaceCulling = false;
+                ///////////////// GROUND VISIBLE/////////////////
+                var ground = BABYLON.Mesh.CreateGround("groundVisible", 4000, 4000, 2, scene);
+                ground.position.y = -52;
+                ground.checkCollisions = true;
+                ground.visibility = 1
+                ground.material = new BABYLON.StandardMaterial('groundMaterial', scene);
+                // ground tuyết
+                ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);
+                // ground cỏ
+                ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg', scene);        
+                ground.material.backFaceCulling = false;
 
-                // setInterval(() => {
-                //     particleSystem.stop();  
-                //     setTimeout(() => {
-                //         ground.material.diffuseTexture = new BABYLON.Texture('https://media.istockphoto.com/photos/green-grass-background-picture-id185317174?k=6&m=185317174&s=612x612&w=0&h=v54pzF3CUQqhVfTU1cBB9KQGLh-f7hZC701ZPKlG5pM=', scene);
-                //     }, 5000)                    
-                // }, 10000);
+                setInterval(() => {
+                    particleSystem.stop();  
+                    setTimeout(() => {
+                        ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg', scene);
+                    }, 5000)                    
+                }, 10000);
 
-                // setInterval(() => {
-                //     particleSystem.start();  
-                //     setTimeout(() => {
-                //         ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);                    
-                //     }, 5000)                       
-                // }, 20000);
+                setInterval(() => {
+                    particleSystem.start();  
+                    setTimeout(() => {
+                        ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);                    
+                    }, 5000)                       
+                }, 20000);
 
                 //////Lists of Data////
                 var PointData=[];
@@ -467,9 +468,9 @@
 
                     ///////////////////DOWN GROUND TEXTURE///////////////
                     m[423].material = new BABYLON.StandardMaterial("mat", scene);          
-                    m[423].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);
+                    m[423].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
                     m[11].material = new BABYLON.StandardMaterial("mat", scene);          
-                    m[11].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);
+                    m[11].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
 
                     ////////////////////////////////////////////
 
