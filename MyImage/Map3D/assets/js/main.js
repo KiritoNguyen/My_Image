@@ -4,7 +4,6 @@ var engine = new BABYLON.Engine(canvas, null, false);
 var camera;
 var particleSystem;
 var timeMobile, intervalTimeMobile;
-var delaySuper=6000;
 var connect=false;
 
 var createBtnClose = function() {
@@ -29,8 +28,6 @@ var createBtnClose = function() {
     })
 }
 
-
-
 var createScene = function() {
     scene = new BABYLON.Scene(engine);
     scene.collisionsEnabled = true;
@@ -38,7 +35,8 @@ var createScene = function() {
     ///////////////// LIGHT //////////////////
     var light = new BABYLON.PointLight("light", new BABYLON.Vector3(-5000, 6000, -16000), scene);
     light.intensity = 2;
-
+    var hemisphericlight = new BABYLON.HemisphericLight("hemisphericlight", new BABYLON.Vector3(-5000, 6000, -16000), scene);
+    hemisphericlight.intensity = 0.01;
     /////////////// CAMERA ///////////////
     camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
     camera.target = new BABYLON.Vector3.Zero();
@@ -326,138 +324,117 @@ var createScene = function() {
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
         m[0].position = new BABYLON.Vector3(500, -50, 500);
-        ///////////////////TREE TEXTURE///////////////
-        for(var i = 142; i < 146; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15);           
+        for(var i = 0; i < m.length; i++) {
+
+            ///////////////////TREE TEXTURE///////////////
+            if ((i >= 142 && i < 146) || i == 758) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15); 
+            } 
+
+            ///////////////////CAR TEXTURE///////////////
+            if (i >= 693 && i < 699) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
+            }    
+
+            ///////////////////FLAG ALLIANZ STADIUM TEXTURE///////////////
+            if (i >= 64 && i < 68) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.8);    
+            }
+
+            ///////////////////ALLIANZ GROUND TEXTURE///////////////
+            if (i == 604) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);          
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);    
+            }
+
+            ///////////////////SYDNEY CRICKET GROUND TEXTURE///////////////
+            if (i == 419) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);          
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/5ca60f119f14ff138829d3ada068cf5d.JPG", scene);
+            }
+
+            ///////////////////LAKE & SWIMMING POOL TEXTURE///////////////
+            if (i == 119 || i == 123 || i == 605 || (i >= 131 && i < 139)) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);          
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/319e89e8fd86b7f4a5ab254920712038.jpg", scene);
+            }
+
+            ///////////////////DOWN GROUND TEXTURE///////////////
+            if (i == 204 || i == 423 || i == 11 || i == 692|| i == 420) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);   
+                m[i].position.y = -55;       
+                if (i ==420)
+                    m[i].position.y = -40;   
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
+            }
+
+            //////////////////GATE A TEXTURE///////////////         
+            if ((i >= 430 && i < 440) || (i >= 325 && i < 327) || i == 322 || i == 366 || i == 360 || i == 448 || i == 269 || i == 462 || i == 76) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
+            }
+            if (i == 377 || i == 386 || i == 292 || i == 282 || i == 437) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);          
+                m[i].material.diffuseColor = new BABYLON.Color3(13/255, 45/255, 18/255);       
+            }   
+
+            ///////////////////ALLIANZ STADIUM SEATS TEXTURE///////////////
+            if ((i >= 195 && i < 197) || i == 612 || i == 527 || i == 688 || i == 521) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
+            }
+                   
+            ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////
+            if ((i >= 440 && i < 442) || (i >= 446 && i < 448) || (i >= 453 && i < 455) || i == 443 
+            || i == 451 || i == 456 || i == 263 || i == 272 || i == 266 || i == 449) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
+            }
+
+            ///////////////////////// WALK GROUND ///////////////////////////
+            if (i == 8) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2d628b2f5cedba319c081744bf92f344.jpg", scene);              
+            }
+
+            ///////////////////////// HOUSE ROOF ///////////////////////////
+            if ((i >= 201 && i < 204) || (i >= 560 && i < 564)) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/eb431a7787f33bbd2710b4d9e7076aeb.jpg", scene);              
+            }
+            if (i == 24) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/64389da8647ed843c1f283430953d23c.jpg", scene);              
+            }
+            if (i == 56) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/cement%20ice1.jpg", scene);              
+            }
+            ///////////////////////// GRASS TENNIS ///////////////////////////
+            if (i == 21) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Grass0153_30_S.jpg", scene);              
+            }
+            if (i == 78 || i == 88) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene); 
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);              
+            }
+
+            ///////////////////////// YARD TILES ///////////////////////////
+            if (i == 77 || i == 86) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/b2cbf8640ebbd1f5217e6e280a096803.jpg", scene);              
+            }
+
+            ///////////////////////// ALLIANZ LOGO STADIUM ///////////////////////////
+            if (i == 567 || (i >= 683 && i < 686)) {
+                m[i].material = new BABYLON.StandardMaterial("mat", scene);
+                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Allianz_Stadium_logo.jpg", scene);              
+            }
         }
-        m[758].material = new BABYLON.StandardMaterial("mat", scene);
-        m[758].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15);
-
-        ////////////////////////////////////////////
-
-        ///////////////////CAR TEXTURE///////////////
-
-        for(var i = 693; i < 699; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
-        }
-
-        ////////////////////////////////////////////
-
-        ///////////////////FLAG ALLIANZ STADIUM TEXTURE///////////////
-
-        for(var i = 64; i < 68; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
-        }
-
-        ////////////////////////////////////////////
-
-        ///////////////////ALLIANZ GROUND TEXTURE///////////////
-        m[604].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[604].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);
-        m[204].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[204].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
-        ////////////////////////////////////////////
-
-        ///////////////////SYDNEY CRICKET GROUND TEXTURE///////////////
-        m[419].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[419].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);
-        
-        ////////////////////////////////////////////
-
-        ///////////////////LAKE TEXTURE///////////////
-        m[605].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[605].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/319e89e8fd86b7f4a5ab254920712038.jpg", scene);
-
-        ////////////////////////////////////////////
-
-        ///////////////////DOWN GROUND TEXTURE///////////////
-        m[423].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[423].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
-        m[11].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[11].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
-
-        ////////////////////////////////////////////
-
-        //////////////////GATE A TEXTURE///////////////
-        m[377].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[377].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);  
-        m[386].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[386].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);
-        m[435].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[435].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);
-        m[292].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[292].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);
-        m[282].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[282].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);      
-        m[448].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[448].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
-        for(var i = 430; i < 440; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
-        }
-        m[437].material = new BABYLON.StandardMaterial("mat", scene);          
-        m[437].material.diffuseColor = new BABYLON.Color3(13/255,45/255,18/255);
-        m[366].material = new BABYLON.StandardMaterial("mat", scene);   
-        m[366].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);  
-        m[360].material = new BABYLON.StandardMaterial("mat", scene);   
-        m[360].material.diffuseTexture  = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);            
-            
-        ////////////////////////////////////////////
-
-        ///////////////////ALLIANZ STADIUM SEATS TEXTURE///////////////
-        m[612].material = new BABYLON.StandardMaterial("mat", scene);
-        m[612].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);  
-        for(var i = 195; i < 197; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);          
-        }
-        m[527].material = new BABYLON.StandardMaterial("mat", scene);
-        m[527].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255); 
-        m[688].material = new BABYLON.StandardMaterial("mat", scene);
-        m[688].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[521].material = new BABYLON.StandardMaterial("mat", scene);
-        m[521].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-
-        ////////////////////////////////////////////
-
-        ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////
-    
-        for(var i = 440; i < 442; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);          
-        }
-        for(var i = 446; i < 448; i++) {
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
-            m[i].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);                        
-        }
-        m[443].material = new BABYLON.StandardMaterial("mat", scene);
-        m[443].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255); 
-        m[451].material = new BABYLON.StandardMaterial("mat", scene);
-        m[451].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[453].material = new BABYLON.StandardMaterial("mat", scene);
-        m[453].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[456].material = new BABYLON.StandardMaterial("mat", scene);
-        m[456].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[263].material = new BABYLON.StandardMaterial("mat", scene);
-        m[263].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[272].material = new BABYLON.StandardMaterial("mat", scene);
-        m[272].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[266].material = new BABYLON.StandardMaterial("mat", scene);
-        m[266].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[454].material = new BABYLON.StandardMaterial("mat", scene);
-        m[454].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[449].material = new BABYLON.StandardMaterial("mat", scene);
-        m[449].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-        m[263].material = new BABYLON.StandardMaterial("mat", scene);
-        m[263].material.diffuseColor = new BABYLON.Color3(0,229/255,238/255);
-
-        ////////////////////////////////////////////
-
-
-
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
     }	
     
@@ -523,7 +500,7 @@ var createScene = function() {
 
     /////////////////////////////////Button Go/////////////////////////////////////
     var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
-    advancedTexture.addControl(btnGo);
+    // advancedTexture.addControl(btnGo);
     btnGo.width = 0.08;
     btnGo.height = "50px";
     btnGo.cornerRadius = 20;
