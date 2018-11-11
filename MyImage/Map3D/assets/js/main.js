@@ -5,6 +5,7 @@ var camera;
 var particleSystem;
 var timeMobile, intervalTimeMobile;
 var connect=false;
+var timeChangeColorRoute=500;
 
 var createBtnClose = function() {
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -619,7 +620,7 @@ var createScene = function() {
             var nameOfPath = prompt("Please enter route name:");      
             console.log(checkNamePath(nameOfPath));
         }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
-        if(nameOfPath!=null&&checkNamePath(nameOfPath)) {
+        if(nameOfPath!=null&&checkNamePath(nameOfPath)&&RecordPointData.length>=1) {
             writeRecordData(nameOfPath);
             console.log(checkNamePath(nameOfPath));
         } 
@@ -642,7 +643,7 @@ var createScene = function() {
     var RecordPointData=[];
     var NamePathData=[];
 
-    /////////////LOAD Record Data//////////////
+    /////////////LOAD RECORD DATA//////////////
     var loadRecordData = () => {  
         connect=false;   
         var newNamePathData=[];
@@ -655,7 +656,7 @@ var createScene = function() {
             }
             newNamePathData.forEach(n=>{
                 NamePathData.push(n);
-            })
+            })           
             var i = 0;
             document.getElementById('path').innerHTML="";
             var myDiv = document.getElementById('path');
@@ -664,12 +665,11 @@ var createScene = function() {
                 option.textContent = newNamePathData[i];
                 myDiv.add(option);
                 i++;
-            });           
-            connect=true;
+            })
+            connect=true;                       
         })
     }
     loadRecordData();
-
     var loadRecordDataByName = (nameOfPath) => {
         connect=false;
         var newPointData=[];  
@@ -708,8 +708,7 @@ var createScene = function() {
         
     }
 
-    /////////////WRITE Record Data//////////////
-
+    /////////////WRITE RECORD DATA//////////////
     var writeRecordData=(nameOfPath)=>{
         connect=false;
         var arrayData=[];
@@ -738,21 +737,29 @@ var createScene = function() {
                 dataType: "json"
             });
             connect=true;
-                
+           
         });   
         var check=setInterval(function(){
             console.log(connect);
-            if(connect){
-                setNotification("SAVED!")
-                loadRecordData();
-                setTimeout(function(){
-                    setNotification("");
-                },1000);
-                connect=false;
+            if(connect)
+            {
                 clearInterval(check);
+                connect=false;
+                console.log("I");
+                loadRecordData();
+                console.log("III");
+                var check2=setInterval(function(){
+                    if(connect){
+                        clearInterval(check2);
+                        setNotification("SAVED!");
+                        setTimeout(function(){
+                            setNotification("");
+                        },1000);
+                        connect=false;
+                    }
+                },200);
             }
-        },100);
-        
+        },200);
     }
 
     /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
@@ -764,6 +771,7 @@ var createScene = function() {
             var check=setInterval(function(){
                 console.log(connect);
                 if(connect){
+                    clearInterval(check);
                     setNotification("");
                     camera.dispose();
                     camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
@@ -803,15 +811,13 @@ var createScene = function() {
                     dirin.setKeys(dir_keys);
                     scene.beginDirectAnimation(camera, [movein,dirin], 0, count * frameRate, false);
                     connect=false;
-                    clearInterval(check);
                 }
             },100);
         }
     }
     document.getElementById('playRecord').onclick = playRecordFunction;
 
-    /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
-
+    /////////////////////////////////BUTTON DELETE PATH/////////////////////////////////////
     var deletePathFunction=()=>{
         connect=false;
         setNotification("DELETING ...");
@@ -836,18 +842,19 @@ var createScene = function() {
         var check=setInterval(function(){
             if(connect)
             {
+                clearInterval(check);
                 connect=false;
                 loadRecordData();
-                var check2=setTimeout(function(){
+                var check2=setInterval(function(){
                     if(connect){
+                        clearInterval(check2);
+                        setNotification("DELETED!");
+                        setTimeout(function(){
+                            setNotification("");
+                        },1000);
                         connect=false;
-                        clearInterval(check);
                     }
-                },100);
-                setNotification("DELETED!");
-                setTimeout(function(){
-                    setNotification("");
-                },1000);
+                },100);   
             }
         },100);
     }
@@ -893,7 +900,7 @@ var createScene = function() {
     }
     document.getElementById("moveTank").onclick = moveTankFunction;
 
-    /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////////
+    /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////
     var DrawMode = false;
     var drawFunction = function() {
         DrawMode = true;
@@ -1044,17 +1051,55 @@ var createScene = function() {
 
     document.getElementById("deleteRoute").onclick = deleteFunction;
     ///////////////////////////Draw Point/////////////////////////////////
-    var DrawOnePoint=function(groundTexture,invertY,x,y){
+    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght){
+        setInterval(function(){
+            var context = groundTexture._context;
+            context.beginPath();
+            context.arc(x, y, 3, 0, 2 * Math.PI, false);
+            
+            context.fillStyle = 'green';
+            context.fill();
+            context.lineWidth = 2;
+            context.strokeStyle = 'yellow';
+            context.stroke();
+            groundTexture.update(invertY);
+        },timeChangeColorRoute);
+        setTimeout(function(){
+            var context = groundTexture._context;
+                context.beginPath();
+                context.arc(x, y, 3, 0, 2 * Math.PI, false);
+                
+                context.fillStyle = 'red';
+                context.fill();
+                context.lineWidth = 2;
+                context.strokeStyle = 'blue';
+                context.stroke();
+                groundTexture.update(invertY);
+            setInterval(function(){
+                var context = groundTexture._context;
+                context.beginPath();
+                context.arc(x, y, 3, 0, 2 * Math.PI, false);
+                
+                context.fillStyle = 'red';
+                context.fill();
+                context.lineWidth = 2;
+                context.strokeStyle = 'blue';
+                context.stroke();
+                groundTexture.update(invertY);
+            },pointLeght*timeChangeColorRoute);
+        },i*timeChangeColorRoute);
+    }
+    var DrawOnePointWithColor=function(groundTexture, invertY, x, y, colorFill, colorStroke){
         var context = groundTexture._context;
-        context.beginPath();
-        context.arc(x, y, 3, 0, 2 * Math.PI, false);
-        
-        context.fillStyle = 'green';
-        context.fill();
-        context.lineWidth = 2;
-        context.strokeStyle = '#00EE00';
-        context.stroke();
-        groundTexture.update(invertY);
+            context.beginPath();
+            context.arc(x, y, 3, 0, 2 * Math.PI, false);
+            
+            context.fillStyle = colorFill;
+            context.fill();
+            context.lineWidth = 2;
+            context.strokeStyle = colorStroke;
+            context.stroke();
+            groundTexture.update(invertY);
     }
 
     btnGo.onPointerDownObservable.add(function() {
@@ -1121,9 +1166,12 @@ var createScene = function() {
                                 newPointData.push(point);
                             }
                         }
+                        var pointLeght = newPointData.length;
+                        var counti = 1;
                         newPointData.forEach(p => {
-                        DrawOnePoint(groundTexture,invertY,p.x,p.y);
+                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght);
                         groundTexture.update(invertY);
+                        counti++;
                         }); 
                     } 
                 else if(e.target.value ==="None"){
@@ -1150,13 +1198,20 @@ var createScene = function() {
                                 groundDraw.position.y = -45;
                                 dynamicMaterial.diffuseTexture.hasAlpha = true;
                                 groundDraw.material = dynamicMaterial;
-
                                 context = groundTexture._context;
                                 size = groundTexture.getSize();
-
+                                var pointLeght=newPointData.length;
+                                var counti = 1;
                                 newPointData.forEach(p => {
-                                    DrawOnePoint(groundTexture,invertY,p.x,p.y);
-                                });
+                                    if(counti == 1)
+                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,'aqua','aqua');
+                                    if(counti==pointLeght)
+                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,'red','red');
+                                    if(counti > 1 && counti < pointLeght)
+                                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1);
+                                groundTexture.update(invertY);
+                                counti++;
+                                }); 
                             }
                             count=i;
                         }                              
@@ -1591,7 +1646,7 @@ var createLake=function(){
 
 ////Register service worker
 if('serviceWorker' in navigator) {
-navigator.serviceWorker
+    navigator.serviceWorker
     .register('/service-worker.js')
     .then(function() { console.log("Service Worker Registered"); });
 }
