@@ -1,6 +1,7 @@
 var canvas = document.getElementById("renderCanvas"); 
 // var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
 var engine = new BABYLON.Engine(canvas, null, false);
+engine.loadingUIText = "LOADING ...";
 var camera;
 var particleSystem;
 var timeMobile, intervalTimeMobile;
