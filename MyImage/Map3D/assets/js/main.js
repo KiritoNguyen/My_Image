@@ -6,6 +6,10 @@ var particleSystem;
 var timeMobile, intervalTimeMobile;
 var connect=false;
 var timeChangeColorRoute=500;
+var fillColorRoute="green";
+var strokeColorRoute="yellow";
+var colorBegin="aqua";
+var colorEnd="red";
 
 var createBtnClose = function() {
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
@@ -1055,18 +1059,27 @@ var createScene = function() {
         });
     }
 
+    ///////////////////Change Route Color/////////
+    var ChangeRouteColor=(x)=>{
+        var x = document.getElementById("colorpicker").value;
+        strokeColorRoute=x;
+    }
+    document.getElementById("colorpicker").onchange=ChangeRouteColor;
+   
+    ///////////////////////////////////////////
+
     document.getElementById("deleteRoute").onclick = deleteFunction;
     ///////////////////////////Draw Point/////////////////////////////////
-    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght){
+    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght,fillColor,strokeColor){
         setInterval(function(){
             var context = groundTexture._context;
             context.beginPath();
             context.arc(x, y, 3, 0, 2 * Math.PI, false);
             
-            context.fillStyle = 'green';
+            context.fillStyle = fillColor;
             context.fill();
             context.lineWidth = 2;
-            context.strokeStyle = 'yellow';
+            context.strokeStyle = strokeColor;
             context.stroke();
             groundTexture.update(invertY);
         },timeChangeColorRoute);
@@ -1175,7 +1188,7 @@ var createScene = function() {
                         var pointLeght = newPointData.length;
                         var counti = 1;
                         newPointData.forEach(p => {
-                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght);
+                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght,fillColorRoute,strokeColorRoute);
                         groundTexture.update(invertY);
                         counti++;
                         }); 
@@ -1210,11 +1223,11 @@ var createScene = function() {
                                 var counti = 1;
                                 newPointData.forEach(p => {
                                     if(counti == 1)
-                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,'aqua','aqua');
+                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorBegin,colorBegin);
                                     if(counti==pointLeght)
-                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,'red','red');
+                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
                                     if(counti > 1 && counti < pointLeght)
-                                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1);
+                                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
                                 groundTexture.update(invertY);
                                 counti++;
                                 }); 
