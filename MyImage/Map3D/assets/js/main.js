@@ -617,7 +617,7 @@ var createScene = function() {
     var savePathFunction = function() {
         Record=false;
         do{
-            var nameOfPath = prompt("Please enter route name:");      
+            var nameOfPath = prompt("Please enter Path Record name:");      
             console.log(checkNamePath(nameOfPath));
         }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
         if(nameOfPath!=null&&checkNamePath(nameOfPath)&&RecordPointData.length>=1) {
