@@ -1,20 +1,21 @@
 var canvas = document.getElementById("renderCanvas"); 
-// var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-var engine = new BABYLON.Engine(canvas, null, false);
+var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+// var engine = new BABYLON.Engine(canvas, null, false);
 engine.loadingUIText = "LOADING ...";
 var camera;
-var particleSystem;
-var timeMobile, intervalTimeMobile;
-var connect=false;
-var timeChangeColorRoute=500;
-var fillColorRoute="green";
-var strokeColorRoute="yellow";
-var colorBegin="aqua";
-var colorEnd="red";
+var particleSystem;                             // biến quản lý hiệu ứng tuyết rơi
+var timeMobile, intervalTimeMobile;             // biến quản lý thời gian khi sử dụng chế độ điện thoại và vòng lặp biến thời gian
+var connect = false;                            // flag kiểm tra trạng thái write và load của feature path record
+var timeChangeColorRoute = 500;                 // Biến quản lý thời gian thay đổi màu của route
+var fillColorRoute = "green";                   // Màu vòng tròn trong của một node trong route
+var strokeColorRoute = "yellow";                // Màu vòng tròn ngoài của một node trong route
+var colorBegin = "aqua";                        // Màu node đầu tiên trong route
+var colorEnd = "red";                           // Màu node cuối cùng trong route
 
+// Hàm tạo button close của chế độ xem hình 360 độ
 var createBtnClose = function() {
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      
-    var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+    var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");                         // Khởi tạo button close
     button.width = "40px";
     button.height ="40px";
     button.top = 10;
@@ -23,8 +24,8 @@ var createBtnClose = function() {
     button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
     button.background = "green";
-    advancedTexture.addControl(button);
-    button.onPointerClickObservable.add(function(){
+    advancedTexture.addControl(button);                                                     // Thêm button vào màn hình
+    button.onPointerClickObservable.add(function(){                                         // Sự kiện quay về màn hình map 3D
         advancedTexture.dispose();
         var scene1 = createScene();
         engine.stopRenderLoop();
@@ -34,6 +35,7 @@ var createBtnClose = function() {
     })
 }
 
+// Hàm tạo scene map 3D
 var createScene = function() {
     scene = new BABYLON.Scene(engine);
     scene.collisionsEnabled = true;
@@ -43,6 +45,7 @@ var createScene = function() {
     light.intensity = 2;
     var hemisphericlight = new BABYLON.HemisphericLight("hemisphericlight", new BABYLON.Vector3(-5000, 6000, -16000), scene);
     hemisphericlight.intensity = 0.01;
+
     /////////////// CAMERA ///////////////
     camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
     camera.target = new BABYLON.Vector3.Zero();
@@ -52,7 +55,7 @@ var createScene = function() {
     camera.upperBetaLimit = Math.PI / 2;
     camera.attachControl(canvas, true); 
 
-    // Creating light sphere
+    /////////////// LENS FLARE EFFECT ///////////////
     var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
         
     lightSphere0.material = new BABYLON.StandardMaterial("white", scene);
@@ -71,7 +74,6 @@ var createScene = function() {
     var flare05 = new BABYLON.LensFlare(0.3, 0.8, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare3.png", lensFlareSystem);
 
     /////////////////SKY BOX/////////////////
-    // var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12600}, scene);
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 8000}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -136,7 +138,7 @@ var createScene = function() {
     // Start the particle system
     particleSystem.start();
 
-    ///////////////// INVISIBLE WALL/////////////////
+    ///////////////// INVISIBLE WALL ///////////////// => Tường ảo để chặn camera ra khỏi map
     var inviWallTop = new BABYLON.MeshBuilder.CreatePlane('inviWallTop', {size: 4000}, scene);
     var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {height: 5000, width: 4000}, scene);
     var inviWallBack = new BABYLON.MeshBuilder.CreatePlane('inviWallBack', {height: 5000, width: 4000}, scene);
@@ -166,18 +168,18 @@ var createScene = function() {
     inviWallRight.rotation.y = Math.PI / 2; 
     inviWallFront.rotation.y = Math.PI;
 
-    ///////////////// GROUND TO DRAW/////////////////
-    var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);    /////////////// A
+    ///////////////// GROUND TO DRAW ///////////////// => Ground để vẽ route
+    var groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);    
 
-    var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);                       /////////////// B
+    var dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);                      
     dynamicMaterial.diffuseTexture = groundTexture;
 
-    var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);         /////////////// C => A là con B và B là con C => ....
+    var groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);         
     groundDraw.position.y = -45;
     dynamicMaterial.diffuseTexture.hasAlpha = true;
     groundDraw.material = dynamicMaterial;
 
-    ///////////////// GROUND VISIBLE/////////////////
+    ///////////////// GROUND VISIBLE ///////////////// => Ground hiện thị mặt đất, ground sẽ thay đổi texture từ cỏ sang tuyết và ngược lại mỗi 10s
     var ground = BABYLON.Mesh.CreateGround("groundVisible", 4000, 4000, 2, scene);
     ground.position.y = -55;
     ground.checkCollisions = true;
@@ -189,6 +191,7 @@ var createScene = function() {
     ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg', scene);        
     ground.material.backFaceCulling = false;
 
+    // Tính toán thời gian thay đổi texture của ground
     setInterval(() => {
         particleSystem.stop();  
         setTimeout(() => {
@@ -203,11 +206,11 @@ var createScene = function() {
         }, 5000)                       
     }, 20000);
 
-    //////Lists of Data////
+    ////// Lists of Data //////
     var PointData=[];
     var PosLocation=[];
     
-    ////////Position of Location/////////////
+    ///////////// Position of Location /////////////
     var loadLocation = () => {
         var newPosition=[];   
         jQuery.getJSON('https://api.myjson.com/bins/kwbd6', (obj) =>{
@@ -226,9 +229,9 @@ var createScene = function() {
         })
         
     }
-    loadLocation();
+    loadLocation(); // Gán vị trí các Marker vào mảng PosLocation
     
-    var locStadium = new BABYLON.Mesh.CreateBox("locStadium", 0, scene);
+    var locStadium = new BABYLON.Mesh.CreateBox("locStadium", 0, scene);    // Tạo box ảo để neo Marker
     locStadium.visibility = 0;
 
     var locParking = new BABYLON.Mesh.CreateBox("locParking", 0, scene);
@@ -252,6 +255,7 @@ var createScene = function() {
     var locStadiumForecourt = new BABYLON.Mesh.CreateBox("locStadiumForecourt", 0, scene);
     locStadiumForecourt.visibility = 0;
 
+    // Gán vị trí cho các box ảo (settimeout để đảm load Location hoàn tất, tránh việc chưa hoàn tất việc đọc file json từ server)
     setTimeout(function(){
         locStadium.position= new BABYLON.Vector3(PosLocation[0].x, PosLocation[0].z, PosLocation[0].y - 250);
         locParking.position= new BABYLON.Vector3(PosLocation[1].x + 150, PosLocation[1].z, PosLocation[1].y - 200);
@@ -263,31 +267,31 @@ var createScene = function() {
         locStadiumForecourt.position= new BABYLON.Vector3(PosLocation[7].x + 100, PosLocation[7].z, PosLocation[7].y - 200);
     }, 5000);
 
-    var clearColor = "#555555";
+    // Đặt các thuộc tính cho việc vẽ Route
     var invertY = true;
     var context = groundTexture._context;
     var size = groundTexture.getSize();
-
     groundTexture.update(invertY);
 
-    var draw = false;
-    
+    var draw = false;   // Flag kiểm tra trạng thái có được phép vẽ hay không
+    var preMove=new BABYLON.Vector2(0,0);   // Khai báo biến preMove
+
+    // Sự kiện ấn chuột => bật biến Draw
     var onPointerDown = function (evt) {
         draw = true;
         preMove.x = scene.pointerX;
         preMove.y = scene.pointerY;
     };
 
+    // Sự kiện thả chuột => tắt biến Draw
     var onPointerUp = function (evt) {
         draw = false;
     };
 
-    var preMove=new BABYLON.Vector2(0,0);
-
+    // Sự kiện di chuyển chuột
     var onPointerMove = function (evt) {
-        var d = Math.sqrt((scene.pointerX-preMove.x)*(scene.pointerX-preMove.x)+(scene.pointerY-preMove.y)*(scene.pointerY-preMove.y));
-        //console.log(Math.floor(d));
-        if (draw && DrawMode && Math.floor(d)>15 && Math.floor(d)<25) {
+        var d = Math.sqrt((scene.pointerX-preMove.x)*(scene.pointerX-preMove.x)+(scene.pointerY-preMove.y)*(scene.pointerY-preMove.y)); // Tính khoảng cách giữa tọa độ chuột cũ và tọa độ hiện tại
+        if (draw && DrawMode && Math.floor(d)>15 && Math.floor(d)<25) { // Kiểm tra flag draw và giới hạn khoảng cách giữa tọa độ chuột và tọa độ chuột hiện tại (vị trí cũ và mới không được quá xa và quá gần)
             var pickResult = scene.pick(scene.pointerX, scene.pointerY);	
                     
             var texcoords = pickResult.getTextureCoordinates();
@@ -312,6 +316,7 @@ var createScene = function() {
         }
     };
 
+    // Add các sự kiện chuột vào canvas
     canvas.addEventListener("pointerdown", onPointerDown, false);
     canvas.addEventListener("pointerup", onPointerUp, false);
     canvas.addEventListener("pointermove", onPointerMove, false);
@@ -323,49 +328,49 @@ var createScene = function() {
     };
     
 
-    //////////////// STADIUM MODEL //////////////////
+    //////////////// STADIUM MODEL ////////////////// => Load model của stadium
     var assetsManager = new BABYLON.AssetsManager(scene);
-    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/stadiumModel/stadium.babylon");
+    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/stadiumModel/stadium.babylon"); 
     // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/stadium.babylon");
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
         m[0].position = new BABYLON.Vector3(450, -50, 300);
-        for(var i = 0; i < m.length; i++) {
+        for(var i = 0; i < m.length; i++) { // Set material cho các model dựa vào danh sách name và id của từng model
 
             /////////////////// CREATE MATERIAL FOR OBJECT ///////////////////
             m[i].material = new BABYLON.StandardMaterial("mat", scene);
 
-            ///////////////////TREE TEXTURE///////////////  DONE
+            ///////////////////TREE TEXTURE/////////////// 
             if ((i >= 147 && i < 150) || i == 789) {                
                 m[i].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15); 
             } 
 
-            ///////////////////CAR TEXTURE///////////////   DONE
+            ///////////////////CAR TEXTURE///////////////  
             if (i >= 724 && i < 730) {                
                 m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
             }    
 
-            ///////////////////FLAG ALLIANZ STADIUM TEXTURE///////////////  DONE
+            ///////////////////FLAG ALLIANZ STADIUM TEXTURE/////////////// 
             if (i >= 64 && i < 68) {                
                 m[i].material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.8);    
             }
 
-            ///////////////////ALLIANZ GROUND TEXTURE///////////////    DONE
+            ///////////////////ALLIANZ GROUND TEXTURE///////////////   
             if (i == 635) {                         
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);    
             }
 
-            ///////////////////SYDNEY CRICKET GROUND TEXTURE/////////////// DONE
+            ///////////////////SYDNEY CRICKET GROUND TEXTURE/////////////// 
             if (i == 439) {                        
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/5ca60f119f14ff138829d3ada068cf5d.JPG", scene);
             }
 
-            ///////////////////LAKE & SWIMMING POOL TEXTURE///////////////  DONE
+            ///////////////////LAKE & SWIMMING POOL TEXTURE///////////////  
             if (i == 119 || i == 123 || i == 636 || (i >= 136 && i < 144)) {                         
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/319e89e8fd86b7f4a5ab254920712038.jpg", scene);
             }
 
-            ///////////////////DOWN GROUND TEXTURE///////////////   DONE
+            ///////////////////DOWN GROUND TEXTURE///////////////   
             if (i == 452 || i == 11 || i == 451) {                  
                 m[i].position.y = -50;       
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/TexturesCom_Grass0197_2_seamless_S.jpg", scene);
@@ -375,7 +380,7 @@ var createScene = function() {
                 m[i].position.y = -30;  
             }
 
-            //////////////////GATE A TEXTURE/////////////// DONE
+            //////////////////GATE A TEXTURE/////////////// 
             if ((i >= 459 && i < 469) || (i >= 337 && i < 339) || i == 334 || i == 379 || i == 372 || i == 477 || i == 281 || i == 491 || i == 76) {               
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
             }
@@ -383,25 +388,25 @@ var createScene = function() {
                 m[i].material.diffuseColor = new BABYLON.Color3(13/255, 45/255, 18/255);       
             }   
 
-            ///////////////////ALLIANZ STADIUM SEATS TEXTURE/////////////// DONE
+            ///////////////////ALLIANZ STADIUM SEATS TEXTURE/////////////// 
             if ((i >= 200 && i < 202) || i == 643 || i == 556 || i == 648 || i == 550) {            
                 m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
             }
                    
-            ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////   DONE
+            ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////   
             if ((i >= 469 && i < 471) || (i >= 475 && i < 477) || (i >= 482 && i < 484) || i == 472 
             || i == 480 || i == 485 || i == 275 || i == 284 || i == 278 || i == 478) {           
                 m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
             }
 
-            ///////////////////////// WALK GROUND ///////////////////////////   DONE
+            ///////////////////////// WALK GROUND ///////////////////////////   
             if (i == 644 || i == 8) {               
                 if (i == 644)
                     m[i].position.y = -60;   
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2d628b2f5cedba319c081744bf92f344.jpg", scene);              
             }
 
-            ///////////////////////// HOUSE ROOF ///////////////////////////    DONE
+            ///////////////////////// HOUSE ROOF ///////////////////////////    
             if ((i >= 206 && i < 209) || (i >= 591 && i < 595)) {               
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/eb431a7787f33bbd2710b4d9e7076aeb.jpg", scene);              
             }
@@ -411,7 +416,8 @@ var createScene = function() {
             if (i == 56) {              
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/cement%20ice1.jpg", scene);              
             }
-            ///////////////////////// GRASS TENNIS ///////////////////////////  DONE
+
+            ///////////////////////// GRASS TENNIS ///////////////////////////  
             if (i == 21) {               
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Grass0153_30_S.jpg", scene);              
             }
@@ -419,12 +425,12 @@ var createScene = function() {
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);              
             }
 
-            ///////////////////////// YARD TILES ///////////////////////////    DONE
+            ///////////////////////// YARD TILES ///////////////////////////    
             if (i == 77 || i == 86) {              
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/b2cbf8640ebbd1f5217e6e280a096803.jpg", scene);              
             }
 
-            ///////////////////////// ALLIANZ LOGO STADIUM ///////////////////////////  DONE
+            ///////////////////////// ALLIANZ LOGO STADIUM ///////////////////////////  
             if (i == 598 || (i >= 651 && i < 654)) {               
                 m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Allianz_Stadium_logo.jpg", scene);              
             }
@@ -439,22 +445,22 @@ var createScene = function() {
     };                
     assetsManager.load();
 
+    //////////////// OPTIMIZE SCENE //////////////////
     var options = new BABYLON.SceneOptimizerOptions(30, 500);
     options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 2.5));
     var optimizer = new BABYLON.SceneOptimizer(scene, options);
 
-    //////////////// TANK MODEL //////////////////
+    //////////////// TANK MODEL ////////////////// => Load model xe tank
     BABYLON.SceneLoader.ImportMesh("", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/275d42382a314d6d0f7dfb27035bbc56b4431ef0/MyImage/Kiet/", "Tank.babylon", scene, function (newMeshes) {
         tank = newMeshes[0];
         tank.position = new BABYLON.Vector3(400, -40, -700);
         tank.scaling = new BABYLON.Vector3(5, 5, 5);
     });
     
-    // UI      
-    var manager = new BABYLON.GUI.GUI3DManager(scene);
+    //////////////// HUD //////////////////    
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    var txtFps = new BABYLON.GUI.TextBlock();
+    var txtFps = new BABYLON.GUI.TextBlock();   // Hiển thị FPS
     txtFps.height = "40px";
     txtFps.color = "red";
     txtFps.fontSize = 16;
@@ -464,7 +470,7 @@ var createScene = function() {
     txtFps.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     advancedTexture.addControl(txtFps);
 
-    var txtTimeMobile = new BABYLON.GUI.TextBlock();
+    var txtTimeMobile = new BABYLON.GUI.TextBlock();    // Hiển thị thời gian chế độ mobile còn lại
     txtTimeMobile.height = "40px";
     txtTimeMobile.color = "red";
     txtTimeMobile.fontSize = 16;
@@ -474,15 +480,15 @@ var createScene = function() {
     txtTimeMobile.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
     advancedTexture.addControl(txtTimeMobile);
 
-    var txtNotification = new BABYLON.GUI.TextBlock();
-    txtNotification.height = "40px";
-    txtNotification.color = "red";
-    txtNotification.fontSize = 24;
-    txtNotification.top = 1;
-    txtNotification.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    advancedTexture.addControl(txtNotification);  
+    var txtOptimize = new BABYLON.GUI.TextBlock();  // Hiển thị thông báo trạng thái optimize
+    txtOptimize.height = "40px";
+    txtOptimize.color = "red";
+    txtOptimize.fontSize = 24;
+    txtOptimize.top = 1;
+    txtOptimize.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    advancedTexture.addControl(txtOptimize);  
 
-    var notificationText=new BABYLON.GUI.TextBlock();
+    var notificationText=new BABYLON.GUI.TextBlock();   // Hiển thị các thông báo
     notificationText.height = "40px";
     notificationText.color = "red";
     notificationText.fontSize = 24;
@@ -491,22 +497,7 @@ var createScene = function() {
     notificationText.horizontalAlignment=BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     advancedTexture.addControl(notificationText);  
 
-
-    /////////////////////////////////Button Go/////////////////////////////////////
-    var btnGo = BABYLON.GUI.Button.CreateSimpleButton("btnGo", "Go");
-    // advancedTexture.addControl(btnGo);
-    btnGo.width = 0.08;
-    btnGo.height = "50px";
-    btnGo.cornerRadius = 20;
-    btnGo.color = "Orange";
-    btnGo.thickness = 4;
-    btnGo.background = "green";
-    btnGo.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    btnGo.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    btnGo.top = "10px";
-    btnGo.left = "-10px";
-
-    /////////////////////////////////BUTTON CHANGE CAMERA/////////////////////////////////////
+    ///////////////////////////// BUTTON CHANGE CAMERA /////////////////////////
     var cameraFreeFunction = function() {
         camera.dispose();
         camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
@@ -531,7 +522,7 @@ var createScene = function() {
     }
     document.getElementById("cameraChange").onclick = cameraFreeFunction;   
 
-    /////////////////////////////////BUTTON MOBILE CONTROL/////////////////////////////////////
+    /////////////////////////////////BUTTON MOBILE CONTROL//////////////////////////////// => Kích hoạt chế độ sử dụng mobile để di chuyển camera
     var mobileControlFunction = function() {
         do {
             timeMobile = parseInt(window.prompt('Enter time out for mobile control (10 seconds < time < 60 seconds): ', '20'));
@@ -562,22 +553,15 @@ var createScene = function() {
         intervalTimeMobile = setInterval(() => {
             timeMobile--;
         }, 1000);
-        // document.getElementById("mobileControl").onclick = test;
     }
-
-    // function test() {
-    //     camera.inputs.attached.virtualJoystick.detachControl();
-    //     document.getElementById("mobileControl").onclick = mobileControlFunction;
-    // }
     document.getElementById("mobileControl").onclick = mobileControlFunction;
-    ///////////Set Notification/////////////////
 
+    ///////////Set Notification/////////////////    => Chức năng hiện thị thông báo
     var setNotification=function(text){
         notificationText.text=text;
     }
 
-    ////////////////// BUTTON RECORD PATH ////////////////////////
-    var RecordPath=false;
+    /////////////////// BUTTON RECORD PATH ////////////////////////  => Chức năng ghi hình đường đi của camera
     var Record=false;
     var recordFunction = function() {
         RecordPointData=[];
@@ -593,6 +577,7 @@ var createScene = function() {
         document.getElementById('addRecord').onclick = savePathFunction;
     }
 
+    // Hàm kiểm tra tên của path mới (không được trùng với tên trong danh sách path đã có)
     var checkNamePath=function(newName){
         var count =0;
         NamePathData.forEach(n=>{
@@ -607,6 +592,7 @@ var createScene = function() {
             return false;
     }
 
+    // Hàm lưu path
     var savePathFunction = function() {
         Record=false;
         do{
@@ -623,21 +609,19 @@ var createScene = function() {
     }
     document.getElementById('addRecord').onclick = recordFunction;
     
+    // Tạo đối tượng Point 3 tham số
     function Point3(_x,_y,_z){
         this.x=_x;
         this.y=_y;
         this.z=_z;
     }
 
-    
-
-    var preRecord=new BABYLON.Vector3(0,0,0);
     var DirData=[];
     var RecordPointData=[];
     var NamePathData=[];
 
-    /////////////LOAD RECORD DATA//////////////
-    var loadRecordData = () => {  
+    /////////////LOAD RECORD DATA////////////// 
+    var loadRecordData = () => {  //=> Đọc tất cả name của path từ file json từ server và lưu vào NamePathData[]
         connect=false;   
         var newNamePathData=[];
         jQuery.getJSON('https://api.myjson.com/bins/13o8p6', (obj) => {
@@ -663,7 +647,7 @@ var createScene = function() {
         })
     }
     loadRecordData();
-    var loadRecordDataByName = (nameOfPath) => {
+    var loadRecordDataByName = (nameOfPath) => { //=> Đọc dữ liệu của path theo name
         connect=false;
         var newPointData=[];  
         var newDirData=[];         
@@ -701,7 +685,7 @@ var createScene = function() {
         
     }
 
-    /////////////WRITE RECORD DATA//////////////
+    /////////////WRITE RECORD DATA////////////// => Ghi Path vào file json của server
     var writeRecordData=(nameOfPath)=>{
         connect=false;
         var arrayData=[];
@@ -755,12 +739,12 @@ var createScene = function() {
         },200);
     }
 
-    /////////////////////////////////BUTTON PLAY RECORD/////////////////////////////////////
+    /////////////////////////////////BUTTON PLAY RECORD///////////////////////////////// => Chức năng chạy record với tên lấy từ list các Path
     var playRecordFunction = function() {
         if(Record==false){
             setNotification("LOADING ...");
             console.log(connect);
-            loadRecordDataByName(document.getElementById('path').value);
+            loadRecordDataByName(document.getElementById('path').value);    // Lấy dữ liệu của Path theo name lấy từ list
             var check=setInterval(function(){
                 console.log(connect);
                 if(connect){
@@ -794,6 +778,7 @@ var createScene = function() {
                         count++;
                     })
                     
+                    // Dùng Animation để chạy record
                     var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
                     BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
@@ -810,7 +795,7 @@ var createScene = function() {
     }
     document.getElementById('playRecord').onclick = playRecordFunction;
 
-    /////////////////////////////////BUTTON DELETE PATH/////////////////////////////////////
+    /////////////////////////////////BUTTON DELETE PATH///////////////////////////////// => Xóa Path khỏi file json theo tên lấy từ list
     var deletePathFunction=()=>{
         connect=false;
         setNotification("DELETING ...");
@@ -1105,27 +1090,6 @@ var createScene = function() {
             groundTexture.update(invertY);
     }
 
-    btnGo.onPointerDownObservable.add(function() {
-        var count=0;
-        var frameRate = 60;
-        var movein_keys = []; 
-
-        PointData.forEach(p=>{
-            movein_keys.push({
-                frame: count*frameRate/10,
-                value: new BABYLON.Vector3(p.x, tank.position.y,p.y)
-            });
-            console.log("sphere" + tank.position+"  point"+p.x+";"+p.y);
-            count++;
-        })
-        
-        var movein = new BABYLON.Animation("movein", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, 
-        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-
-        movein.setKeys(movein_keys);
-        scene.beginDirectAnimation(tank, [movein], 0, count * frameRate*10, false);
-    });
-
     ///////////////////////////// LOAD Route Data ////////////////////////////
     var loadRouteData = () => {   
         var newPointData=[];  
@@ -1395,10 +1359,10 @@ var createScene = function() {
 
     // Writing
     optimizer.onNewOptimizationAppliedObservable.add(function () {
-        txtNotification.text = "Optimizing ...";
+        txtOptimize.text = "Optimizing ...";
     });
     optimizer.onFailureObservable.add(function () {
-        txtNotification.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
+        txtOptimize.text = "Optimized. Frame rate was " + optimizer.currentFrameRate;
     });
 
     var prePos=new BABYLON.Vector3.Zero();
@@ -1408,12 +1372,10 @@ var createScene = function() {
         txtFps.text = 'FPS: ' + engine.getFps().toFixed();
         if (document.getElementById('optimize').hidden == true) {
             setTimeout(function(){
-                txtNotification.text = "";
+                txtOptimize.text = "";
                 txtFps.top = -10;
                 txtTimeMobile.top = 5;
-                btnGo.top = -10;
-
-                btnGo.scaleX = 0.5;              
+           
                 btnGateACricket.scaleX = 0.5;  
                 btnKippaxLake.scaleX = 0.5;  
                 btnNationalLeague.scaleX = 0.5;  
@@ -1424,7 +1386,6 @@ var createScene = function() {
                 btnSydneyCricketGround.scaleX = 0.5;  
                 
                 btnGateACricket.scaleY = 0.5;  
-                btnGo.scaleY = 0.5;  
                 btnKippaxLake.scaleY = 0.5;
                 btnNationalLeague.scaleY = 0.5;
                 btnParking.scaleY = 0.5;
