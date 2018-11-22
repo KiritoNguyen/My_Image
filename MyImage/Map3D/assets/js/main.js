@@ -597,11 +597,9 @@ var createScene = function() {
         Record=false;
         do{
             var nameOfPath = prompt("Please enter Path Record name:");      
-            console.log(checkNamePath(nameOfPath));
         }while(nameOfPath===""||checkNamePath(nameOfPath)==false);
         if(nameOfPath!=null&&checkNamePath(nameOfPath)&&RecordPointData.length>=1) {
             writeRecordData(nameOfPath);
-            console.log(checkNamePath(nameOfPath));
         } 
         
         document.getElementById('addRecord').innerHTML = 'Record';
@@ -717,14 +715,11 @@ var createScene = function() {
            
         });   
         var check=setInterval(function(){
-            console.log(connect);
             if(connect)
             {
                 clearInterval(check);
                 connect=false;
-                console.log("I");
                 loadRecordData();
-                console.log("III");
                 var check2=setInterval(function(){
                     if(connect){
                         clearInterval(check2);
@@ -743,10 +738,8 @@ var createScene = function() {
     var playRecordFunction = function() {
         if(Record==false){
             setNotification("LOADING ...");
-            console.log(connect);
             loadRecordDataByName(document.getElementById('path').value);    // Lấy dữ liệu của Path theo name lấy từ list
             var check=setInterval(function(){
-                console.log(connect);
                 if(connect){
                     clearInterval(check);
                     setNotification("");
@@ -761,7 +754,6 @@ var createScene = function() {
                     var frameRate = 60;
                     var movein_keys = []; 
                     var dir_keys=[];
-                    console.log(RecordPointData);
                     RecordPointData.forEach(p=>{
                         movein_keys.push({
                             frame: count*frameRate/10,
@@ -879,19 +871,19 @@ var createScene = function() {
     }
     document.getElementById("moveTank").onclick = moveTankFunction;
 
-    /////////////////////////////////BUTTON DRAW ROUTE/////////////////////////////////
-    var DrawMode = false;
-    var drawFunction = function() {
-        DrawMode = true;
+    /////////////////////////////////BUTTON DRAW ROUTE///////////////////////////////// => Xử lí sự kiện vẽ route cho button Draw Route
+    var DrawMode = false;   //Kiểm tra chế độ vẽ ,mặc định false (không vẽ)
+    var drawFunction = function() { //Hàm xử lí Draw Route
+        DrawMode = true;    //Chế độ vẽ route bật
         camera.dispose();
         camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
         camera.target = new BABYLON.Vector3.Zero();
         document.getElementById("cameraChange").disabled = true;
-        document.getElementById("addRoute").innerHTML = 'Save Route';
+        document.getElementById("addRoute").innerHTML = 'Save Route';   //addRoute là id của button Draw Route
         document.getElementById("addRoute").onclick = saveRouteFunction;
     }
-    var saveRouteFunction = function() {
-        DrawMode = false;
+    var saveRouteFunction = function() {    //Hàm xử lí cho Save Route
+        DrawMode = false;   //Chế độ vẽ route tắt
         camera.dispose();
         camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
         camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
@@ -899,7 +891,7 @@ var createScene = function() {
         camera.checkCollisions = true;
         document.getElementById("cameraChange").disabled = false;
         camera.attachControl(canvas, true);
-        do{
+        do{     //Kiểm tra nhập tên trước khi save route
             var nameOfRoute = prompt("Please enter route name:");      
         }while(nameOfRoute==="" );
         if(nameOfRoute!=null) {
@@ -908,12 +900,12 @@ var createScene = function() {
         document.getElementById("addRoute").innerHTML = 'Draw';
         document.getElementById("addRoute").onclick = drawFunction;
     }
-    var writeRouteData=(nameOfRoute)=>{
-        var id=1;
-        var arrayData=[];
-        jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
-            for (var i = 0; i < obj.length; i++) {
-                arrayData.push(obj[i]);
+    var writeRouteData=(nameOfRoute)=>{         //Hàm ghi dữ liệu Route xuống JSON
+        var id=1;   //Định nghĩa trường id cho mỗi route
+        var arrayData=[];   //arrayData dùng lưu mảng route 
+        jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{       //Sử dụng getJson để lấy dữ liệu từ file JSON
+            for (var i = 0; i < obj.length; i++) {          
+                arrayData.push(obj[i]); 
             }    
             if(obj.length!=0){
                 id=obj[obj.length-1].id+1;
@@ -932,13 +924,13 @@ var createScene = function() {
                 dataType: "json"
             });
             PointData=[];  
-            function removeOptions(selectbox) {
+            function removeOptions(selectbox) {     //Xóa tất cả các item trong list Route
                 for(i = selectbox.options.length - 1; i >= 0; i--) {
                     selectbox.remove(i);
                 }
             }
-            removeOptions(document.getElementById("route"));
-            loadRouteData();       
+            removeOptions(document.getElementById("route"));    
+            loadRouteData();       //Load lại dữ liệu cho list Route sau khi remove 
         });                             
     }
     document.getElementById("addRoute").onclick = drawFunction;
@@ -948,7 +940,7 @@ var createScene = function() {
         this.y=_y;
     }
 
-    var resetFuntion=()=>{
+    var resetFuntion=()=>{      //
         groundTexture.dispose();    
         groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
         dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
@@ -963,21 +955,21 @@ var createScene = function() {
         size = groundTexture.getSize();
     }
 
-    /////////////////////////////////BUTTON DELETE ROUTE/////////////////////////////////////
+    /////////////////////////////////BUTTON DELETE ROUTE///////////////////////////////////// =>Xử lí sự kiện cho button Delete
 
     var deleteFunction=()=>{
-        var arrayData=[];
+        var arrayData=[];      //arrayData lưu trữ mảng Route
         jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
             var e = document.getElementById("route");
-            var getItem = e.options[e.selectedIndex].text;
+            var getItem = e.options[e.selectedIndex].text;      //Lấy nội dung của item trong list đã chọn
             for (var i = 0; i < obj.length; i++) {
                 arrayData.push(obj[i]);
             } 
 
             function removeArrayEl(arr, RouteName){
-                newArr = [];
+                newArr = [];        //newArr lưu trữ các route sau khi xóa
                 index=-1;
-                if(RouteName==="All Route")
+                if(RouteName==="All Route")     //Kiểm tra nếu chọn All Route thì sẽ cập nhật lại JSON với mảng rỗng
                 {
                     arrayData=[];
                     var updatedData=JSON.stringify(arrayData);         
@@ -992,13 +984,13 @@ var createScene = function() {
                     return;                    
                 }
                 
-                for(var i = 0, l = arr.length;i < l; i++){
+                for(var i = 0, l = arr.length;i < l; i++){      //Lấy index của item trong list được chọn để delete
                     var counter = arr[i].name;
                     if(counter == RouteName){
                         index=arr[i].id;
                     }
                 }
-                for(var i = 0, l = arr.length;i < l; i++){
+                for(var i = 0, l = arr.length;i < l; i++){      //Thêm các Route vào newArr ngoại trừ Route đã xóa
                     var counter = arr[i].id;
                     if(counter != index){
                         newArr.push(arr[i]);
@@ -1017,27 +1009,24 @@ var createScene = function() {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
-            function removeOptions(selectbox) {
+            function removeOptions(selectbox) {        ////Xóa tất cả các item trong list Route
                 for(i = selectbox.options.length - 1; i >= 0; i--) {
                     selectbox.remove(i);
                 }
             }
-            removeOptions(document.getElementById("route"));
-                loadRouteData();
-                resetFuntion();
+            removeOptions(document.getElementById("route"));        
+            loadRouteData();   //Load lại dữ liệu cho list Route sau khi remove 
+            resetFuntion();
         });
     }
 
-    ///////////////////Change Route Color/////////
-    var ChangeRouteColor=(x)=>{
-        var x = document.getElementById("colorpicker").value;
+    document.getElementById("deleteRoute").onclick = deleteFunction;
+    ///////////////////Change Route Color///////// => Thay đổi màu sắc cho Route khi được vẽ
+    var ChangeRouteColor=(x)=>{ 
+        var x = document.getElementById("colorpicker").value;       //x là value mà colorpicker đã chọn 
         strokeColorRoute=x;
     }
     document.getElementById("colorpicker").onchange=ChangeRouteColor;
-   
-    ///////////////////////////////////////////
-
-    document.getElementById("deleteRoute").onclick = deleteFunction;
     ///////////////////////////Draw Point/////////////////////////////////
     var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght,fillColor,strokeColor){
         setInterval(function(){
@@ -1090,7 +1079,7 @@ var createScene = function() {
             groundTexture.update(invertY);
     }
 
-    ///////////////////////////// LOAD Route Data ////////////////////////////
+    ///////////////////////////// LOAD Route Data ////////////////////////////  => Load dữ liệu Route 
     var loadRouteData = () => {   
         var newPointData=[];  
         var PointObject=[];      
@@ -1104,14 +1093,14 @@ var createScene = function() {
                 }
             }
             var i=0; 
-            var myDiv = document.getElementById("route");
-            var default_option_none = document.createElement("option");
-            var default_option_all = document.createElement("option");
+            var myDiv = document.getElementById("route");   
+            var default_option_none = document.createElement("option");     //Option None trong list Route
+            var default_option_all = document.createElement("option");     //Option All Route trong list Route
             default_option_none.textContent = "None";
             default_option_all.textContent = "All Route";
             myDiv.add(default_option_none);
             myDiv.add(default_option_all);
-            PointObject.forEach(p => {
+            PointObject.forEach(p => {      //Thêm các option tương ứng các Route vào myDiv
                 var option = document.createElement("option");
                 option.textContent = PointObject[i].name;
                 option.value=PointObject[i].id;
@@ -1122,9 +1111,9 @@ var createScene = function() {
             newPointData=[];    
         });  
         var count=-1;
-        document.getElementById("route").addEventListener("change", e => {
+        document.getElementById("route").addEventListener("change", e => {      //XỬ lí sự kiện khi click vào item trong list Route
             if (e.target.value !=null) {                        
-                if(e.target.value==="All Route")
+                if(e.target.value==="All Route")    //Xử lí khi chọn All Route
                     {
                         for (var i = 0; i < PointObject.length; i++) {
                             for (var j = 0; j < PointObject[i].location.length; j++) {
@@ -1141,13 +1130,13 @@ var createScene = function() {
                         counti++;
                         }); 
                     } 
-                else if(e.target.value ==="None"){
+                else if(e.target.value ==="None"){      //Xử lí khi chọn None
                     resetFuntion();
                 }     
-                else{
+                else{       //XỬ lí khi click các route khác
                     var i=0;
                     PointObject.forEach(p => {
-                        if(e.target.value==PointObject[i].id)
+                        if(e.target.value==PointObject[i].id)   
                         { 
                             newPointData=[];
                             for (var j = 0; j < PointObject[i].location.length; j++) {              
@@ -1226,7 +1215,7 @@ var createScene = function() {
     btnParking.height = "90px";
     btnParking.linkWithMesh(locParking);   
     btnParking.linkOffsetY =-50;
-    btnParking.onPointerClickObservable.add(function(){
+    btnParking.onPointerClickObservable.add(function(){     //XỬ lí sự kiện mở ảnh 360
         advancedTexture.dispose();
         var scene1=createParking();
         engine.stopRenderLoop();
@@ -1357,7 +1346,7 @@ var createScene = function() {
         })
     })
 
-    // Writing
+    // OPTIMIZE NOTIFICATION 
     optimizer.onNewOptimizationAppliedObservable.add(function () {
         txtOptimize.text = "Optimizing ...";
     });
@@ -1429,7 +1418,6 @@ var createScene = function() {
                 ||Math.abs(preDir.x-currentDir.x)>0.1||Math.abs(preDir.y-currentDir.y)>0.1||Math.abs(preDir.z-currentDir.z)>0.1){
                 var point=new Point3(currentPos.x,currentPos.y,currentPos.z);
                 RecordPointData.push(point);
-                console.log(currentPos);
                 prePos=currentPos;
                 var dir=new BABYLON.Vector3(camera.rotation.x, camera.rotation.y,camera.rotation.z);
                 DirData.push(dir);
@@ -1450,6 +1438,7 @@ var createScene = function() {
     return scene;
 }
 
+///////////////// 360 DEGREE IMAGE /////////////////////
 var createStadium=function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
@@ -1609,7 +1598,7 @@ var createLake=function(){
     createBtnClose();
     return scene;
 }
-
+//////////////////////////////////////////////////
 ////Register service worker
 if('serviceWorker' in navigator) {
     navigator.serviceWorker
