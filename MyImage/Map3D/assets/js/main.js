@@ -1180,7 +1180,7 @@ var createScene = function() {
     loadRouteData();
 
     /////////////////////////// BUTTON LOCATION //////////////////////////
-    var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");
+    var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");    // Khởi tạo button
     advancedTexture.addControl(btnStadium);
     btnStadium.width = "80px";
     btnStadium.height = "80px";
@@ -1189,7 +1189,7 @@ var createScene = function() {
     btnStadium.fontSize=15;
     btnStadium.linkWithMesh(locStadium);   
     btnStadium.linkOffsetY =-100;
-    btnStadium.onPointerClickObservable.add(function(){
+    btnStadium.onPointerClickObservable.add(function(){ //XỬ lí sự kiện mở ảnh 360
         advancedTexture.dispose();
         var scene1=createStadium();
         engine.stopRenderLoop();
@@ -1198,7 +1198,7 @@ var createScene = function() {
         })
     })
 
-    var lineStadium = new BABYLON.GUI.Line();
+    var lineStadium = new BABYLON.GUI.Line();   // Khởi tạo liên kết giữa box ảo và button
     lineStadium.lineWidth = 2;
     lineStadium.color = "Gray";
     lineStadium.y2 = 20;
@@ -1215,7 +1215,7 @@ var createScene = function() {
     btnParking.height = "90px";
     btnParking.linkWithMesh(locParking);   
     btnParking.linkOffsetY =-50;
-    btnParking.onPointerClickObservable.add(function(){     //XỬ lí sự kiện mở ảnh 360
+    btnParking.onPointerClickObservable.add(function(){     
         advancedTexture.dispose();
         var scene1=createParking();
         engine.stopRenderLoop();
@@ -1358,7 +1358,9 @@ var createScene = function() {
     var preDir=new BABYLON.Vector3.Zero();
 
     scene.registerBeforeRender(function() {
+        // Hiển thị FPS
         txtFps.text = 'FPS: ' + engine.getFps().toFixed();
+        // Kiểm tra xem nếu user kích hoạt tính năng 'Optimize' thì sẽ thay đổi lại kích cỡ các button và dòng dữ hiển thị thông báo
         if (document.getElementById('optimize').hidden == true) {
             setTimeout(function(){
                 txtOptimize.text = "";
@@ -1398,6 +1400,7 @@ var createScene = function() {
             }, 10000)
         }
 
+        // Kiểm tra xem nếu user kích hoạt tính năng 'move Tank' thì sẽ không cho họ thay đổi chế độ camera đến khi tank dừng hẳn
         if (document.getElementById('moveTank').hidden == true) {
             camera.dispose();
             document.getElementById("cameraChange").disabled = true;
@@ -1409,6 +1412,7 @@ var createScene = function() {
             camera.attachControl(canvas, true);
         }   
 
+        // Kiểm tra xem nếu user kích hoạt tính năng 'Record' thì nếu user không di chuyển camera (xét cả vị trí và góc xoay) thì tọa độ đó sẽ không được lưu vào json
         if(Record)
         {
             var currentPos=new BABYLON.Vector3(camera.position.x,camera.position.y,camera.position.z);
@@ -1425,12 +1429,15 @@ var createScene = function() {
             }
         }
 
+        // Hiển thị thời gian còn lại của chế độ mobile
         if (timeMobile > 0)
             txtTimeMobile.text = 'Time Mobile: ' + timeMobile;
+        // Hiển thị thông báo hết thời gian sử dụng mobile
         else if (timeMobile <= 0) {
             clearInterval(intervalTimeMobile);   
             txtTimeMobile.text = "Time's up";
         } 
+        // Hiển thị thông báo chưa kích hoạt tính năng sử dụng mobile
         else
             txtTimeMobile.text = 'Mobile control not yet activated';
     })
@@ -1438,8 +1445,8 @@ var createScene = function() {
     return scene;
 }
 
-///////////////// 360 DEGREE IMAGE /////////////////////
-var createStadium=function(){
+///////////////////// 360 DEGREE IMAGE /////////////////////
+var createStadium=function(){   // Scene chứa hình ảnh 360 của stadium
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
@@ -1598,17 +1605,17 @@ var createLake=function(){
     createBtnClose();
     return scene;
 }
-//////////////////////////////////////////////////
-////Register service worker
+
+///////////// Register service worker /////////////
 if('serviceWorker' in navigator) {
     navigator.serviceWorker
     .register('/service-worker.js')
     .then(function() { console.log("Service Worker Registered"); });
 }
 
-var scene = createScene();
-engine.runRenderLoop(function () {
-    scene.render();
+var scene = createScene();  // Gán scene mặc định cho canvas
+engine.runRenderLoop(function () {  // Update scene
+    scene.render(); // Render scene
 });
 
 // Resize
