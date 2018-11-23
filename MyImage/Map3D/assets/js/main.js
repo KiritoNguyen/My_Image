@@ -213,7 +213,7 @@ var createScene = function() {
     ///////////// Position of Location /////////////
     var loadLocation = () => {
         var newPosition=[];   
-        jQuery.getJSON('https://api.myjson.com/bins/kwbd6', (obj) =>{
+        jQuery.getJSON('https://api.myjson.com/bins/fjtcm', (obj) =>{
             {
                 for (var i = 0; i < obj.length; i++) {
                     var counter = obj[i].position[0];
@@ -257,14 +257,14 @@ var createScene = function() {
 
     // Gán vị trí cho các box ảo (settimeout để đảm load Location hoàn tất, tránh việc chưa hoàn tất việc đọc file json từ server)
     setTimeout(function(){
-        locStadium.position= new BABYLON.Vector3(PosLocation[0].x, PosLocation[0].z, PosLocation[0].y - 250);
-        locParking.position= new BABYLON.Vector3(PosLocation[1].x + 150, PosLocation[1].z, PosLocation[1].y - 200);
-        locNationalLeague.position= new BABYLON.Vector3(PosLocation[2].x + 150, PosLocation[2].z, PosLocation[2].y - 220);
-        locKippaxLake.position= new BABYLON.Vector3(PosLocation[3].x + 70, PosLocation[3].z, PosLocation[3].y - 300);
-        locStadiumSportsPhysiotherapy.position= new BABYLON.Vector3(-800, -10, 1450);
-        locGateACricket.position= new BABYLON.Vector3(-1150, -10, 400);
-        locSydneyCricketGround.position= new BABYLON.Vector3(-800, -10, 150);
-        locStadiumForecourt.position= new BABYLON.Vector3(-1200, -10, 1050);
+        locStadium.position= new BABYLON.Vector3(PosLocation[0].x, PosLocation[0].z, PosLocation[0].y);
+        locParking.position= new BABYLON.Vector3(PosLocation[1].x, PosLocation[1].z, PosLocation[1].y);
+        locNationalLeague.position= new BABYLON.Vector3(PosLocation[2].x, PosLocation[2].z, PosLocation[2].y);
+        locKippaxLake.position= new BABYLON.Vector3(PosLocation[3].x, PosLocation[3].z, PosLocation[3].y);
+        locStadiumSportsPhysiotherapy.position= new BABYLON.Vector3(PosLocation[4].x, PosLocation[4].z, PosLocation[4].y);
+        locGateACricket.position= new BABYLON.Vector3(PosLocation[5].x, PosLocation[5].z, PosLocation[5].y);
+        locSydneyCricketGround.position= new BABYLON.Vector3(PosLocation[6].x, PosLocation[6].z, PosLocation[6].y);
+        locStadiumForecourt.position= new BABYLON.Vector3(PosLocation[7].x, PosLocation[7].z, PosLocation[7].y);
     }, 5000);
 
     // Đặt các thuộc tính cho việc vẽ Route
