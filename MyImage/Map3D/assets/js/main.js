@@ -47,13 +47,19 @@ var createScene = function() {
     hemisphericlight.intensity = 0.01;
 
     /////////////// CAMERA ///////////////
-    camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
-    camera.target = new BABYLON.Vector3.Zero();
-    camera.wheelPrecision = 1;
-    camera.lowerRadiusLimit = 200;
-    camera.upperRadiusLimit = 4000;      
-    camera.upperBetaLimit = Math.PI / 2;
-    camera.attachControl(canvas, true); 
+    camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene)
+    camera.setTarget(new BABYLON.Vector3(-700, 30, 0)); 
+    camera.speed = 20;
+    camera.checkCollisions = true;
+    camera.attachControl(canvas, true);
+    document.getElementById('cameraChange').innerHTML = "Free Camera";
+    // camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI,  -Math.PI/2, 3200, BABYLON.Vector3.Zero(), scene);
+    // camera.target = new BABYLON.Vector3.Zero();
+    // camera.wheelPrecision = 1;
+    // camera.lowerRadiusLimit = 200;
+    // camera.upperRadiusLimit = 4000;      
+    // camera.upperBetaLimit = Math.PI / 2;
+    // camera.attachControl(canvas, true); 
 
     /////////////// LENS FLARE EFFECT ///////////////
     var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
@@ -413,7 +419,7 @@ var createScene = function() {
         document.getElementById("cameraChange").onclick = cameraFreeFunction;       
         document.getElementById('cameraChange').innerHTML = "Arc Rotate Camera";
     }
-    document.getElementById("cameraChange").onclick = cameraFreeFunction;   
+    document.getElementById("cameraChange").onclick = cameraRotateFunction;   
 
     /////////////////////////////////BUTTON MOBILE CONTROL//////////////////////////////// => Kích hoạt chế độ sử dụng mobile để di chuyển camera
     var mobileControlFunction = function() {
