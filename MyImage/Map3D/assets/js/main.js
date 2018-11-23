@@ -1,6 +1,6 @@
 var canvas = document.getElementById("renderCanvas"); 
 var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-// var engine = new BABYLON.Engine(canvas, null, false);
+
 engine.loadingUIText = "LOADING ...";
 var camera;
 var particleSystem;                             // biến quản lý hiệu ứng tuyết rơi
@@ -330,8 +330,8 @@ var createScene = function() {
 
     //////////////// STADIUM MODEL ////////////////// => Load model của stadium
     var assetsManager = new BABYLON.AssetsManager(scene);
-    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/stadiumModel/stadium.babylon"); 
-    // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/skpModel/stadium.babylon");
+    // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/stadiumModel/stadium.babylon"); 
+    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/skpModel/stadium.babylon");
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
         m[0].position = new BABYLON.Vector3(450, -50, 300);
@@ -837,6 +837,17 @@ var createScene = function() {
         optimizer.start();
     }
     document.getElementById("optimize").onclick = optimizeFunction;
+
+    /////////////////////////////////BUTTON ADVANCED OPTION/////////////////////////////////////
+    var advOptionFunction = function() {
+        if (scene.debugLayer.isVisible()) {
+            scene.debugLayer.hide();
+        }
+        else {
+            scene.debugLayer.show();
+        }
+    }
+    document.getElementById("advOption").onclick = advOptionFunction;
 
     /////////////////////////////////BUTTON MOVE TANK/////////////////////////////////////
     var moveTankFunction = function() {
