@@ -334,7 +334,7 @@ var createScene = function() {
     var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/skpModel/stadium.babylon");
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
-        m[0].position = new BABYLON.Vector3(-1200, -50, 1000);
+        m[0].position = new BABYLON.Vector3(-900, -50, 800);
         for(var i = 0; i < m.length; i++) { // Set material cho các model dựa vào danh sách name và id của từng model
 
             // /////////////////// CREATE MATERIAL FOR OBJECT ///////////////////
