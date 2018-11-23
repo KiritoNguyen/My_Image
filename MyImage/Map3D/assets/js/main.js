@@ -337,103 +337,103 @@ var createScene = function() {
         m[0].position = new BABYLON.Vector3(450, -50, 300);
         for(var i = 0; i < m.length; i++) { // Set material cho các model dựa vào danh sách name và id của từng model
 
-            /////////////////// CREATE MATERIAL FOR OBJECT ///////////////////
-            m[i].material = new BABYLON.StandardMaterial("mat", scene);
+            // /////////////////// CREATE MATERIAL FOR OBJECT ///////////////////
+            // m[i].material = new BABYLON.StandardMaterial("mat", scene);
 
-            ///////////////////TREE TEXTURE/////////////// 
-            if ((i >= 147 && i < 150) || i == 789) {                
-                m[i].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15); 
-            } 
+            // ///////////////////TREE TEXTURE/////////////// 
+            // if ((i >= 147 && i < 150) || i == 789) {                
+            //     m[i].material.diffuseColor = new BABYLON.Color3(0.182,0.9488,0.15); 
+            // } 
 
-            ///////////////////CAR TEXTURE///////////////  
-            if (i >= 724 && i < 730) {                
-                m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
-            }    
+            // ///////////////////CAR TEXTURE///////////////  
+            // if (i >= 724 && i < 730) {                
+            //     m[i].material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());           
+            // }    
 
-            ///////////////////FLAG ALLIANZ STADIUM TEXTURE/////////////// 
-            if (i >= 64 && i < 68) {                
-                m[i].material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.8);    
-            }
+            // ///////////////////FLAG ALLIANZ STADIUM TEXTURE/////////////// 
+            // if (i >= 64 && i < 68) {                
+            //     m[i].material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.8);    
+            // }
 
-            ///////////////////ALLIANZ GROUND TEXTURE///////////////   
-            if (i == 635) {                         
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);    
-            }
+            // ///////////////////ALLIANZ GROUND TEXTURE///////////////   
+            // if (i == 635) {                         
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/Allianz_Fleild.jpg", scene);    
+            // }
 
-            ///////////////////SYDNEY CRICKET GROUND TEXTURE/////////////// 
-            if (i == 439) {                        
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/5ca60f119f14ff138829d3ada068cf5d.JPG", scene);
-            }
+            // ///////////////////SYDNEY CRICKET GROUND TEXTURE/////////////// 
+            // if (i == 439) {                        
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/5ca60f119f14ff138829d3ada068cf5d.JPG", scene);
+            // }
 
-            ///////////////////LAKE & SWIMMING POOL TEXTURE///////////////  
-            if (i == 119 || i == 123 || i == 636 || (i >= 136 && i < 144)) {                         
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/319e89e8fd86b7f4a5ab254920712038.jpg", scene);
-            }
+            // ///////////////////LAKE & SWIMMING POOL TEXTURE///////////////  
+            // if (i == 119 || i == 123 || i == 636 || (i >= 136 && i < 144)) {                         
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/319e89e8fd86b7f4a5ab254920712038.jpg", scene);
+            // }
 
-            ///////////////////DOWN GROUND TEXTURE///////////////   
-            if (i == 452 || i == 11 || i == 451) {                  
-                m[i].position.y = -50;       
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/TexturesCom_Grass0197_2_seamless_S.jpg", scene);
-            }
-            if (i == 209 || i == 440 ) {                  
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
-                m[i].position.y = -30;  
-            }
+            // ///////////////////DOWN GROUND TEXTURE///////////////   
+            // if (i == 452 || i == 11 || i == 451) {                  
+            //     m[i].position.y = -50;       
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/TexturesCom_Grass0197_2_seamless_S.jpg", scene);
+            // }
+            // if (i == 209 || i == 440 ) {                  
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/06feee7a09df2f669e6f71a3d4f9ee2b.jpg", scene);
+            //     m[i].position.y = -30;  
+            // }
 
-            //////////////////GATE A TEXTURE/////////////// 
-            if ((i >= 459 && i < 469) || (i >= 337 && i < 339) || i == 334 || i == 379 || i == 372 || i == 477 || i == 281 || i == 491 || i == 76) {               
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
-            }
-            if (i == 397 || i == 406 || i == 304 || i == 294 || i == 466) {                         
-                m[i].material.diffuseColor = new BABYLON.Color3(13/255, 45/255, 18/255);       
-            }   
+            // //////////////////GATE A TEXTURE/////////////// 
+            // if ((i >= 459 && i < 469) || (i >= 337 && i < 339) || i == 334 || i == 379 || i == 372 || i == 477 || i == 281 || i == 491 || i == 76) {               
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/68ef63aaad90d63d4605c1b44edadfc0.jpg", scene);       
+            // }
+            // if (i == 397 || i == 406 || i == 304 || i == 294 || i == 466) {                         
+            //     m[i].material.diffuseColor = new BABYLON.Color3(13/255, 45/255, 18/255);       
+            // }   
 
-            ///////////////////ALLIANZ STADIUM SEATS TEXTURE/////////////// 
-            if ((i >= 200 && i < 202) || i == 643 || i == 556 || i == 648 || i == 550) {            
-                m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
-            }
+            // ///////////////////ALLIANZ STADIUM SEATS TEXTURE/////////////// 
+            // if ((i >= 200 && i < 202) || i == 643 || i == 556 || i == 648 || i == 550) {            
+            //     m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
+            // }
                    
-            ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////   
-            if ((i >= 469 && i < 471) || (i >= 475 && i < 477) || (i >= 482 && i < 484) || i == 472 
-            || i == 480 || i == 485 || i == 275 || i == 284 || i == 278 || i == 478) {           
-                m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
-            }
+            // ///////////////////SYDNEY CRICKET GROUND SEATS TEXTURE///////////////   
+            // if ((i >= 469 && i < 471) || (i >= 475 && i < 477) || (i >= 482 && i < 484) || i == 472 
+            // || i == 480 || i == 485 || i == 275 || i == 284 || i == 278 || i == 478) {           
+            //     m[i].material.diffuseColor = new BABYLON.Color3(0, 229/255, 238/255);          
+            // }
 
-            ///////////////////////// WALK GROUND ///////////////////////////   
-            if (i == 644 || i == 8) {               
-                if (i == 644)
-                    m[i].position.y = -60;   
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2d628b2f5cedba319c081744bf92f344.jpg", scene);              
-            }
+            // ///////////////////////// WALK GROUND ///////////////////////////   
+            // if (i == 644 || i == 8) {               
+            //     if (i == 644)
+            //         m[i].position.y = -60;   
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/d49dbff4cf5e1f3454dddc049942da5d3378ac6b/MyImage/testMini/2d628b2f5cedba319c081744bf92f344.jpg", scene);              
+            // }
 
-            ///////////////////////// HOUSE ROOF ///////////////////////////    
-            if ((i >= 206 && i < 209) || (i >= 591 && i < 595)) {               
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/eb431a7787f33bbd2710b4d9e7076aeb.jpg", scene);              
-            }
-            if (i == 24) {              
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/64389da8647ed843c1f283430953d23c.jpg", scene);              
-            }
-            if (i == 56) {              
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/cement%20ice1.jpg", scene);              
-            }
+            // ///////////////////////// HOUSE ROOF ///////////////////////////    
+            // if ((i >= 206 && i < 209) || (i >= 591 && i < 595)) {               
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/eb431a7787f33bbd2710b4d9e7076aeb.jpg", scene);              
+            // }
+            // if (i == 24) {              
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/64389da8647ed843c1f283430953d23c.jpg", scene);              
+            // }
+            // if (i == 56) {              
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/cement%20ice1.jpg", scene);              
+            // }
 
-            ///////////////////////// GRASS TENNIS ///////////////////////////  
-            if (i == 21) {               
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Grass0153_30_S.jpg", scene);              
-            }
-            if (i == 78 || i == 88) {           
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);              
-            }
+            // ///////////////////////// GRASS TENNIS ///////////////////////////  
+            // if (i == 21) {               
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Grass0153_30_S.jpg", scene);              
+            // }
+            // if (i == 78 || i == 88) {           
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/2a854fd2a1944ed815c0106114730282.jpg", scene);              
+            // }
 
-            ///////////////////////// YARD TILES ///////////////////////////    
-            if (i == 77 || i == 86) {              
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/b2cbf8640ebbd1f5217e6e280a096803.jpg", scene);              
-            }
+            // ///////////////////////// YARD TILES ///////////////////////////    
+            // if (i == 77 || i == 86) {              
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/b2cbf8640ebbd1f5217e6e280a096803.jpg", scene);              
+            // }
 
-            ///////////////////////// ALLIANZ LOGO STADIUM ///////////////////////////  
-            if (i == 598 || (i >= 651 && i < 654)) {               
-                m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Allianz_Stadium_logo.jpg", scene);              
-            }
+            // ///////////////////////// ALLIANZ LOGO STADIUM ///////////////////////////  
+            // if (i == 598 || (i >= 651 && i < 654)) {               
+            //     m[i].material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/testMini/Allianz_Stadium_logo.jpg", scene);              
+            // }
         }
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
     }	
