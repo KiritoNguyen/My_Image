@@ -2,6 +2,7 @@ var canvas = document.getElementById("renderCanvas");
 var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
 
 engine.loadingUIText = "LOADING ...";
+
 var camera;
 var particleSystem;                             // biến quản lý hiệu ứng tuyết rơi
 var timeMobile, intervalTimeMobile;             // biến quản lý thời gian khi sử dụng chế độ điện thoại và vòng lặp biến thời gian
@@ -142,7 +143,7 @@ var createScene = function() {
     particleSystem.updateSpeed = 0.005;    
     
     // Start the particle system
-    particleSystem.start();
+    // particleSystem.start();
 
     ///////////////// INVISIBLE WALL ///////////////// => Tường ảo để chặn camera ra khỏi map
     var inviWallTop = new BABYLON.MeshBuilder.CreatePlane('inviWallTop', {size: 4000}, scene);
@@ -206,7 +207,7 @@ var createScene = function() {
     }, 10000);
 
     setInterval(() => {
-        particleSystem.start();  
+        // particleSystem.start();  
         setTimeout(() => {
             ground.material.diffuseTexture = new BABYLON.Texture('https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Kiet/snow_texture.jpg', scene);                    
         }, 5000)                       
@@ -343,12 +344,8 @@ var createScene = function() {
         m[0].position = new BABYLON.Vector3(-900, -50, 800);
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
     }	
-    
-    assetsManager.onFinish = function (tasks) {
-        engine.runRenderLoop(function () {
-            scene.render();
-        });
-    };                
+     
+    assetsManager.useDefaultLoadingScreen = false;
     assetsManager.load();
 
     //////////////// OPTIMIZE SCENE //////////////////
