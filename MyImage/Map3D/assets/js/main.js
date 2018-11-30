@@ -777,6 +777,14 @@ var createScene = function() {
     var writeRouteData=(nameOfRoute)=>{         //Hàm ghi dữ liệu Route xuống JSON
         var id=1;   //Định nghĩa trường id cho mỗi route
         var arrayData=[];   //arrayData dùng lưu mảng route 
+        var directionData=[] // dung de luu mang direction
+        for (var i=1;i<PointData.length;i++){
+            var directX=PointData[i].x-PointData[i-1].x;
+            var directY=PointData[i].y-PointData[i-1].y;
+            var direct=new Point(directX,directY);
+            directionData.push(direct);
+        }
+
         jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{       //Sử dụng getJson để lấy dữ liệu từ file JSON
             for (var i = 0; i < obj.length; i++) {          
                 arrayData.push(obj[i]); 
@@ -784,8 +792,9 @@ var createScene = function() {
             if(obj.length!=0){
                 id=obj[obj.length-1].id+1;
             }
-            var newData=JSON.stringify(PointData);            
-            var standardJson=`{"id": ${id},"name":"${nameOfRoute}","location":${newData}}`;
+            var newData=JSON.stringify(PointData);       
+            var newDirection=JSON.stringify(directionData);     
+            var standardJson=`{"id": ${id},"name":"${nameOfRoute}","location":${newData},"direction":${newDirection}}`;
             standardJson=JSON.parse(standardJson);
             arrayData.push(standardJson);
             var updatedData=JSON.stringify(arrayData);
@@ -951,6 +960,10 @@ var createScene = function() {
             context.strokeStyle = colorStroke;
             context.stroke();
             groundTexture.update(invertY);
+    }
+
+    var DrawHeadRoute=function(x,y){
+        var sphere=new BABYLON.MeshBuilder.CreateSphere("sphere",{diamater:2},scene)
     }
 
     ///////////////////////////// LOAD Route Data ////////////////////////////  => Load dữ liệu Route 
