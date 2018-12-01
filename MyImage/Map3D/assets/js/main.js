@@ -28,10 +28,10 @@ var createBtnClose = function() {
     advancedTexture.addControl(button);                                                     // Thêm button vào màn hình
     button.onPointerClickObservable.add(function(){                                         // Sự kiện quay về màn hình map 3D
         advancedTexture.dispose();
-        var scene1 = createScene();
+        sceneMap = createScene();
         engine.stopRenderLoop();
         engine.runRenderLoop(function () {               
-            scene1.render();
+            sceneMap.render();
         })
     })
 }
@@ -81,7 +81,7 @@ var createScene = function() {
     var flare05 = new BABYLON.LensFlare(0.3, 0.8, new BABYLON.Color3(1, 1, 1), "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/Playground/textures/flare3.png", lensFlareSystem);
 
     /////////////////SKY BOX/////////////////
-    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 8000}, scene);
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 12000}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skybox.infiniteDistance = true;
@@ -187,7 +187,7 @@ var createScene = function() {
     groundDraw.material = dynamicMaterial;
 
     ///////////////// GROUND VISIBLE ///////////////// => Ground hiện thị mặt đất, ground sẽ thay đổi texture từ cỏ sang tuyết và ngược lại mỗi 10s
-    var ground = BABYLON.Mesh.CreateGround("groundVisible", 4000, 4000, 2, scene);
+    var ground = BABYLON.Mesh.CreateGround("groundVisible", 6000, 6000, 2, scene);
     ground.position.y = -55;
     ground.checkCollisions = true;
     ground.visibility = 1
@@ -300,9 +300,8 @@ var createScene = function() {
         var d = Math.sqrt((scene.pointerX-preMove.x)*(scene.pointerX-preMove.x)+(scene.pointerY-preMove.y)*(scene.pointerY-preMove.y)); // Tính khoảng cách giữa tọa độ chuột cũ và tọa độ hiện tại
         if (draw && DrawMode && Math.floor(d)>15 && Math.floor(d)<25) { // Kiểm tra flag draw và giới hạn khoảng cách giữa tọa độ chuột và tọa độ chuột hiện tại (vị trí cũ và mới không được quá xa và quá gần)
             var pickResult = scene.pick(scene.pointerX, scene.pointerY);	
-                    
             var texcoords = pickResult.getTextureCoordinates();
-            
+
             var centerX = texcoords.x * size.width;
             var centerY = size.height - texcoords.y * size.height;
             var radius = 3;
@@ -310,7 +309,7 @@ var createScene = function() {
             // draw circle
             context.beginPath();
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-            var point=new Point(centerX,centerY);
+            var point = new Point(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
             PointData.push(point);
             context.fillStyle = 'green';
             context.fill();
@@ -410,7 +409,7 @@ var createScene = function() {
         camera.target = new BABYLON.Vector3.Zero();
         camera.wheelPrecision = 1;
         camera.lowerRadiusLimit = 200;
-        camera.upperRadiusLimit = 4000;      
+        camera.upperRadiusLimit = 3600;      
         camera.upperBetaLimit = Math.PI / 2;
         camera.attachControl(canvas, true);      
         document.getElementById("cameraChange").onclick = cameraFreeFunction;       
@@ -750,7 +749,7 @@ var createScene = function() {
     var drawFunction = function() { //Hàm xử lí Draw Route
         DrawMode = true;    //Chế độ vẽ route bật
         camera.dispose();
-        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3800, BABYLON.Vector3.Zero(), scene);
+        camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3600, BABYLON.Vector3.Zero(), scene);
         camera.target = new BABYLON.Vector3.Zero();
         document.getElementById("cameraChange").disabled = true;
         document.getElementById("addRoute").innerHTML = 'Save Route';   //addRoute là id của button Draw Route
@@ -758,11 +757,6 @@ var createScene = function() {
     }
     var saveRouteFunction = function() {    //Hàm xử lí cho Save Route
         DrawMode = false;   //Chế độ vẽ route tắt
-        camera.dispose();
-        camera = new BABYLON.UniversalCamera("", new BABYLON.Vector3(0, 100, -500), scene);
-        camera.setTarget(new BABYLON.Vector3(-700, 30, 0));
-        camera.speed = 20;
-        camera.checkCollisions = true;
         document.getElementById("cameraChange").disabled = false;
         camera.attachControl(canvas, true);
         do{     //Kiểm tra nhập tên trước khi save route
@@ -903,42 +897,52 @@ var createScene = function() {
     document.getElementById("colorpicker").onchange=ChangeRouteColor;
     ///////////////////////////Draw Point/////////////////////////////////
     var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght,fillColor,strokeColor){
-        setInterval(function(){
-            var context = groundTexture._context;
-            context.beginPath();
-            context.arc(x, y, 3, 0, 2 * Math.PI, false);
+        // setInterval(function(){
+        //     var context = groundTexture._context;
+        //     context.beginPath();
+        //     context.arc(x, y, 3, 0, 2 * Math.PI, false);
             
-            context.fillStyle = fillColor;
-            context.fill();
-            context.lineWidth = 2;
-            context.strokeStyle = strokeColor;
-            context.stroke();
-            groundTexture.update(invertY);
-        },timeChangeColorRoute);
-        setTimeout(function(){
-            var context = groundTexture._context;
-                context.beginPath();
-                context.arc(x, y, 3, 0, 2 * Math.PI, false);
+        //     context.fillStyle = fillColor;
+        //     context.fill();
+        //     context.lineWidth = 2;
+        //     context.strokeStyle = strokeColor;
+        //     context.stroke();
+        //     groundTexture.update(invertY);
+        // },timeChangeColorRoute);
+        // setTimeout(function(){
+        //     var context = groundTexture._context;
+        //         context.beginPath();
+        //         context.arc(x, y, 3, 0, 2 * Math.PI, false);
                 
-                context.fillStyle = 'red';
-                context.fill();
-                context.lineWidth = 2;
-                context.strokeStyle = 'blue';
-                context.stroke();
-                groundTexture.update(invertY);
-            setInterval(function(){
-                var context = groundTexture._context;
-                context.beginPath();
-                context.arc(x, y, 3, 0, 2 * Math.PI, false);
+        //         context.fillStyle = 'red';
+        //         context.fill();
+        //         context.lineWidth = 2;
+        //         context.strokeStyle = 'blue';
+        //         context.stroke();
+        //         groundTexture.update(invertY);
+        //     setInterval(function(){
+        //         var context = groundTexture._context;
+        //         context.beginPath();
+        //         context.arc(x, y, 3, 0, 2 * Math.PI, false);
                 
-                context.fillStyle = 'red';
-                context.fill();
-                context.lineWidth = 2;
-                context.strokeStyle = 'blue';
-                context.stroke();
-                groundTexture.update(invertY);
-            },pointLeght*timeChangeColorRoute);
-        },i*timeChangeColorRoute);
+        //         context.fillStyle = 'red';
+        //         context.fill();
+        //         context.lineWidth = 2;
+        //         context.strokeStyle = 'blue';
+        //         context.stroke();
+        //         groundTexture.update(invertY);
+        //     },pointLeght*timeChangeColorRoute);
+        // },i*timeChangeColorRoute);
+    }
+    var DrawOnePointTemp = function(x, y) {
+        var impact = BABYLON.Mesh.CreateGround("impact", 50, 50, 100, scene);
+        impact.material = new BABYLON.StandardMaterial("impactMat", scene);
+        impact.material.diffuseTexture = new BABYLON.Texture("https://image.flaticon.com/icons/svg/60/60758.svg", scene);
+        impact.material.diffuseTexture.hasAlpha = true;
+        impact.position = new BABYLON.Vector3(x, -50, y);
+        // impact.rotation.y = Math.atan2(diffX, diffY);
+        // var hl = new BABYLON.HighlightLayer("hl1", scene);
+        // hl.addMesh(impact, BABYLON.Color3.Red());
     }
     var DrawOnePointWithColor=function(groundTexture, invertY, x, y, colorFill, colorStroke){
         var context = groundTexture._context;
@@ -956,6 +960,7 @@ var createScene = function() {
     ///////////////////////////// LOAD Route Data ////////////////////////////  => Load dữ liệu Route 
     var loadRouteData = () => {   
         var newPointData=[];  
+        var newDirectionData=[];
         var PointObject=[];      
         jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{
             for (var i = 0; i < obj.length; i++) {
@@ -1018,6 +1023,12 @@ var createScene = function() {
                                 var point=new Point(counter.x,counter.y);
                                 newPointData.push(point);
                             }
+                            newDirectionData=[];
+                            for (var j = 0; j < PointObject[i].location.length; j++) {              
+                                var counter = PointObject[i].location[j];                             
+                                var point=new Point(counter.x,counter.y);
+                                newDirectionData.push(point);
+                            }
                             if(count!=i){
                                 groundTexture.dispose();    
                                 groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
@@ -1038,7 +1049,8 @@ var createScene = function() {
                                     if(counti==pointLeght)
                                         DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
                                     if(counti > 1 && counti < pointLeght)
-                                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
+                                        // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
+                                        DrawOnePointTemp(p.x, p.y);
                                 groundTexture.update(invertY);
                                 counti++;
                                 }); 
@@ -1475,9 +1487,9 @@ if('serviceWorker' in navigator) {
     .then(function() { console.log("Service Worker Registered"); });
 }
 
-var scene = createScene();  // Gán scene mặc định cho canvas
+var sceneMap = createScene();  // Gán scene mặc định cho canvas
 engine.runRenderLoop(function () {  // Update scene
-    scene.render(); // Render scene
+    sceneMap.render(); // Render scene
 });
 
 // Resize
