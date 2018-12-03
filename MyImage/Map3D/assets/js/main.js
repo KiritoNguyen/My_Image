@@ -778,7 +778,7 @@ var createScene = function() {
             var direct=new Point(directX,directY);
             directionData.push(direct);
         }
-
+ 
         jQuery.getJSON('https://api.myjson.com/bins/vf6v4', (obj) =>{       //Sử dụng getJson để lấy dữ liệu từ file JSON
             for (var i = 0; i < obj.length; i++) {          
                 arrayData.push(obj[i]); 
@@ -949,7 +949,7 @@ var createScene = function() {
         impact.material.diffuseTexture = new BABYLON.Texture("https://image.flaticon.com/icons/svg/60/60758.svg", scene);
         impact.material.diffuseTexture.hasAlpha = true;
         impact.position = new BABYLON.Vector3(x, -50, y);
-        impact.rotation.y = Math.atan2(diffX, diffY)
+        impact.rotation.y = Math.atan2(diffX, diffY)+Math.PI/2;
         // impact.rotation.y = Math.atan2(diffX, diffY);
         // var hl = new BABYLON.HighlightLayer("hl1", scene);
         // hl.addMesh(impact, BABYLON.Color3.Red());
@@ -1042,10 +1042,9 @@ var createScene = function() {
                                 var point=new Point(counter.x,counter.y);
                                 newPointData.push(point);
                             }
-                            console.log(newPointData);
                             newDirectionData=[];
-                            for (var j = 0; j < PointObject[i].location.length; j++) {              
-                                var counter = PointObject[i].location[j];                             
+                            for (var j = 0; j < PointObject[i].direction.length; j++) {              
+                                var counter = PointObject[i].direction[j];                             
                                 var point=new Point(counter.x,counter.y);
                                 newDirectionData.push(point);
                             }
@@ -1072,7 +1071,11 @@ var createScene = function() {
                                         //DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
                                     if(counti > 1 && counti < pointLeght)
                                         // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
-                                        DrawOnePointTemp(p.x, p.y, newDirectionData[counti].x, newDirectionData[counti].y);
+                                        {
+                                            //console.log("direction "+counti+": "+newDirectionData[counti].x +" "+newDirectionData[counti].y);
+                                            DrawOnePointTemp(p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y);
+                                        }
+                                    
                                 groundTexture.update(invertY);
                                 counti++;
                                 }); 
