@@ -943,12 +943,13 @@ var createScene = function() {
         //     },pointLeght*timeChangeColorRoute);
         // },i*timeChangeColorRoute);
     }
-    var DrawOnePointTemp = function(x, y) {
+    var DrawOnePointTemp = function(x, y,diffX,diffY) {
         var impact = BABYLON.Mesh.CreateGround("impact", 50, 50, 100, scene);
         impact.material = new BABYLON.StandardMaterial("impactMat", scene);
         impact.material.diffuseTexture = new BABYLON.Texture("https://image.flaticon.com/icons/svg/60/60758.svg", scene);
         impact.material.diffuseTexture.hasAlpha = true;
         impact.position = new BABYLON.Vector3(x, -50, y);
+        impact.rotation.y = Math.atan2(diffX, diffY)
         // impact.rotation.y = Math.atan2(diffX, diffY);
         // var hl = new BABYLON.HighlightLayer("hl1", scene);
         // hl.addMesh(impact, BABYLON.Color3.Red());
@@ -967,7 +968,12 @@ var createScene = function() {
     }
 
     var DrawHeadRoute=function(x,y){
-        var sphere=new BABYLON.MeshBuilder.CreateSphere("sphere",{diamater:2},scene)
+        var sphere=new BABYLON.MeshBuilder.CreateSphere("sphere",{diameter:50},scene);
+        sphere.material=new BABYLON.StandardMaterial("sphereMat",scene);
+        sphere.material.diffuseColor=new BABYLON.Color3.Green();
+        sphere.position=new BABYLON.Vector3(x,-50,y);
+        // var hl = new BABYLON.HighlightLayer("hl1", scene);
+        // hl.addMesh(sphere, BABYLON.Color3.Red());
     }
 
     ///////////////////////////// LOAD Route Data ////////////////////////////  => Load dữ liệu Route 
@@ -1036,6 +1042,7 @@ var createScene = function() {
                                 var point=new Point(counter.x,counter.y);
                                 newPointData.push(point);
                             }
+                            console.log(newPointData);
                             newDirectionData=[];
                             for (var j = 0; j < PointObject[i].location.length; j++) {              
                                 var counter = PointObject[i].location[j];                             
@@ -1058,12 +1065,14 @@ var createScene = function() {
                                 var counti = 1;
                                 newPointData.forEach(p => {
                                     if(counti == 1)
-                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorBegin,colorBegin);
+                                        //DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorBegin,colorBegin);
+                                        DrawHeadRoute(p.x,p.y);
                                     if(counti==pointLeght)
-                                        DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
+                                        DrawHeadRoute(p.x,p.y);
+                                        //DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
                                     if(counti > 1 && counti < pointLeght)
                                         // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
-                                        DrawOnePointTemp(p.x, p.y);
+                                        DrawOnePointTemp(p.x, p.y, newDirectionData[counti].x, newDirectionData[counti].y);
                                 groundTexture.update(invertY);
                                 counti++;
                                 }); 
