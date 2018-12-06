@@ -59,7 +59,7 @@ var createScene = function() {
     // camera.wheelPrecision = 1;
     // camera.lowerRadiusLimit = 200;
     // camera.upperRadiusLimit = 4000;      
-    // camera.upperBetaLimit = Math.PI / 2;
+    // camera.upperBetaLimit = Math.PI / 3;
     // camera.attachControl(canvas, true); 
 
     /////////////// LENS FLARE EFFECT ///////////////
@@ -187,7 +187,7 @@ var createScene = function() {
     groundDraw.material = dynamicMaterial;
 
     ///////////////// GROUND VISIBLE ///////////////// => Ground hiện thị mặt đất, ground sẽ thay đổi texture từ cỏ sang tuyết và ngược lại mỗi 10s
-    var ground = BABYLON.Mesh.CreateGround("groundVisible", 6000, 6000, 2, scene);
+    var ground = BABYLON.Mesh.CreateGround("groundVisible", 14000, 14000, 2, scene);
     ground.position.y = -55;
     ground.checkCollisions = true;
     ground.visibility = 1
@@ -410,7 +410,7 @@ var createScene = function() {
         camera.wheelPrecision = 1;
         camera.lowerRadiusLimit = 200;
         camera.upperRadiusLimit = 3600;      
-        camera.upperBetaLimit = Math.PI / 2;
+        camera.upperBetaLimit = Math.PI / 3;
         camera.attachControl(canvas, true);      
         document.getElementById("cameraChange").onclick = cameraFreeFunction;       
         document.getElementById('cameraChange').innerHTML = "Arc Rotate Camera";
