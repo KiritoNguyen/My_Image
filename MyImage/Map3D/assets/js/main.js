@@ -943,17 +943,23 @@ var createScene = function() {
         //     },pointLeght*timeChangeColorRoute);
         // },i*timeChangeColorRoute);
     }
-    var DrawOnePointTemp = function(x, y,diffX,diffY) {
+    var DrawOnePointTemp = function(x, y,diffX,diffY,i,pointLeght) {
         var arrow = BABYLON.Mesh.CreateGround("arrow", 50, 50, 1, scene);
         arrow.material = new BABYLON.StandardMaterial("arrowMat", scene);
         arrow.material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/2000px-Red_right_arrow.svg.png", scene);
         arrow.material.diffuseTexture.hasAlpha = true;
-        arrow.material.diffuseColor = BABYLON.Color3.Blue();
+        arrow.material.diffuseColor = BABYLON.Color3.Red();
         arrow.position = new BABYLON.Vector3(x, -50, y);
         arrow.rotation.y = Math.atan2(diffX, diffY)+Math.PI/2;
-        // arrow.rotation.y = Math.atan2(diffX, diffY);
-        // var hl = new BABYLON.HighlightLayer("hl1", scene);
-        // hl.addMesh(arrow, BABYLON.Color3.Red());
+        setInterval(function(){
+            arrow.material.diffuseColor = BABYLON.Color3.Red();
+        },timeChangeColorRoute);
+        setTimeout(function(){
+            arrow.material.diffuseColor = BABYLON.Color3.Blue();
+            setInterval(function(){
+                arrow.material.diffuseColor = BABYLON.Color3.Blue();
+            },pointLeght*timeChangeColorRoute);
+        },i*timeChangeColorRoute);
     }
     var DrawOnePointWithColor=function(groundTexture, invertY, x, y, colorFill, colorStroke){
         var context = groundTexture._context;
@@ -1074,7 +1080,7 @@ var createScene = function() {
                                         // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
                                         {
                                             //console.log("direction "+counti+": "+newDirectionData[counti].x +" "+newDirectionData[counti].y);
-                                            DrawOnePointTemp(p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y);
+                                            DrawOnePointTemp(p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y,counti,pointLeght+1);
                                         }
                                     
                                 groundTexture.update(invertY);
