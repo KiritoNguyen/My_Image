@@ -944,15 +944,16 @@ var createScene = function() {
         // },i*timeChangeColorRoute);
     }
     var DrawOnePointTemp = function(x, y,diffX,diffY) {
-        var impact = BABYLON.Mesh.CreateGround("impact", 50, 50, 100, scene);
-        impact.material = new BABYLON.StandardMaterial("impactMat", scene);
-        impact.material.diffuseTexture = new BABYLON.Texture("https://image.flaticon.com/icons/svg/60/60758.svg", scene);
-        impact.material.diffuseTexture.hasAlpha = true;
-        impact.position = new BABYLON.Vector3(x, -50, y);
-        impact.rotation.y = Math.atan2(diffX, diffY)+Math.PI/2;
-        // impact.rotation.y = Math.atan2(diffX, diffY);
+        var arrow = BABYLON.Mesh.CreateGround("arrow", 50, 50, 1, scene);
+        arrow.material = new BABYLON.StandardMaterial("arrowMat", scene);
+        arrow.material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/2000px-Red_right_arrow.svg.png", scene);
+        arrow.material.diffuseTexture.hasAlpha = true;
+        arrow.material.diffuseColor = BABYLON.Color3.Blue();
+        arrow.position = new BABYLON.Vector3(x, -50, y);
+        arrow.rotation.y = Math.atan2(diffX, diffY)+Math.PI/2;
+        // arrow.rotation.y = Math.atan2(diffX, diffY);
         // var hl = new BABYLON.HighlightLayer("hl1", scene);
-        // hl.addMesh(impact, BABYLON.Color3.Red());
+        // hl.addMesh(arrow, BABYLON.Color3.Red());
     }
     var DrawOnePointWithColor=function(groundTexture, invertY, x, y, colorFill, colorStroke){
         var context = groundTexture._context;
@@ -1494,7 +1495,7 @@ var createLake=function(){
 
     var lake = new BABYLON.PhotoDome(
         "lake",
-        "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/Kippax_Lake.jpg",
+        "assets/images/Kippax_Lake.jpg",
         {
             resolution: 100,
             size: 50
