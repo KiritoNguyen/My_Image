@@ -905,7 +905,7 @@ var createScene = function() {
     }
     // document.getElementById("colorpicker").onchange=ChangeRouteColor;
     ///////////////////////////Draw Point/////////////////////////////////
-    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLeght,fillColor,strokeColor){
+    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLength,fillColor,strokeColor){
         // setInterval(function(){
         //     var context = groundTexture._context;
         //     context.beginPath();
@@ -940,11 +940,10 @@ var createScene = function() {
         //         context.strokeStyle = 'blue';
         //         context.stroke();
         //         groundTexture.update(invertY);
-        //     },pointLeght*timeChangeColorRoute);
+        //     },pointLength*timeChangeColorRoute);
         // },i*timeChangeColorRoute);
     }
-    var DrawOnePointTemp = function(x, y,diffX,diffY,i,pointLeght) {
-        var arrow = BABYLON.Mesh.CreateGround("arrow", 50, 50, 1, scene);
+    var DrawOnePointTemp = function(arrow,x, y,diffX,diffY,i,pointLength) {
         arrow.material = new BABYLON.StandardMaterial("arrowMat", scene);
         arrow.material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/2000px-Red_right_arrow.svg.png", scene);
         arrow.material.diffuseTexture.hasAlpha = true;
@@ -958,7 +957,7 @@ var createScene = function() {
             arrow.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
             setInterval(function(){
                 arrow.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-            },pointLeght*timeChangeColorRoute);
+            },pointLength*timeChangeColorRoute);
         },i*timeChangeColorRoute);
     }
     var DrawOnePointWithColor=function(groundTexture, invertY, x, y, colorFill, colorStroke){
@@ -974,11 +973,11 @@ var createScene = function() {
             groundTexture.update(invertY);
     }
 
-    var DrawHeadRoute=function(x,y){
-        var sphere=new BABYLON.MeshBuilder.CreateSphere("sphere",{diameter:50},scene);
-        sphere.material=new BABYLON.StandardMaterial("sphereMat",scene);
-        sphere.material.diffuseColor=new BABYLON.Color3.Green();
-        sphere.position=new BABYLON.Vector3(x,-50,y);
+    var DrawHeadRoute=function(sphere,x,y){
+        sphere.material = new BABYLON.StandardMaterial("sphereMat", scene);
+        sphere.material.diffuseTexture = new BABYLON.Texture("https://image.flaticon.com/icons/svg/189/189647.svg", scene);
+        sphere.material.diffuseTexture.hasAlpha = true;
+        sphere.position = new BABYLON.Vector3(x, -50, y);
         // var hl = new BABYLON.HighlightLayer("hl1", scene);
         // hl.addMesh(sphere, BABYLON.Color3.Red());
     }
@@ -1016,6 +1015,8 @@ var createScene = function() {
             newPointData=[];    
         });  
         var count=-1;
+        var meshcount=0;
+        var mesharray=[]; 
         document.getElementById("route").addEventListener("change", e => {      //XỬ lí sự kiện khi click vào item trong list Route
             if (e.target.value !=null) {                        
                 if(e.target.value==="All Route")    //Xử lí khi chọn All Route
@@ -1027,10 +1028,10 @@ var createScene = function() {
                                 newPointData.push(point);
                             }
                         }
-                        var pointLeght = newPointData.length;
+                        var pointLength = newPointData.length;
                         var counti = 1;
                         newPointData.forEach(p => {
-                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght,fillColorRoute,strokeColorRoute);
+                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLength,fillColorRoute,strokeColorRoute);
                         groundTexture.update(invertY);
                         counti++;
                         }); 
@@ -1056,10 +1057,9 @@ var createScene = function() {
                                 newDirectionData.push(point);
                             }
                             if(count!=i){
-                                groundTexture.dispose();    
-                                groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-                                dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
-                                dynamicMaterial.diffuseTexture = groundTexture;
+                                mesharray.forEach(p=>{
+                                    p.dispose();
+                                });
                                     
                                 groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
                                 groundDraw.position.y = -45;
@@ -1067,20 +1067,35 @@ var createScene = function() {
                                 groundDraw.material = dynamicMaterial;
                                 context = groundTexture._context;
                                 size = groundTexture.getSize();
-                                var pointLeght=newPointData.length;
+                                var pointLength=newPointData.length;
                                 var counti = 1;
                                 newPointData.forEach(p => {
                                     if(counti == 1)
+                                    {
                                         //DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorBegin,colorBegin);
-                                        DrawHeadRoute(p.x,p.y);
-                                    if(counti==pointLeght)
-                                        DrawHeadRoute(p.x,p.y);
+                                        var sphere = BABYLON.Mesh.CreateGround("arrow"+meshcount, 150, 150, 100, scene);
+                                        DrawHeadRoute(sphere,p.x,p.y);
+                                        mesharray.push(sphere);
+                                        meshcount++;
+                                    }
+                                    if(counti==pointLength)
+                                    { 
+                                        var sphere = BABYLON.Mesh.CreateGround("arrow"+meshcount, 150, 150, 100, scene);
+                                        DrawHeadRoute(sphere,p.x,p.y);
+                                        mesharray.push(sphere);
+                                        meshcount++;
+                                    }
                                         //DrawOnePointWithColor(groundTexture, invertY, p.x, p.y,colorEnd,colorEnd);
-                                    if(counti > 1 && counti < pointLeght)
-                                        // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLeght + 1,fillColorRoute,strokeColorRoute);
+                                    if(counti > 1 && counti < pointLength)
+                                        // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLength + 1,fillColorRoute,strokeColorRoute);
                                         {
                                             //console.log("direction "+counti+": "+newDirectionData[counti].x +" "+newDirectionData[counti].y);
-                                            DrawOnePointTemp(p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y,counti,pointLeght+1);
+                                            var arrow = BABYLON.Mesh.CreateGround("arrow"+meshcount, 75, 75, 100, scene);
+                                            // console.log(meshcount)
+                                            DrawOnePointTemp(arrow,p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y,counti,pointLength+1);
+                                            mesharray.push(arrow);
+                                            // console.log(mesharray)
+                                            meshcount++;
                                         }
                                     
                                 groundTexture.update(invertY);
