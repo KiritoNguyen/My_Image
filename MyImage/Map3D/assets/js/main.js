@@ -745,8 +745,10 @@ var createScene = function() {
     document.getElementById("advOption").onclick = advOptionFunction;
 
     /////////////////////////////////BUTTON DRAW ROUTE///////////////////////////////// => Xử lí sự kiện vẽ route cho button Draw Route
+    var mesharray=[]; //Array lưu trữ arrow đã vẽ
     var DrawMode = false;   //Kiểm tra chế độ vẽ ,mặc định false (không vẽ)
     var drawFunction = function() { //Hàm xử lí Draw Route
+        ClearArrow();
         DrawMode = true;    //Chế độ vẽ route bật
         camera.dispose();
         camera = new BABYLON.ArcRotateCamera("arcRotateCamera", -Math.PI, -Math.PI/2, 3600, BABYLON.Vector3.Zero(), scene);
@@ -807,7 +809,10 @@ var createScene = function() {
                 }
             }
             removeOptions(document.getElementById("route"));    
-            loadRouteData();       //Load lại dữ liệu cho list Route sau khi remove 
+            setTimeout(() => {
+                loadRouteData();  
+            }, 3000);      //Load lại dữ liệu cho list Route sau khi remove 
+            resetFuntion();
         });                             
     }
     document.getElementById("addRoute").onclick = drawFunction;
@@ -817,19 +822,23 @@ var createScene = function() {
         this.y=_y;
     }
 
-    var resetFuntion=()=>{      //
+    var resetFuntion=()=>{      // Delete drawed route
         groundTexture.dispose();    
         groundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
         dynamicMaterial = new BABYLON.StandardMaterial('mat', scene);
         dynamicMaterial.diffuseTexture = groundTexture;
-            
+        context = groundTexture._context;
+        size = groundTexture.getSize(); 
         groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
         groundDraw.position.y = -45;
         dynamicMaterial.diffuseTexture.hasAlpha = true;
         groundDraw.material = dynamicMaterial;
+    }
 
-        context = groundTexture._context;
-        size = groundTexture.getSize();
+    var ClearArrow=()=>{ //Delete displayed arrow
+        mesharray.forEach(p=>{
+            p.dispose();
+        });
     }
 
     /////////////////////////////////BUTTON DELETE ROUTE///////////////////////////////////// =>Xử lí sự kiện cho button Delete
@@ -893,7 +902,7 @@ var createScene = function() {
             }
             removeOptions(document.getElementById("route"));        
             loadRouteData();   //Load lại dữ liệu cho list Route sau khi remove 
-            resetFuntion();
+            ClearArrow();
         });
     }
 
@@ -983,7 +992,8 @@ var createScene = function() {
     }
 
     ///////////////////////////// LOAD Route Data ////////////////////////////  => Load dữ liệu Route 
-    var loadRouteData = () => {   
+
+    var loadRouteData = () => {  
         var newPointData=[];  
         var newDirectionData=[];
         var PointObject=[];      
@@ -993,10 +1003,10 @@ var createScene = function() {
                 for (var j = 0; j < obj[i].location.length; j++) {
                     var counter = obj[i].location[j];
                     var point=new Point(counter.x,counter.y);
-                    newPointData.push(point);
                 }
             }
             var i=0; 
+            document.getElementById('route').innerHTML="";
             var myDiv = document.getElementById("route");   
             var default_option_none = document.createElement("option");     //Option None trong list Route
             var default_option_all = document.createElement("option");     //Option All Route trong list Route
@@ -1010,63 +1020,87 @@ var createScene = function() {
                 option.value=PointObject[i].id;
                 myDiv.add(option);
                 i++;
-            });
-            
-            newPointData=[];    
+            });  
         });  
         var count=-1;
         var meshcount=0;
-        var mesharray=[]; 
         document.getElementById("route").addEventListener("change", e => {      //XỬ lí sự kiện khi click vào item trong list Route
             if (e.target.value !=null) {                        
                 if(e.target.value==="All Route")    //Xử lí khi chọn All Route
                     {
+                        ClearArrow();
+                        groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
+                        groundDraw.position.y = -45;
+                        dynamicMaterial.diffuseTexture.hasAlpha = true;
+                        groundDraw.material = dynamicMaterial;
                         for (var i = 0; i < PointObject.length; i++) {
                             for (var j = 0; j < PointObject[i].location.length; j++) {
                                 var counter = PointObject[i].location[j];
                                 var point=new Point(counter.x,counter.y);
                                 newPointData.push(point);
                             }
+
+                            for (var j = 0; j < PointObject[i].direction.length; j++) {              
+                                var counter = PointObject[i].direction[j];                             
+                                var point=new Point(counter.x,counter.y);
+                                newDirectionData.push(point);
+                            }
+                            var pointLength=newPointData.length;
+                            var counti = 1;
+                            newPointData.forEach(p => {
+                                if(counti == 1)
+                                {
+                                    var sphere = BABYLON.Mesh.CreateGround("arrow"+meshcount, 150, 150, 100, scene);
+                                    DrawHeadRoute(sphere,p.x,p.y);
+                                    mesharray.push(sphere);
+                                    meshcount++;
+                                }
+                                if(counti==pointLength)
+                                { 
+                                    var sphere = BABYLON.Mesh.CreateGround("arrow"+meshcount, 150, 150, 100, scene);
+                                    DrawHeadRoute(sphere,p.x,p.y);
+                                    mesharray.push(sphere);
+                                    meshcount++;
+                                }
+                                if(counti > 1 && counti < pointLength)
+                                    {
+                                        var arrow = BABYLON.Mesh.CreateGround("arrow"+meshcount, 75, 75, 100, scene);
+                                        DrawOnePointTemp(arrow,p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y,counti,pointLength+1);
+                                        mesharray.push(arrow);
+                                        meshcount++;
+                                    }
+                                
+                            counti++;
+                            }); 
+                            newPointData=[];
+                            newDirectionData=[];
                         }
-                        var pointLength = newPointData.length;
-                        var counti = 1;
-                        newPointData.forEach(p => {
-                        DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLength,fillColorRoute,strokeColorRoute);
-                        groundTexture.update(invertY);
-                        counti++;
-                        }); 
                     } 
                 else if(e.target.value ==="None"){      //Xử lí khi chọn None
-                    resetFuntion();
+                    ClearArrow();
                 }     
                 else{       //XỬ lí khi click các route khác
                     var i=0;
                     PointObject.forEach(p => {
                         if(e.target.value==PointObject[i].id)   
                         { 
-                            newPointData=[];
+                            
                             for (var j = 0; j < PointObject[i].location.length; j++) {              
                                 var counter = PointObject[i].location[j];                             
                                 var point=new Point(counter.x,counter.y);
                                 newPointData.push(point);
                             }
-                            newDirectionData=[];
                             for (var j = 0; j < PointObject[i].direction.length; j++) {              
                                 var counter = PointObject[i].direction[j];                             
                                 var point=new Point(counter.x,counter.y);
                                 newDirectionData.push(point);
                             }
                             if(count!=i){
-                                mesharray.forEach(p=>{
-                                    p.dispose();
-                                });
-                                    
+                                ClearArrow();                         
                                 groundDraw = BABYLON.Mesh.CreateGround("groundDraw", 3900, 3900, 2, scene);
                                 groundDraw.position.y = -45;
                                 dynamicMaterial.diffuseTexture.hasAlpha = true;
                                 groundDraw.material = dynamicMaterial;
-                                context = groundTexture._context;
-                                size = groundTexture.getSize();
                                 var pointLength=newPointData.length;
                                 var counti = 1;
                                 newPointData.forEach(p => {
@@ -1089,23 +1123,22 @@ var createScene = function() {
                                     if(counti > 1 && counti < pointLength)
                                         // DrawOnePoint(groundTexture,invertY, p.x, p.y, counti, pointLength + 1,fillColorRoute,strokeColorRoute);
                                         {
-                                            //console.log("direction "+counti+": "+newDirectionData[counti].x +" "+newDirectionData[counti].y);
                                             var arrow = BABYLON.Mesh.CreateGround("arrow"+meshcount, 75, 75, 100, scene);
-                                            // console.log(meshcount)
                                             DrawOnePointTemp(arrow,p.x, p.y, -newDirectionData[counti-2].x, -newDirectionData[counti-2].y,counti,pointLength+1);
                                             mesharray.push(arrow);
-                                            // console.log(mesharray)
                                             meshcount++;
                                         }
                                     
-                                groundTexture.update(invertY);
                                 counti++;
                                 }); 
+                                newPointData=[];
+                                newDirectionData=[];
                             }
                             count=i;
                         }                              
                         i++;
                     });
+                   
                 }
             }
         });
