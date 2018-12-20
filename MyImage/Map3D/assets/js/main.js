@@ -341,6 +341,7 @@ var createScene = function() {
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
         m[0].position = new BABYLON.Vector3(-900, -50, 800);
+        m[0].scaling = new BABYLON.Vector3(1, 1, 1); // Nếu model quá to thì có thể chỉnh lại thông số vector để scale model cho phù hợp
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
     }	
      
