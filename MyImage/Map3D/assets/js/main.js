@@ -366,12 +366,19 @@ var createScene = function() {
     //////////////// STADIUM MODEL ////////////////// => Load model của stadium
     var assetsManager = new BABYLON.AssetsManager(scene);
     // var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/stadiumModel/stadium.babylon"); 
-    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/skpModel/stadium.babylon");
+    var meshTask = assetsManager.addMeshTask("stadium", "", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/newModel/full/full.babylon");
     meshTask.onSuccess = function (task) {
         m = task.loadedMeshes;
-        m[0].position = new BABYLON.Vector3(-900, -50, 800);
-        m[0].scaling = new BABYLON.Vector3(0.08, 0.08, 0.08); // Nếu model quá to thì có thể chỉnh lại thông số vector để scale model cho phù hợp
+        m[0].position = new BABYLON.Vector3(-1100, -45, -300);
+        m[0].scaling = new BABYLON.Vector3(0.004, 0.004, 0.004); // Nếu model quá to thì có thể chỉnh lại thông số vector để scale model cho phù hợp
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
+
+        for(var i = 0; i < m.length; i++) { // Search ground Texture dựa vào danh sách name và id của từng model
+            ///////////////////GROUND TEXTURE/////////////// 
+            if (m[i].name == 'Mesh01') {             
+                m[i].position.y = -1300;
+            } 
+        }
     }	
      
     assetsManager.useDefaultLoadingScreen = false;
