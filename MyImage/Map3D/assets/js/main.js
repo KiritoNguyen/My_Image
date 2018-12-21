@@ -13,6 +13,34 @@ var strokeColorRoute = "yellow";                // Màu vòng tròn ngoài của
 var colorBegin = "aqua";                        // Màu node đầu tiên trong route
 var colorEnd = "red";                           // Màu node cuối cùng trong route
 
+// Hàm tạo lable info cho Route
+var createlabelInformation = function(x,y,z,content) {
+
+    var locInfo = new BABYLON.Mesh.CreateBox("locInfo", 0, scene);    // Tạo box ảo để neo Marker
+    locInfo.visibility = 0;
+    locInfo.position= new BABYLON.Vector3(x,y,z);
+
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+    var lbInfo = BABYLON.GUI.Button.CreateSimpleButton("lb", content);   
+    advancedTexture.addControl(lbInfo);                       
+    lbInfo.width = "100px";
+    lbInfo.height = "50px";
+    lbInfo.color = "white";
+    lbInfo.fontSize=15;
+    lbInfo.linkWithMesh(locInfo);   
+    lbInfo.linkOffsetY =-50;
+    lbInfo.background="Red";
+    
+    var lineInfo = new BABYLON.GUI.Line();   // Khởi tạo liên kết giữa box ảo và button
+    lineInfo.lineWidth = 2;
+    lineInfo.color = "Red";
+    lineInfo.y2 = 20;
+    lineInfo.linkOffsetY = -10;
+    advancedTexture.addControl(lineInfo);
+    lineInfo.linkWithMesh(locInfo); 
+    lineInfo.connectedControl = lbInfo;
+}
+
 // Hàm tạo button close của chế độ xem hình 360 độ
 var createBtnClose = function() {
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
@@ -61,7 +89,7 @@ var createScene = function() {
     // camera.upperRadiusLimit = 4000;      
     // camera.upperBetaLimit = Math.PI / 3;
     // camera.attachControl(canvas, true); 
-
+    
     /////////////// LENS FLARE EFFECT ///////////////
     var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
         
@@ -144,7 +172,7 @@ var createScene = function() {
     
     // Start the particle system
     // particleSystem.start();
-
+    
     ///////////////// INVISIBLE WALL ///////////////// => Tường ảo để chặn camera ra khỏi map
     var inviWallTop = new BABYLON.MeshBuilder.CreatePlane('inviWallTop', {size: 4000}, scene);
     var inviWallFront = new BABYLON.MeshBuilder.CreatePlane('inviWallFront', {height: 5000, width: 4000}, scene);
@@ -272,6 +300,7 @@ var createScene = function() {
         locGateACricket.position= new BABYLON.Vector3(PosLocation[5].x, PosLocation[5].z, PosLocation[5].y);
         locSydneyCricketGround.position= new BABYLON.Vector3(PosLocation[6].x, PosLocation[6].z, PosLocation[6].y);
         locStadiumForecourt.position= new BABYLON.Vector3(PosLocation[7].x, PosLocation[7].z, PosLocation[7].y);
+        createlabelInformation(1350,-50,-300,"New Meeting");
     }, 5000);
 
     // Đặt các thuộc tính cho việc vẽ Route
@@ -1146,7 +1175,10 @@ var createScene = function() {
     }
     loadRouteData();
 
+  
+
     /////////////////////////// BUTTON LOCATION //////////////////////////
+    
     var btnStadium = BABYLON.GUI.Button.CreateSimpleButton("btnStadium", "Allianz Stadium");    // Khởi tạo button
     advancedTexture.addControl(btnStadium);
     btnStadium.width = "80px";
@@ -1560,7 +1592,6 @@ var createLake=function(){
     createBtnClose();
     return scene;
 }
-
 ///////////// Register service worker /////////////
 if('serviceWorker' in navigator) {
     navigator.serviceWorker
