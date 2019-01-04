@@ -994,7 +994,7 @@ var createScene = function() {
         arrow.material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/2000px-Red_right_arrow.svg.png", scene);
         arrow.material.diffuseTexture.hasAlpha = true;
         arrow.material.diffuseColor = new BABYLON.Color3(0.6, 0, 0);
-        arrow.position = new BABYLON.Vector3(x, -50, y);
+        arrow.position = new BABYLON.Vector3(x, 10, y);
         arrow.rotation.y = Math.atan2(diffX, diffY)+Math.PI/2;
         setInterval(function(){
             arrow.material.diffuseColor = new BABYLON.Color3(0.6, 0, 0);
