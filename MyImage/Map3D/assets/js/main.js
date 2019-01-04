@@ -30,6 +30,7 @@ var createlabelInformation = function(x,y,z,content) {
     lbInfo.linkWithMesh(locInfo);   
     lbInfo.linkOffsetY =-50;
     lbInfo.background="Red";
+    lbInfo.isEnabled=false;
     
     var lineInfo = new BABYLON.GUI.Line();   // Khởi tạo liên kết giữa box ảo và button
     lineInfo.lineWidth = 2;
