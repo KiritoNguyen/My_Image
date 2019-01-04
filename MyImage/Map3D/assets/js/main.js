@@ -42,8 +42,7 @@ var createlabelInformation = function(x,y,z,content) {
 }
 
 // Hàm tạo button close của chế độ xem hình 360 độ
-var createBtnClose = function() {
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+var createBtnClose = function(advancedTexture) {
     var button = BABYLON.GUI.Button.CreateSimpleButton("but", "X");                         // Khởi tạo button close
     button.width = "40px";
     button.height ="40px";
@@ -63,31 +62,39 @@ var createBtnClose = function() {
         })
     })
 }
-var createBtnMove=function(scenemove,isLeft){
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
-    var button; 
-    if(isLeft==true){
-        button= BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/130856.png");
-        button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        button.left=100;
-    }
-    else{
-        button= BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/arrow_right.png");
-        button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        button.left=-100;
-    }            
-    button.width = "100px";
-    button.height ="100px";
-    button.color = "transparent";
-    button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-    button.background = "transparent";
-    advancedTexture.addControl(button);                                                 // Thêm button vào màn hình
-    button.onPointerClickObservable.add(function(){                                         // Sự kiện quay về màn hình map 3D
+var createBtnSwitchScene=function(sceneLeft, sceneRight, advancedTexture){
+    var btnLeft = BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/130856.png");
+    btnLeft.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    btnLeft.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    btnLeft.left = 100;
+    btnLeft.width = "100px";
+    btnLeft.height ="100px";
+    btnLeft.color = "transparent";
+
+    var btnRight = BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchRight", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/arrow_right.png");
+    btnRight.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    btnRight.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    btnRight.left =- 100;  
+    btnRight.width = "100px";
+    btnRight.height ="100px";
+    btnRight.color = "transparent";
+
+    advancedTexture.addControl(btnRight);             
+    advancedTexture.addControl(btnLeft);            
+
+    btnLeft.onPointerClickObservable.add(function(){
         advancedTexture.dispose();
-        var sceneMap = scenemove;
         engine.stopRenderLoop();
         engine.runRenderLoop(function () {               
-            sceneMap.render();
+            sceneLeft.render();
+        })     
+    })
+
+    btnRight.onPointerClickObservable.add(function(){
+        advancedTexture.dispose();
+        engine.stopRenderLoop();
+        engine.runRenderLoop(function () {               
+            sceneRight.render();
         })     
     })
 }
@@ -1471,6 +1478,8 @@ var createScene = function() {
 var createStadium=function(){   // Scene chứa hình ảnh 360 của stadium
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1484,8 +1493,8 @@ var createStadium=function(){   // Scene chứa hình ảnh 360 của stadium
         },
         scene
     );
-    createBtnClose();
-    createBtnMove(sceneParking,false);   
+    createBtnClose(advancedTexture);
+    createBtnSwitchScene(sceneStadium, sceneStadiumSportsPhysiotherapy, advancedTexture);   
     return scene;
 }
 var sceneStadium = createStadium();
@@ -1493,6 +1502,8 @@ var sceneStadium = createStadium();
 var createParking=function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1506,9 +1517,8 @@ var createParking=function(){
         },
         scene
     );
-    createBtnClose();
-    createBtnMove(sceneStadium,true);   
-    createBtnMove(sceneGateACricket,false);   
+    createBtnClose(advancedTexture);
+    createBtnSwitchScene(sceneStadium, sceneGateACricket, advancedTexture);      
     return scene;
 }
 var sceneParking = createParking();
@@ -1516,6 +1526,8 @@ var sceneParking = createParking();
 var createNationalLeague=function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1529,7 +1541,7 @@ var createNationalLeague=function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneNationalLeague = createNationalLeague();
@@ -1537,6 +1549,8 @@ var sceneNationalLeague = createNationalLeague();
 var createStadiumSportsPhysiotherapy = function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1550,7 +1564,7 @@ var createStadiumSportsPhysiotherapy = function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneStadiumSportsPhysiotherapy = createStadiumSportsPhysiotherapy();
@@ -1558,6 +1572,8 @@ var sceneStadiumSportsPhysiotherapy = createStadiumSportsPhysiotherapy();
 var createGateACricket = function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1571,7 +1587,7 @@ var createGateACricket = function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneGateACricket =createGateACricket();
@@ -1579,6 +1595,8 @@ var sceneGateACricket =createGateACricket();
 var createSydneyCricketGround = function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1592,7 +1610,7 @@ var createSydneyCricketGround = function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneSydneyCricketGround =createSydneyCricketGround();
@@ -1600,6 +1618,8 @@ var sceneSydneyCricketGround =createSydneyCricketGround();
 var createStadiumForecourt=function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1613,7 +1633,7 @@ var createStadiumForecourt=function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneStadiumForecourt = createStadiumForecourt();
@@ -1621,6 +1641,8 @@ var sceneStadiumForecourt = createStadiumForecourt();
 var createLake=function(){
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2,  Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 1;
     camera.upperRadiusLimit = 25;   
@@ -1634,7 +1656,7 @@ var createLake=function(){
         },
         scene
     );
-    createBtnClose();
+    createBtnClose(advancedTexture);
     return scene;
 }
 var sceneLake = createLake();
