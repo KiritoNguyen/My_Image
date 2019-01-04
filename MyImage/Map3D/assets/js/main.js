@@ -64,6 +64,34 @@ var createBtnClose = function() {
         })
     })
 }
+var createBtnMove=function(scenemove,isLeft){
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");      // Khởi tạo màn hình chứa button
+    var button; 
+    if(isLeft==true){
+        button= BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Phi/130856.png");
+        button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        button.left=100;
+    }
+    else{
+        button= BABYLON.GUI.Button.CreateImageOnlyButton("btnSwitchLeft", "https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/arrow_right.png");
+        button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        button.left=-100;
+    }            
+    button.width = "100px";
+    button.height ="100px";
+    button.color = "transparent";
+    button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    button.background = "transparent";
+    advancedTexture.addControl(button);                                                 // Thêm button vào màn hình
+    button.onPointerClickObservable.add(function(){                                         // Sự kiện quay về màn hình map 3D
+        advancedTexture.dispose();
+        var sceneMap = scenemove;
+        engine.stopRenderLoop();
+        engine.runRenderLoop(function () {               
+            sceneMap.render();
+        })     
+    })
+}
 
 // Hàm tạo scene map 3D
 var createScene = function() {
@@ -1458,8 +1486,10 @@ var createStadium=function(){   // Scene chứa hình ảnh 360 của stadium
         scene
     );
     createBtnClose();
+    createBtnMove(sceneParking,false);   
     return scene;
 }
+var sceneStadium = createStadium();
 
 var createParking=function(){
     var scene = new BABYLON.Scene(engine);
@@ -1478,8 +1508,11 @@ var createParking=function(){
         scene
     );
     createBtnClose();
+    createBtnMove(sceneStadium,true);   
+    createBtnMove(sceneGateACricket,false);   
     return scene;
 }
+var sceneParking = createParking();
 
 var createNationalLeague=function(){
     var scene = new BABYLON.Scene(engine);
@@ -1500,6 +1533,7 @@ var createNationalLeague=function(){
     createBtnClose();
     return scene;
 }
+var sceneNationalLeague = createNationalLeague();
 
 var createStadiumSportsPhysiotherapy = function(){
     var scene = new BABYLON.Scene(engine);
@@ -1520,6 +1554,7 @@ var createStadiumSportsPhysiotherapy = function(){
     createBtnClose();
     return scene;
 }
+var sceneStadiumSportsPhysiotherapy = createStadiumSportsPhysiotherapy();
 
 var createGateACricket = function(){
     var scene = new BABYLON.Scene(engine);
@@ -1540,6 +1575,7 @@ var createGateACricket = function(){
     createBtnClose();
     return scene;
 }
+var sceneGateACricket =createGateACricket();
 
 var createSydneyCricketGround = function(){
     var scene = new BABYLON.Scene(engine);
@@ -1560,6 +1596,7 @@ var createSydneyCricketGround = function(){
     createBtnClose();
     return scene;
 }
+var sceneSydneyCricketGround =createSydneyCricketGround();
 
 var createStadiumForecourt=function(){
     var scene = new BABYLON.Scene(engine);
@@ -1580,6 +1617,7 @@ var createStadiumForecourt=function(){
     createBtnClose();
     return scene;
 }
+var sceneStadiumForecourt = createStadiumForecourt();
 
 var createLake=function(){
     var scene = new BABYLON.Scene(engine);
@@ -1600,6 +1638,8 @@ var createLake=function(){
     createBtnClose();
     return scene;
 }
+var sceneLake = createLake();
+
 ///////////// Register service worker /////////////
 if('serviceWorker' in navigator) {
     navigator.serviceWorker
