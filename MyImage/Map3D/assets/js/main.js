@@ -409,12 +409,12 @@ var createScene = function() {
         m[0].scaling = new BABYLON.Vector3(0.004, 0.004, 0.004); // Nếu model quá to thì có thể chỉnh lại thông số vector để scale model cho phù hợp
         BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
 
-        for(var i = 0; i < m.length; i++) { // Search ground Texture dựa vào danh sách name và id của từng model
-            ///////////////////GROUND TEXTURE/////////////// 
-            if (m[i].name == 'Mesh01') {             
-                m[i].position.y = -1300;
-            } 
-        }
+        // for(var i = 0; i < m.length; i++) { // Search ground Texture dựa vào danh sách name và id của từng model
+        //     ///////////////////GROUND TEXTURE/////////////// 
+        //     if (m[i].name == 'Mesh01') {             
+        //         m[i].position.y = -1300;
+        //     } 
+        // }
     }	
      
     assetsManager.useDefaultLoadingScreen = false;
