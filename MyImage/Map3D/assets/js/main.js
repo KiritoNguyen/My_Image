@@ -987,44 +987,6 @@ var createScene = function() {
     }
     // document.getElementById("colorpicker").onchange=ChangeRouteColor;
     ///////////////////////////Draw Point/////////////////////////////////
-    var DrawOnePoint=function(groundTexture, invertY, x, y, i, pointLength,fillColor,strokeColor){
-        // setInterval(function(){
-        //     var context = groundTexture._context;
-        //     context.beginPath();
-        //     context.arc(x, y, 3, 0, 2 * Math.PI, false);
-            
-        //     context.fillStyle = fillColor;
-        //     context.fill();
-        //     context.lineWidth = 2;
-        //     context.strokeStyle = strokeColor;
-        //     context.stroke();
-        //     groundTexture.update(invertY);
-        // },timeChangeColorRoute);
-        // setTimeout(function(){
-        //     var context = groundTexture._context;
-        //         context.beginPath();
-        //         context.arc(x, y, 3, 0, 2 * Math.PI, false);
-                
-        //         context.fillStyle = 'red';
-        //         context.fill();
-        //         context.lineWidth = 2;
-        //         context.strokeStyle = 'blue';
-        //         context.stroke();
-        //         groundTexture.update(invertY);
-        //     setInterval(function(){
-        //         var context = groundTexture._context;
-        //         context.beginPath();
-        //         context.arc(x, y, 3, 0, 2 * Math.PI, false);
-                
-        //         context.fillStyle = 'red';
-        //         context.fill();
-        //         context.lineWidth = 2;
-        //         context.strokeStyle = 'blue';
-        //         context.stroke();
-        //         groundTexture.update(invertY);
-        //     },pointLength*timeChangeColorRoute);
-        // },i*timeChangeColorRoute);
-    }
     var DrawOnePointTemp = function(arrow,x, y,diffX,diffY,i,pointLength) {
         arrow.material = new BABYLON.StandardMaterial("arrowMat", scene);
         arrow.material.diffuseTexture = new BABYLON.Texture("https://raw.githubusercontent.com/KiritoNguyen/My_Image/master/MyImage/Map3D/assets/images/2000px-Red_right_arrow.svg.png", scene);
