@@ -12,6 +12,8 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 	Python World class constructor completed
 	processing begun of mesh:  paws_low
 		processing begun of Standard material:  bot
+			Diffuse texture found "Texture.001"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
 		num positions      :  1804
 		num normals        :  1804
 		num uvs            :  3608
@@ -19,8 +21,8 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 		num colors         :  0
 		num indices        :  5424
 	processing begun of mesh:  cannon_low
-		processing begun of Standard material:  Material
-			Diffuse texture found "Tex"
+		processing begun of Standard material:  top
+			Diffuse texture found "Texture"
 				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
 		num positions      :  1129
 		num normals        :  1129
@@ -29,7 +31,7 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 		num colors         :  0
 		num indices        :  3378
 	processing begun of mesh:  cannon_box_low
-		processing begun of Standard material:  top
+		registered as also a user of material:  top
 		num positions      :  70
 		num normals        :  70
 		num uvs            :  140
@@ -54,6 +56,8 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 		num indices        :  1680
 	processing begun of mesh:  wires_low
 		processing begun of Standard material:  middle
+			Diffuse texture found "Texture.002"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
 		num positions      :  474
 		num normals        :  474
 		num uvs            :  948
@@ -62,10 +66,6 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 		num indices        :  2016
 	processing begun of mesh:  bolts_low
 		registered as also a user of material:  bot
-		processing begun of Standard material:  Material.003
-			Diffuse texture found "Texture"
-				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
-		processing begun of multimaterial:  untitled.Multimaterial#0
 		num positions      :  604
 		num normals        :  604
 		num uvs            :  1208
@@ -117,4 +117,4 @@ Exporter version: 5.6.4, Blender version: 2.79 (sub 0)
 ========= Writing of scene file started =========
 ========= Writing of scene file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 1.5451 secs
+elapsed time:  0 min, 1.0561 secs
